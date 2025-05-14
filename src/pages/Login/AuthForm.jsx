@@ -7,7 +7,7 @@ import { Label } from "../../components/ui/label";
 import { Button } from "../../components/Button/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import { useToast } from "../../components/ui/use-toast";
-import { Leaf, User, Lock, Mail, Eye, EyeOff, IndentIcon } from "lucide-react";
+import { User, Lock, Mail, Eye, EyeOff, IndentIcon } from "lucide-react";
 import { login } from "../../services/auth"; // ajoute ce import
 import { useNavigate } from 'react-router-dom';
 import icon from '../../assets/ArmoiriesduMaroc.svg'
@@ -49,14 +49,17 @@ const AuthForm = () => {
     try {
       const result = await login(formData.identite, formData.password);
       
-      // Stockage local du token si retourné par ton backend
-      const token = result.data.token;
+      const token = result.Token;
+      console.log(token)
       localStorage.setItem("token", token);
-      navigate('/dashboard');
-      toast({
-        title: "Connexion réussie",
-        description: "Bienvenue sur AgriConnect !",
-      });
+      if(token!=null){
+          navigate('/espace-paysan');
+          toast({
+            title: "Connexion réussie",
+            description: "Bienvenue sur AgriConnect !",
+          });
+      }
+      
 
     // Redirection possible ici...
   } catch (err) {
@@ -66,16 +69,7 @@ const AuthForm = () => {
         variant: "destructive",
       });
   }
-    
-    // In a real app, you would authenticate with a backend service
-    // For now, we'll just show a success message
-    toast({
-      title: "Success",
-      description: "You have successfully logged in!",
-    });
-    
-    // Store in localStorage for demo purposes
-    localStorage.setItem("user", JSON.stringify({ email: formData.email }));
+
   };
 
   const handleSignup = (e) => {
