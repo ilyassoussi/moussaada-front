@@ -1,10 +1,10 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Toaster } from "../../components/ui/toaster";
+import { Toaster } from "../../../components/ui/toaster";
 import AuthForm from "./AuthForm";
-import Footer from "../../components/Footer/Footer";
-import NavBar from '../../components/Header/Navbar';
+import Footer from "../../../components/Footer/Footer";
+import NavBar from '../../../components/Header/Navbar';
 
 const LoginPage = () => {
   return (

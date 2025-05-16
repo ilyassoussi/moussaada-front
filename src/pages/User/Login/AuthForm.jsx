@@ -1,16 +1,17 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/tabs";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { Button } from "../../components/Button/button";
-import { Checkbox } from "../../components/ui/checkbox";
-import { useToast } from "../../components/ui/use-toast";
-import { User, Lock, Mail, Eye, EyeOff, IndentIcon } from "lucide-react";
-import { login } from "../../services/auth"; // ajoute ce import
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../components/ui/tabs";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import { Button } from "../../../components/Button/button";
+import { Checkbox } from "../../../components/ui/checkbox";
+import { useToast } from "../../../components/ui/use-toast";
+import { User, Lock, Mail, Eye, EyeOff, IndentIcon, Paperclip, Newspaper, Phone, Calendar } from "lucide-react";
+import { login } from "../../../services/auth"; // ajoute ce import
 import { useNavigate } from 'react-router-dom';
-import icon from '../../assets/ArmoiriesduMaroc.svg'
+import icon from '../../../assets/ArmoiriesduMaroc.svg'
+import { createAccount } from '../../../services/api';
 
 const AuthForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,8 +22,13 @@ const AuthForm = () => {
     password: "",
     confirmPassword: "",
     phone: "",
-    datedenaissance: "",
+    date_de_naissance: '',
     agreeTerms: false,
+  });
+
+  const [formDataLogIn, setFormDataLogIn] = useState({
+    identite_login: "",
+    password_login: "",
   });
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -33,11 +39,15 @@ const AuthForm = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    setFormDataLogIn((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!formData.identite || !formData.password) {
+    if (!formDataLogIn.identite_login || !formDataLogIn.password_login) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -47,17 +57,17 @@ const AuthForm = () => {
     }
 
     try {
-      const result = await login(formData.identite, formData.password);
+      const result = await login(formDataLogIn.identite_login, formDataLogIn.password_login);
       
       const token = result.Token;
       console.log(token)
       localStorage.setItem("token", token);
       if(token!=null){
-          navigate('/espace-paysan');
           toast({
             title: "Connexion réussie",
-            description: "Bienvenue sur AgriConnect !",
+            description: "Bienvenue sur Moussaada !",
           });
+          navigate('/espace-paysan');
       }
       
 
@@ -72,9 +82,9 @@ const AuthForm = () => {
 
   };
 
-  const handleSignup = (e) => {
+  const handleSignup  = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.datedenaissance || !formData.identite || !formData.phone || !formData.agreeTerms) {
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.date_de_naissance || !formData.identite || !formData.phone || !formData.agreeTerms) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -100,13 +110,29 @@ const AuthForm = () => {
       });
       return;
     }
-    
+
+    try {
+        const response = await createAccount(formData.identite,formData.name,formData.email,formData.password,formData.phone,formData.confirmPassword,formData.date_de_naissance);
+        console.log('Compte créé !', response);
+        toast({
+          title: "Success",
+          description: "Your account has been created successfully!",
+        });
+        localStorage.setItem('id_compte',response.data.id)
+        navigate('/validation')
+        // rediriger vers login ou autre
+    } catch (error) {
+        console.error('Erreur lors de la création :', error);
+        toast({
+          title: "Error",
+          description: "ERROR!!",
+          variant: "destructive",
+        });
+        
+    }
     // In a real app, you would register with a backend service
     // For now, we'll just show a success message
-    toast({
-      title: "Success",
-      description: "Your account has been created successfully!",
-    });
+    
     
   };
 
@@ -169,17 +195,17 @@ const AuthForm = () => {
                   className="space-y-4"
                 >
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-gray-700 flex items-center gap-1">
+                    <Label htmlFor="identite_login" className="text-gray-700 flex items-center gap-1">
                       <IndentIcon className="h-4 w-4 text-green-600" /> 
                         Identité
                     </Label>
                     <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                       <Input
-                        id="identite"
-                        name="identite"
+                        id="identite_login"
+                        name="identite_login"
                         type="text"
                         placeholder="XXXXXX"
-                        value={formData.identite}
+                        value={formDataLogIn.identite_login}
                         onChange={handleChange}
                         className="border-green-200 focus:border-green-500"
                         required
@@ -188,7 +214,7 @@ const AuthForm = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-gray-700 flex items-center gap-1">
+                    <Label htmlFor="password_login" className="text-gray-700 flex items-center gap-1">
                       <Lock className="h-4 w-4 text-green-600" />
                       Password
                     </Label>
@@ -198,11 +224,11 @@ const AuthForm = () => {
                       className="relative"
                     >
                       <Input
-                        id="password"
-                        name="password"
+                        id="password_login"
+                        name="password_login"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        value={formData.password}
+                        value={formDataLogIn.password_login}
                         onChange={handleChange}
                         className="border-green-200 focus:border-green-500 pr-10"
                         required
@@ -263,16 +289,35 @@ const AuthForm = () => {
                   className="space-y-4"
                 >
                   <div className="space-y-2">
+                    <Label htmlFor="identite" className="text-gray-700 flex items-center gap-1">
+                      <Newspaper className="h-4 w-4 text-green-600" />
+                      Identite
+                    </Label>
+                    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      <Input
+                        id="identite"
+                        name="identite"
+                        type="text"
+                        placeholder="XXXXXXXX"
+                        value={formData.identite}
+                        onChange={handleChange}
+                        className="border-green-200 focus:border-green-500"
+                        required
+                      />
+                    </motion.div>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="name" className="text-gray-700 flex items-center gap-1">
                       <User className="h-4 w-4 text-green-600" />
-                      Full Name
+                      Nom et prenom
                     </Label>
                     <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                       <Input
                         id="name"
                         name="name"
                         type="text"
-                        placeholder="John Doe"
+                        placeholder="Soussi ilyas"
                         value={formData.name}
                         onChange={handleChange}
                         className="border-green-200 focus:border-green-500"
@@ -301,7 +346,7 @@ const AuthForm = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-gray-700 flex items-center gap-1">
+                    <Label htmlFor="password" className="text-gray-700 flex items-center gap-1">
                       <Lock className="h-4 w-4 text-green-600" />
                       Password
                     </Label>
@@ -311,7 +356,7 @@ const AuthForm = () => {
                       className="relative"
                     >
                       <Input
-                        id="signup-password"
+                        id="password"
                         name="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
@@ -335,7 +380,7 @@ const AuthForm = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="confirm-password" className="text-gray-700 flex items-center gap-1">
+                    <Label htmlFor="confirmPassword" className="text-gray-700 flex items-center gap-1">
                       <Lock className="h-4 w-4 text-green-600" />
                       Confirm Password
                     </Label>
@@ -345,13 +390,50 @@ const AuthForm = () => {
                       className="relative"
                     >
                       <Input
-                        id="confirm-password"
+                        id="confirmPassword"
                         name="confirmPassword"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         className="border-green-200 focus:border-green-500 pr-10"
+                        required
+                      />
+                    </motion.div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-gray-700 flex items-center gap-1">
+                      <Phone className="h-4 w-4 text-green-600" />
+                      Numero GSM
+                    </Label>
+                    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="text"
+                        placeholder="06XXXXXXX"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="border-green-200 focus:border-green-500"
+                        required
+                      />
+                    </motion.div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="date_de_naissance" className="text-gray-700 flex items-center gap-1">
+                      <Calendar className="h-4 w-4 text-green-600" />
+                      date de naissance
+                    </Label>
+                    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      <Input
+                        id="date_de_naissance"
+                        name="date_de_naissance"
+                        type="date"
+                        placeholder="YYYY-MM-DD"
+                        value={formData.date_de_naissance}
+                        onChange={handleChange}
+                        className="border-green-200 focus:border-green-500"
                         required
                       />
                     </motion.div>

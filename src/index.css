@@ -34,6 +34,65 @@
 
     --radius: 0.5rem;
   }
+  .dark{
+    --background: 240 10% 3.9%; /* Dark blue-gray */
+    --foreground: 0 0% 98%; /* Almost white */
+
+    --card: 240 10% 10%; /* Slightly lighter dark blue-gray */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 142.1 76.2% 36.3%; /* Vibrant Green */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 210 40% 96.1%; /* Light gray for accents */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* Dark blue */
+
+    --muted: 240 5% 25%; /* Muted dark gray */
+    --muted-foreground: 0 0% 60%; /* Lighter gray for muted text */
+
+    --accent: 142.1 76.2% 46.3%; /* Slightly lighter vibrant green */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%; /* Red */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5% 15%; /* Darker border */
+    --input: 240 5% 15%;
+    --ring: 142.1 76.2% 46.3%; /* Vibrant green for focus rings */
+
+    --radius: 0.75rem; /* Slightly larger radius */
+  }
+  .light { /* Define light theme variables if needed, or adjust dark to be default */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 142.1 76.2% 36.3%; /* Vibrant Green */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 210 40% 96.1%; /* Light gray for accents */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* Dark blue */
+
+    --muted: 210 40% 96.1%;
+
+    --accent: 142.1 76.2% 46.3%; /* Slightly lighter vibrant green */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+  }
 }
 
 @layer base {

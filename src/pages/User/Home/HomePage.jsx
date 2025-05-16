@@ -1,12 +1,12 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Button } from "../../components/Button/button";
+import { Button } from "../../../components/Button/button";
 import { Users, MessageSquare, ChevronRight, Sparkles, Tractor, TrendingUp, Leaf } from "lucide-react";
-import NavBar from '../../components/Header/Navbar';
-import Footer from "../../components/Footer/Footer";
-import CoverHome from '../../assets/cover-home.jpeg'
-import NewsSection from '../../components/ui/NewsSection'
+import NavBar from '../../../components/Header/Navbar';
+import Footer from "../../../components/Footer/Footer";
+import CoverHome from '../../../assets/cover-home.jpeg'
+import NewsSection from '../../../components/ui/NewsSection'
 
 const TestimonialCard = ({ quote, author, role, avatar, index }) => (
   <motion.div
