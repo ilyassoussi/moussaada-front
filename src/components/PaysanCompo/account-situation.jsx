@@ -1,45 +1,48 @@
 
-import React from "react";
+import {React , useContext} from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import {
   Table,
   TableBody,
   TableCell,
-  TableRow,
-  TableHead,
-  TableHeader
+  TableRow
 } from "./table";
-import { Briefcase, CalendarDays, DollarSign, FileClock, Landmark, UserCircle2 } from "lucide-react";
+import { Briefcase, CalendarDays, DollarSign, FileClock, Landmark, Mail, Phone, UserCircle2 } from "lucide-react";
+import { UserContext } from '../../context/UserContext';
+import { TerreContext } from '../../context/TerreContext';
 
 export function AccountSituation() {
-  const personalInfo = [
-    { icon: <UserCircle2 className="text-primary" size={20}/>, label: "NOM ET PRÉNOM", value: "ES-SALLAMY ZAKARIA" },
-    { icon: <Briefcase className="text-primary" size={20}/>, label: "MATRICULE", value: "453335" },
-    { icon: <Landmark className="text-primary" size={20}/>, label: "ORGANISME EMPLOYEUR", value: "OFFICE NATIONAL DES CHEMINS DE FER (O.N.C.F)" }
-  ];
+  
+  const { userInfo } = useContext(UserContext);
+  const { terreInfo } = useContext(TerreContext);
 
-  const accountInfo = [
-    { 
-      icon: <DollarSign className="text-primary" size={20}/>,
-      label: "COTISATION VALIDATION (EN DHS)", 
-      value: "0.00",
-      rightLabel: "PÉRIODE VALIDÉE (EN MOIS)",
-      rightValue: "N/A"
-    },
-    { 
-      icon: <FileClock className="text-primary" size={20}/>,
-      label: "COTISATION RACHAT (EN DHS)", 
-      value: "0.00",
-      rightLabel: "PÉRIODE RACHETÉE (EN MOIS ET JOURS)",
-      rightValue: "0 Mois 0 Jours" /* Updated format */
-    }
-  ];
+  const dateISO = userInfo?.date_de_naissance;
+
+  const dateObj = new Date(dateISO);
+  const formattedDate = dateObj.toLocaleDateString('fr-FR'); // format français jour/mois/année
+
+const personalInfo = [
+  { icon: <UserCircle2 className="text-primary" size={20} />, label: "NOM ET PRÉNOM", value: userInfo?.nometprenom },
+  { icon: <Briefcase className="text-primary" size={20} />, label: "MATRICULE", value: userInfo?.identite },
+];
+
+
+  // const TerreInfo = [
+  //   { 
+  //     icon: <DollarSign className="text-primary" size={20}/>,
+  //     label: "Valeur Terre (EN DHS)", 
+  //     value: "1 500 0000.00",
+  //     rightLabel: "PÉRIODE VALIDÉE (EN MOIS)",
+  //     rightValue: "N/A"
+  //   }
+    
+  // ];
 
   const affiliationInfo = [
-    { icon: <UserCircle2 className="text-primary" size={20}/>, label: "N° AFFILIATION", value: "969654608" },
-    { icon: <Briefcase className="text-primary" size={20}/>, label: "N° ADHÉSION/ÉTAT", value: "353080001" },
-    { icon: <CalendarDays className="text-primary" size={20}/>, label: "DATE AFFILIATION", value: "05/12/2018" }
+    { icon: <Phone className="text-primary" size={20}/>, label: "numero de telephone", value: userInfo?.phone },
+    { icon: <Mail className="text-primary" size={20}/>, label: "Email", value: userInfo?.mail },
+    { icon: <CalendarDays className="text-primary" size={20}/>, label: "DATE de naissance", value: formattedDate }
   ];
 
   const itemVariants = {
@@ -90,7 +93,7 @@ export function AccountSituation() {
             </motion.div>
             
             <motion.div variants={itemVariants} custom={1} className="md:border-l md:pl-8 border-border">
-              <h4 className="text-lg font-semibold mb-4 text-primary">Détails d'Affiliation</h4>
+              <h4 className="text-lg font-semibold mb-4 text-primary">Détails d'information</h4>
               <Table>
                 <TableBody>
                   {affiliationInfo.map((item, i) => (
@@ -109,21 +112,63 @@ export function AccountSituation() {
             <motion.div variants={itemVariants} custom={2} className="md:col-span-2 mt-4 pt-6 border-t border-border">
               <h4 className="text-lg font-semibold mb-4 text-primary">Informations des Terres</h4>
                <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
-                {accountInfo.map((item, i) => (
-                  <Card key={i} className="bg-muted/20 hover:shadow-primary/20 transition-shadow">
-                    <CardContent className="p-4">
-                       <div className="flex items-start gap-3 mb-2">
-                        <motion.span whileHover={{ rotate: 15 }}>{item.icon}</motion.span>
-                        <p className="font-semibold text-foreground">{item.label}</p>
-                      </div>
-                      <p className="text-2xl font-bold text-primary mb-3">{item.value}</p>
-                      <div className="text-sm text-muted-foreground">
-                        <p className="font-medium">{item.rightLabel} :</p>
-                        <p>{item.rightValue}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {terreInfo?.length > 0 ? (
+                    terreInfo.map((terre, i) => (
+                      <Card key={terre.id || i} className="bg-muted/20 hover:shadow-primary/20 transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3 mb-2">
+                            <motion.span whileHover={{ rotate: 15 }}>
+                              <Landmark className="text-primary" size={20} />
+                            </motion.span>
+                            <p className="font-semibold text-foreground">
+                              {terre.numeroTitre || "Titre inconnu"}
+                            </p>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                              <p>proprietaires :</p>
+                              <span>{terre.proprietaires.nomComplet}</span>
+                            </div>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                              <p>Localisation :</p>
+                              <span>{terre.localisation}</span>
+                            </div>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                              <p>Superficie :</p>
+                              <span>{terre.superficieM2 ? `${terre.superficieM2} ha` : "N/A"}</span>
+                            </div>
+                          </div>
+
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                              <p>Date d'enregistrement :</p>
+                              <span>{terre.dateEnregistrement ? `${new Date(terre.dateEnregistrement).toLocaleDateString('fr-FR')}` : "N/A"}</span>
+                            </div>
+                          </div>
+
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                              <p>en Litige :</p>
+                              <span>{terre.enLitige ? "OUI" : "NON"}</span>
+                            </div>
+                          </div>
+
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                              <p>hypothequee :</p>
+                              <span>{terre.hypothequee ? "OUI" : "NON"}</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground">Aucune terre trouvée.</p>
+                  )}
               </div>
             </motion.div>
 

@@ -4,6 +4,7 @@ import Login from '../pages/User/Login/Login';
 import Acceul from '../pages/User/Home/HomePage';
 import Validation from '../pages/User/ValidationCompte/VerificationPage';
 import Paysan from '../pages/paysan/MonCompte';
+import UpdateSituation from '../pages/paysan/UpdateSituationPage';
 
 export default function AppRouter() {
   const routes = useRoutes([
@@ -11,6 +12,7 @@ export default function AppRouter() {
     { path: '/login', element: <Login /> },
     { path: '/validation', element: <Validation /> },
     { path: '/espace-paysan', element: <Paysan /> },
+    { path: '/mise-a-jours-situation', element: <UpdateSituation /> },
   ]);
   return routes;
 }

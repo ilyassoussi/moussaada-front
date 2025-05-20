@@ -1,9 +1,13 @@
-import axiosInstance from '../hooks/axiosInstance'; // ton axiosInstance configuré
-import { useEffect } from 'react';
+import axiosInstance from '../hooks/axiosInstance';
+import { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
+import { TerreContext } from '../context/TerreContext';
 
 const useVerifyToken = () => {
   const navigate = useNavigate();
+  const { setUserInfo } = useContext(UserContext); 
+  const { setTerreInfo } = useContext(TerreContext);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -18,16 +22,31 @@ const useVerifyToken = () => {
           params: { token }
         });
 
-        // exemple de réponse attendue : { role: { type_role: "Admin" }, ... }
-        const role = response.data?.role?.type_role;
+        if (response.data === true) {
+          const infoUser = await axiosInstance.get(`/utilisateur/information`);
+          const information = infoUser.data.data;
 
-        if (role === 'ROLE_Admin') {
-          navigate('/espace-admin');
-        } else if (role === 'ROLE_Paysan') {
-          navigate('/espace-paysan');
-        } else if (role === 'ROLE_Service_terrain'){
-          navigate('/espace-techn');
+          setUserInfo(information); // <== stocker les infos
+
+          switch (information.role.type_role) {
+            case 'Admin':
+              navigate('/espace-admin');
+              break;
+            case 'Paysan':
+              const infoTerreFromPaysan = await axiosInstance.get(`/paysan/info/terre`);
+              setTerreInfo(infoTerreFromPaysan.data.data.getInfoResponse)
+              console.log(infoTerreFromPaysan.data.data.getInfoResponse)
+              navigate('/espace-paysan');
+              break;
+            case 'Service_terrain':
+              navigate('/espace-technique');
+              break;
+            default:
+              navigate('/login');
+              break;
+          }
         }
+
       } catch (err) {
         console.error('Token invalide ou expiré', err);
         localStorage.removeItem('token');
@@ -36,7 +55,7 @@ const useVerifyToken = () => {
     };
 
     verifyToken();
-  }, [navigate]);
+  }, [navigate, setUserInfo]);
 };
 
 export default useVerifyToken;

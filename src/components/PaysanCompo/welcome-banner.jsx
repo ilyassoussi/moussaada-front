@@ -4,7 +4,10 @@ import { motion } from "framer-motion";
 import { Button } from "./button";
 import { ArrowRight } from "lucide-react";
 
+
 export function WelcomeBanner({ name }) {
+
+
   return (
     <motion.div 
       className="relative overflow-hidden rounded-xl shadow-2xl group" /* Enhanced shadow and rounded corners */

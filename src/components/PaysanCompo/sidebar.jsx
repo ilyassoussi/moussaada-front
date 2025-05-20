@@ -13,20 +13,36 @@ import {
   Settings,
   LogOut
 } from "lucide-react";
+import { logout } from '../../services/api';
 
 const menuItems = [
-  { icon: <LayoutGrid size={20} />, label: "Mon compte", active: true, href: "#"},
-  { icon: <Edit3 size={20} />, label: "Mise à jour situation", active: false, href: "#"},
+  { icon: <LayoutGrid size={20} />, label: "Mon compte", active: true, href: "/espace-paysan"},
+  { icon: <Edit3 size={20} />, label: "Mise à jour situation", active: false, href: "/mise-a-jours-situation"},
   { icon: <Calendar size={20} />, label: "Prise de rendez-vous", active: false, href: "#"},
   { icon: <FileText size={20} />, label: "Attestations en ligne", active: false, href: "#"},
   { icon: <MessageCircle size={20} />, label: "Réclamations", active: false, href: "#"},
   { icon: <List size={20} />, label: "Suivi des réclamations", active: false, href: "#"}
 ];
 
+
 const bottomMenuItems = [
   { icon: <Settings size={20} />, label: "Paramètres", href: "#" },
-  { icon: <LogOut size={20} />, label: "Déconnexion", href: "#" },
-]
+  { 
+    icon: <LogOut size={20} />, 
+    label: "Déconnexion", 
+    href: "#", // <-- Met un href vide ou # ici pour éviter rechargement
+    onClick: async (e) => {
+      e.preventDefault(); // bloque la navigation
+      try {
+        await logout();
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      } catch (error) {
+        console.error("Erreur logout:", error);
+      }
+    }
+  },
+];
 
 export function Sidebar() {
   const [activeItem, setActiveItem] = React.useState("Mon compte");
@@ -75,7 +91,8 @@ export function Sidebar() {
           {bottomMenuItems.map((item) => (
             <motion.a
               key={item.label}
-              href={item.href}
+              href={item.href || '#'} // Ajoute un href fallback pour éviter warning
+              onClick={item.onClick ? item.onClick : undefined}
               className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}

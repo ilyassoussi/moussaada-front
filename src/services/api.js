@@ -52,3 +52,13 @@ export const getInformationCompte = async (id) => {
         throw error.response ? error.response.data : error;
     }
 };
+
+
+export const logout = async () => {
+    try {
+        const response = await axiosInstance.post(`/utilisateur/logout`);
+        return response;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+};

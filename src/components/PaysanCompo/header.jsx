@@ -1,10 +1,12 @@
 
-import React from "react";
+import React , {useContext} from "react";
 import { Search, Bell, ChevronDown, Moon, Sun } from "lucide-react";
 import { Input } from "./input";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Button } from "./button";
 import { motion } from "framer-motion";
+import { UserContext } from '../../context/UserContext';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +34,7 @@ export function Header() {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
+  const { userInfo } = useContext(UserContext);
 
 
   return (
@@ -77,8 +80,8 @@ export function Header() {
                   <AvatarFallback className="bg-primary text-primary-foreground text-sm">ES</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col items-start">
-                  <span className="text-sm font-semibold text-foreground">ES-SALLAMY ZAKARIA</span>
-                  <span className="text-xs text-muted-foreground">969654608</span>
+                  <span className="text-sm font-semibold text-foreground">{userInfo?.nometprenom}</span>
+                  <span className="text-xs text-muted-foreground">{userInfo?.role?.type_role}</span>
                 </div>
                 <ChevronDown size={18} className="text-muted-foreground" />
               </motion.div>
