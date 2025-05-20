@@ -10,7 +10,7 @@ export function Footer() {
       transition={{ duration: 0.5, delay: 0.5 }}
       className="bg-card/50 border-t border-border text-center p-5 text-sm text-muted-foreground" /* Modernized style */
     >
-      <span>© {new Date().getFullYear()} RCAR - Propulsé par la Caisse de Dépôt et de Gestion. Tous droits réservés.</span>
+      <span>© {new Date().getFullYear()} MOUSSAADA - Propulsé par la Directions provinciale de l'agriculture. Tous droits réservés.</span>
     </motion.footer>
   );
 }

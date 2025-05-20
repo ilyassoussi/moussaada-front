@@ -30,16 +30,15 @@ const useVerifyToken = () => {
 
           switch (information.role.type_role) {
             case 'Admin':
-              navigate('/espace-admin');
+              navigate('');
               break;
             case 'Paysan':
               const infoTerreFromPaysan = await axiosInstance.get(`/paysan/info/terre`);
               setTerreInfo(infoTerreFromPaysan.data.data.getInfoResponse)
-              console.log(infoTerreFromPaysan.data.data.getInfoResponse)
-              navigate('/espace-paysan');
+              navigate('');
               break;
             case 'Service_terrain':
-              navigate('/espace-technique');
+              navigate('');
               break;
             default:
               navigate('/login');
@@ -55,7 +54,7 @@ const useVerifyToken = () => {
     };
 
     verifyToken();
-  }, [navigate, setUserInfo]);
+  }, [navigate, setTerreInfo, setUserInfo]);
 };
 
 export default useVerifyToken;

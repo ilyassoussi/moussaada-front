@@ -62,3 +62,45 @@ export const logout = async () => {
         throw error.response ? error.response.data : error;
     }
 };
+
+export const CreateUpdateAddresse = async (id_ville,addresse,quartier,code_postal,email,telephone_fixe,gsm) => {
+    try {
+        const response = await axiosInstance.post(`/paysan/addresse/create`,
+            {
+                id_ville,
+                addresse,
+                quartier,
+                code_postal,
+                email,
+                telephone_fixe,
+                gsm
+            },
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getAddressePaysan = async () => {
+    try{
+        const response = await axiosInstance.get(`/paysan/addresse`);
+        return response.data.data;
+    }catch (error){
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const GetVillePaysan = async () => {
+    try {
+        const response = await axiosInstance.get(`/paysan/addresse/ville`);
+        return response.data.data;
+    } catch (error){
+        throw error.response ? error.response.data : error;
+    }
+}

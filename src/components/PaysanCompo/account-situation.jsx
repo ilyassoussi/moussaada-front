@@ -8,7 +8,7 @@ import {
   TableCell,
   TableRow
 } from "./table";
-import { Briefcase, CalendarDays, DollarSign, FileClock, Landmark, Mail, Phone, UserCircle2 } from "lucide-react";
+import { Briefcase, CalendarDays, Landmark, Mail, Phone, UserCircle2 } from "lucide-react";
 import { UserContext } from '../../context/UserContext';
 import { TerreContext } from '../../context/TerreContext';
 

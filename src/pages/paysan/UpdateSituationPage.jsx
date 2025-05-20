@@ -10,17 +10,16 @@ import { useToast } from "../../components/PaysanCompo/use-toast";
 import { MapPin, Home, Landmark, Mail, Phone, Smartphone, Save, Info } from "lucide-react";
 import { Sidebar } from "../../components/PaysanCompo/sidebar";
 import { Header } from "../../components/PaysanCompo/header";
-const cities = [
-  { id: 1, name: "Casablanca" },
-  { id: 2, name: "Rabat" },
-  { id: 3, name: "Marrakech" },
-  { id: 4, name: "Fès" },
-  { id: 5, name: "Tanger" },
-];
+import { GetVillePaysan } from "../../services/api"; 
+import { getAddressePaysan } from "../../services/api"; 
+import { CreateUpdateAddresse } from "../../services/api";
+import UseVerifyToken from '../../services/useVerifyToken';
+import { Footer } from "../../components/PaysanCompo/footer";
+import { Toaster } from "../../components/PaysanCompo/toaster";
 
-const LS_KEY_SITUATION = "user_situation_data";
 
 function UpdateSituationPage() {
+  UseVerifyToken();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     id_ville: "",
@@ -32,18 +31,45 @@ function UpdateSituationPage() {
     gsm: "",
   });
   const [hasExistingData, setHasExistingData] = useState(false);
-
+  const [villes, setVilles] = useState([]);
+  
+  
   useEffect(() => {
-    const storedData = localStorage.getItem(LS_KEY_SITUATION);
-    if (storedData) {
-      setFormData(JSON.parse(storedData));
-      setHasExistingData(true);
-      toast({
-        title: "Données existantes chargées",
-        description: "Vos informations précédemment sauvegardées ont été chargées.",
-        variant: "default",
-      });
-    }
+    const fetchInitialData = async () => {
+      try {
+        // 1. Récupérer les villes
+        const villesRes = await GetVillePaysan();
+        setVilles(villesRes);
+
+        // 2. Récupérer l’adresse existante
+        const adresseRes = await getAddressePaysan(); // ou getAddressePaysan()
+        if (adresseRes) {
+          setFormData({
+            id_ville: adresseRes.id_ville?.toString() || "", // attention au type
+            addresse: adresseRes.addresse || "",
+            quartier: adresseRes.quartier || "",
+            code_postal: adresseRes.code_postal || "",
+            email: adresseRes.email || "",
+            telephone_fixe: adresseRes.telephone_fixe || "",
+            gsm: adresseRes.gsm || "",
+          });
+          setHasExistingData(true);
+          toast({
+            title: "Données chargées",
+            description: "Vos informations d’adresse existantes ont été chargées.",
+            variant: "default",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger vos informations.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchInitialData();
   }, [toast]);
 
   const handleChange = (e) => {
@@ -55,16 +81,46 @@ function UpdateSituationPage() {
     setFormData((prev) => ({ ...prev, id_ville: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    localStorage.setItem(LS_KEY_SITUATION, JSON.stringify(formData));
-    setHasExistingData(true);
-    toast({
-      title: "Mise à jour réussie !",
-      description: "Vos informations de situation ont été sauvegardées localement.",
-      variant: "default",
-      className: "bg-primary text-primary-foreground",
-    });
+
+    
+    try {
+      const {
+        id_ville,
+        addresse,
+        quartier,
+        code_postal,
+        email,
+        telephone_fixe,
+        gsm,
+      } = formData;
+
+      const response = await CreateUpdateAddresse(
+        id_ville,
+        addresse,
+        quartier,
+        code_postal,
+        email,
+        telephone_fixe,
+        gsm
+      );
+
+      setHasExistingData(true);
+
+      toast({
+        title: "Adresse mise à jour !",
+        description: "Les informations ont été enregistrées avec succès.",
+        variant: "default",
+        className: "bg-primary text-primary-foreground",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Échec de l'enregistrement de l'adresse.",
+        variant: "destructive",
+      });
+    }
   };
 
   const inputFields = [
@@ -85,7 +141,7 @@ function UpdateSituationPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="space-y-8 p-[100px]"
+          className="lex-1 overflow-y-auto p-8 space-y-8"
         >
           <Card className="overflow-hidden bg-card/80 backdrop-blur-md shadow-xl">
             <CardHeader className="bg-muted/30 border-b border-border">
@@ -120,9 +176,9 @@ function UpdateSituationPage() {
                         <SelectValue placeholder="Sélectionnez votre ville" />
                       </SelectTrigger>
                       <SelectContent>
-                        {cities.map((city) => (
-                          <SelectItem key={city.id} value={String(city.id)}>
-                            {city.name}
+                        {villes.map((ville) => (
+                          <SelectItem key={ville.id} value={String(ville.id)}>
+                            {ville.ville}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -167,7 +223,9 @@ function UpdateSituationPage() {
             </form>
           </Card>
         </motion.div>
+        <Footer />
       </div>
+      <Toaster />
     </div>
   );
 }
