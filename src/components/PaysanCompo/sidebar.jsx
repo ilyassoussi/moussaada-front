@@ -3,26 +3,29 @@ import React from "react";
 import { cn } from "./utils";
 import { motion } from "framer-motion";
 import iconArmerie from '../../assets/ArmoiriesduMaroc.svg'
-import { 
-  LayoutGrid, 
-  Edit3, 
-  Calendar, 
-  FileText, 
-  MessageCircle, 
-  List,
+import {
+  LayoutGrid,
+  Edit3,
+  Calendar,
+  Award,
+  MessageCircle,
+  ListChecks,
   Settings,
-  LogOut
-} from "lucide-react";
+  LogOut,
+  FilePlus
+} from 'lucide-react';
 import { logout } from '../../services/api';
 
 const menuItems = [
-  { icon: <LayoutGrid size={20} />, label: "Mon compte", active: true, href: "/espace-paysan"},
-  { icon: <Edit3 size={20} />, label: "Mise à jour situation", active: false, href: "/mise-a-jours-situation"},
-  { icon: <Calendar size={20} />, label: "Prise de rendez-vous", active: false, href: "#"},
-  { icon: <FileText size={20} />, label: "Attestations en ligne", active: false, href: "#"},
-  { icon: <MessageCircle size={20} />, label: "Réclamations", active: false, href: "#"},
-  { icon: <List size={20} />, label: "Suivi des réclamations", active: false, href: "#"}
+  { icon: <LayoutGrid size={20} />, label: "Mon compte", href: "/mon-compte"},
+  { icon: <Edit3 size={20} />, label: "Mise à jour situation", href: "/mise-a-jour-situation"},
+  { icon: <Calendar size={20} />, label: "Prise de rendez-vous", href: "/prise-de-rendez-vous"},
+  { icon: <Award size={20} />, label: "Demande de Subventions", href: "/demande-subventions"},
+  { icon: <FilePlus size={20} />, label: "Suivi des Subventions", href: "/suivi-subventions"},
+  { icon: <MessageCircle size={20} />, label: "Réclamations", href: "/reclamations"},
+  { icon: <ListChecks size={20} />, label: "Suivi des réclamations", href: "/suivi-reclamations"}
 ];
+
 
 
 const bottomMenuItems = [
