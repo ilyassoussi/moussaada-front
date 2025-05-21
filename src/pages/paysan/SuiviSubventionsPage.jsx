@@ -5,6 +5,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Badge } from "../../components/PaysanCompo/badge";
 import { MessageCircle, MailCheck, ListChecks, AlertCircle, Award, FileText, Info } from "lucide-react";
 import { Button } from "../../components/PaysanCompo/button";
+import { Sidebar } from "../../components/PaysanCompo/sidebar";
+import { Header } from "../../components/PaysanCompo/header";
+import { Footer } from "../../components/PaysanCompo/footer";
+import { Toaster } from "../../components/PaysanCompo/toaster";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +18,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../components/PaysanCompo/alert-dialog";
+import UseVerifyToken from '../../services/useVerifyToken';
+
 
 const LS_KEY_SUBVENTIONS = "user_subventions_data";
 
@@ -39,6 +45,8 @@ const formatDate = (dateString) => {
 };
 
 function SuiviSubventionsPage() {
+        UseVerifyToken();
+  
   const [subventions, setSubventions] = useState([]);
   const [selectedSubvention, setSelectedSubvention] = useState(null);
 
@@ -84,9 +92,15 @@ function SuiviSubventionsPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-8"
+      className="flex h-screen bg-background text-foreground antialiased"
     >
-      <Card className="overflow-hidden bg-card/80 backdrop-blur-md shadow-xl">
+
+                  <Sidebar />
+      
+      <Card className="flex flex-col flex-1 overflow-hidden">
+
+                            <Header />
+      
         <CardHeader className="bg-muted/30 border-b border-border">
           <CardTitle className="text-2xl flex items-center gap-3 text-primary">
             <ListChecks size={28} />
@@ -96,7 +110,7 @@ function SuiviSubventionsPage() {
             Consultez l'état de vos demandes de subvention et les réponses associées.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="flex-1 overflow-y-auto p-8 space-y-8">
           {subventions.length === 0 ? (
             <motion.div 
               className="p-10 text-center text-muted-foreground flex flex-col items-center gap-4"
@@ -151,9 +165,9 @@ function SuiviSubventionsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         {sub.reponse && (
-                           <Button variant="outline" size="sm" onClick={() => handleViewResponse(sub)}>
-                             Voir Détails
-                           </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleViewResponse(sub)}>
+                            Voir Détails
+                          </Button>
                         )}
                       </TableCell>
                     </motion.tr>
@@ -163,6 +177,9 @@ function SuiviSubventionsPage() {
             </div>
           )}
         </CardContent>
+
+                                <Footer />
+        
       </Card>
 
       {selectedSubvention && (
@@ -195,6 +212,9 @@ function SuiviSubventionsPage() {
           </AlertDialogContent>
         </AlertDialog>
       )}
+
+                        <Toaster />
+      
     </motion.div>
   );
 }

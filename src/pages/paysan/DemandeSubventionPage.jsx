@@ -8,6 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Textarea } from "../../components/PaysanCompo/textarea";
 import { useToast } from "../../components/PaysanCompo/use-toast";
 import { FileText, UploadCloud, Send, Award, Edit } from "lucide-react";
+import { Sidebar } from "../../components/PaysanCompo/sidebar";
+import { Header } from "../../components/PaysanCompo/header";
+import { Footer } from "../../components/PaysanCompo/footer";
+import { Toaster } from "../../components/PaysanCompo/toaster";
+import UseVerifyToken from '../../services/useVerifyToken';
 
 const subventionTypes = [
   { id: "SUB_AGRI_MAT", name: "Subvention Matériel Agricole" },
@@ -19,6 +24,8 @@ const subventionTypes = [
 const LS_KEY_SUBVENTIONS = "user_subventions_data";
 
 function DemandeSubventionPage() {
+      UseVerifyToken();
+  
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     id_subvention: "",
@@ -109,10 +116,15 @@ function DemandeSubventionPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-8"
+      className="flex h-screen bg-background text-foreground antialiased"
     >
-      <Card className="overflow-hidden bg-card/80 backdrop-blur-md shadow-xl">
-        <CardHeader className="bg-muted/30 border-b border-border">
+            <Sidebar />
+      
+      <Card className="flex flex-col flex-1 overflow-hidden">
+
+                      <Header />
+        
+        <CardHeader className="flex-1 overflow-y-auto p-8 space-y-8">
           <CardTitle className="text-2xl flex items-center gap-3 text-primary">
             <Award size={28} />
             Demande de Subvention
@@ -197,7 +209,7 @@ function DemandeSubventionPage() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="border-t border-border bg-muted/30 p-6 md:p-8">
+          <CardFooter className="flex-1 overflow-y-auto p-8 space-y-8">
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -210,7 +222,11 @@ function DemandeSubventionPage() {
             </motion.div>
           </CardFooter>
         </form>
+                        <Footer />
+        
       </Card>
+                  <Toaster />
+      
     </motion.div>
   );
 }

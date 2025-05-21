@@ -137,3 +137,11 @@ export const getAllReclamation = async () => {
         throw error.response ? error.response.data : error;
     }
 }
+export const getResponseReclamation = async (id) => {
+    try{
+        const response = await axiosInstance.get(`/admin/reclamation/response/${id}`)
+        return response.data.data;
+    } catch (error){
+        throw error.response ? error.response.data : error;
+    }
+}

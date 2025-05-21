@@ -15,9 +15,10 @@ import {
   FilePlus
 } from 'lucide-react';
 import { logout } from '../../services/api';
+import { useLocation } from 'react-router-dom';
 
 const menuItems = [
-  { icon: <LayoutGrid size={20} />, label: "Mon compte", href: "/mon-compte"},
+  { icon: <LayoutGrid size={20} />, label: "Mon compte", href: "/espace-paysan"},
   { icon: <Edit3 size={20} />, label: "Mise à jour situation", href: "/mise-a-jour-situation"},
   { icon: <Calendar size={20} />, label: "Prise de rendez-vous", href: "/prise-de-rendez-vous"},
   { icon: <Award size={20} />, label: "Demande de Subventions", href: "/demande-subventions"},
@@ -49,7 +50,9 @@ const bottomMenuItems = [
 
 export function Sidebar() {
   const [activeItem, setActiveItem] = React.useState("Mon compte");
-
+  const location = useLocation();
+  const currentPath = location.pathname;
+  
   return (
     <motion.div 
       initial={{ x: -256 }}
@@ -61,7 +64,7 @@ export function Sidebar() {
         <div className="p-6 flex items-center space-x-3">
           <img 
             src={iconArmerie} 
-            alt="CNRA RCAR Logo" 
+            alt="Moussaada Logo" 
             className="h-10" /* Slightly smaller logo */
           />
           <span className="font-semibold text-xl">Moussaada</span>
@@ -75,8 +78,8 @@ export function Sidebar() {
               onClick={() => setActiveItem(item.label)}
               className={cn(
                 "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ease-in-out",
-                activeItem === item.label
-                  ? "bg-primary text-primary-foreground shadow-md scale-105" 
+                currentPath === item.href
+                  ? "bg-green-600 text-white shadow-md scale-105"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
               whileHover={{ scale: activeItem !== item.label ? 1.05 : 1 }}

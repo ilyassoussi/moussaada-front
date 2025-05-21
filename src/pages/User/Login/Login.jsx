@@ -28,7 +28,7 @@ const LoginPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
               >
-                Grow Your Farm with <span className="text-lime-600">AgriConnect</span>
+                Grow Your Farm with <span className="text-lime-600">Moussaada</span>
               </motion.h1>
               
               <motion.p 

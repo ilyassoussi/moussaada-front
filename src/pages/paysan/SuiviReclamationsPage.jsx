@@ -9,6 +9,7 @@ import { Sidebar } from "../../components/PaysanCompo/sidebar";
 import { Header } from "../../components/PaysanCompo/header";
 import { Footer } from "../../components/PaysanCompo/footer";
 import { Toaster } from "../../components/PaysanCompo/toaster";
+import { getResponseReclamation } from "../../services/api";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,16 +20,16 @@ import {
   AlertDialogTitle,
 } from "../../components/PaysanCompo/alert-dialog";
 import { getAllReclamation } from "../../services/api"; 
+import UseVerifyToken from '../../services/useVerifyToken';
 
 
-const LS_KEY_RECLAMATIONS = "user_reclamations_data";
 
 const getStatusVariant = (status) => {
   switch (status) {
     case true:
       return "default";
     case false:
-      return "outline"; 
+      return "destructive"; 
     default:
       return "default";
   }
@@ -47,15 +48,34 @@ const formatDate = (dateString) => {
 };
 
 function SuiviReclamationsPage() {
+      UseVerifyToken();
+  
   const [reclamations, setReclamations] = useState([]);
   const [selectedReclamation, setSelectedReclamation] = useState(null);
-
+  const [selectedReclamationResponse, setSelectedReclamationResponse] = useState(null);
+  const [loadingResponse, setLoadingResponse] = useState(false);
+  
   useEffect(() => {
     const fetchReclamations = async () => {
       try {
         const data = await getAllReclamation();
-        setReclamations(data.sort((a, b) => new Date(b.date) - new Date(a.date)));
 
+        const updatedData = await Promise.all(
+          data.map(async (rec) => {
+            if (rec.inTreatment === true && !rec.reponse) {
+              try {
+                const reponseData = await getResponseReclamation(rec.id_reclamation);
+                return { ...rec, reponse: reponseData }; // ajoute dynamiquement la réponse
+              } catch (err) {
+                console.warn(`Erreur pour la réclamation ${rec.id_reclamation}`, err);
+                return rec;
+              }
+            }
+            return rec;
+          })
+        );
+
+        setReclamations(updatedData.sort((a, b) => new Date(b.date_creation) - new Date(a.date_creation)));
       } catch (error) {
         console.error("Erreur lors du chargement des réclamations :", error);
       }
@@ -65,9 +85,19 @@ function SuiviReclamationsPage() {
   }, []);
 
 
-  const handleViewResponse = (reclamation) => {
-    setSelectedReclamation(reclamation);
-  };
+const handleViewResponse = async (reclamation) => {
+  setSelectedReclamation(reclamation);
+  setLoadingResponse(true);
+  try {
+    const response = await getResponseReclamation(reclamation.id_reclamation);
+    setSelectedReclamationResponse(response);
+  } catch (error) {
+    console.error("Erreur lors du chargement de la réponse :", error);
+    setSelectedReclamationResponse("Erreur lors du chargement de la réponse.");
+  } finally {
+    setLoadingResponse(false);
+  }
+};
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -170,24 +200,38 @@ function SuiviReclamationsPage() {
                         <Footer />
       </Card>
 
-      {selectedReclamation && (
-        <AlertDialog open={!!selectedReclamation} onOpenChange={() => setSelectedReclamation(null)}>
+      {selectedReclamationResponse && (
+        <AlertDialog open={!!selectedReclamation} onOpenChange={(open) => {
+            if (!open) {
+              setSelectedReclamation(null);
+              setSelectedReclamationResponse(null);
+            }
+        }}>
           <AlertDialogContent className="bg-card border-border">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-primary flex items-center gap-2">
-                <MailCheck size={24} /> Réponse à la réclamation R-{String(selectedReclamation.id).slice(-5)}
+                <MailCheck size={24} /> Réponse à la réclamation R-{selectedReclamation.id_reclamation}
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground pt-2">
-                <span className="font-semibold">Date de soumission:</span> {formatDate(selectedReclamation.date)}<br/>
-                <span className="font-semibold">Votre message:</span> <em className="line-clamp-2">{selectedReclamation.reclamation}</em>
+                <span className="font-semibold">Date de reponse:</span> {formatDate(selectedReclamationResponse.date_creation_reclamation)}<br />
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="my-4 p-4 rounded-md bg-muted/50 max-h-60 overflow-y-auto">
-              <p className="text-sm text-foreground whitespace-pre-wrap">{selectedReclamation.reponse}</p>
+              {loadingResponse ? (
+                <p className="text-sm text-muted-foreground animate-pulse">Chargement de la réponse...</p>
+              ) : (
+                  <p className="text-sm text-foreground whitespace-pre-wrap">
+                    {selectedReclamationResponse?.reponse || "Aucune réponse disponible."}
+                  </p>
+
+              )}
             </div>
             <AlertDialogFooter>
-              <AlertDialogAction 
-                onClick={() => setSelectedReclamation(null)} 
+              <AlertDialogAction
+                onClick={() => {
+                  setSelectedReclamation(null);
+                  setSelectedReclamationResponse(null);
+                }}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 Fermer
@@ -196,6 +240,7 @@ function SuiviReclamationsPage() {
           </AlertDialogContent>
         </AlertDialog>
       )}
+
                   <Toaster />
       
     </motion.div>

@@ -16,7 +16,7 @@ export default function AppRouter() {
     { path: '/login', element: <Login /> },
     { path: '/validation', element: <Validation /> },
     { path: '/espace-paysan', element: <Paysan /> },
-    { path: '/mise-a-jours-situation', element: <UpdateSituation /> },
+    { path: '/mise-a-jour-situation', element: <UpdateSituation /> },
     { path: '/demande-subventions', element: <DemandeSubvention /> },
     { path: '/reclamations', element: <Reclamation /> },
     { path: '/suivi-subventions', element: <SuivisSubvention /> },
