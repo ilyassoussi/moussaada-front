@@ -1,6 +1,6 @@
 
 import React , {useContext} from "react";
-import { Search, Bell, ChevronDown, Moon, Sun } from "lucide-react";
+import { Search, Bell, ChevronDown, Moon, Sun, Globe  } from "lucide-react";
 import { Input } from "./input";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Button } from "./button";
@@ -14,12 +14,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "./dropdown-menu";
-
+import { useTranslation } from 'react-i18next';
 
 export function Header() {
   const [darkMode, setDarkMode] = React.useState(true);
-
   React.useEffect(() => {
     const root = window.document.documentElement;
     if (darkMode) {
@@ -35,8 +36,12 @@ export function Header() {
     setDarkMode(!darkMode);
   };
   const { userInfo } = useContext(UserContext);
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.language;
 
-
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
   return (
     <motion.header 
       initial={{ opacity: 0, y: -20 }}
@@ -53,8 +58,20 @@ export function Header() {
             className="pl-10 h-11 bg-background/70 border-border focus:border-primary transition-colors" /* Adjusted styling */
           />
         </div>
-        
         <div className="flex items-center gap-6"> {/* Increased gap */}
+                              <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                  <Globe size={22} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-card border-border shadow-xl">
+                <DropdownMenuRadioGroup value={currentLanguage} onValueChange={changeLanguage}>
+                  <DropdownMenuRadioItem value="fr">Français</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="ar">العربية</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
            <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="text-muted-foreground hover:text-foreground">
             {darkMode ? <Sun size={22} /> : <Moon size={22} />}
             <span className="sr-only">Toggle theme</span>
@@ -87,12 +104,14 @@ export function Header() {
               </motion.div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-card border-border shadow-xl">
-              <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('header.myAccount')}</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-border"/>
-              <DropdownMenuItem>Profil</DropdownMenuItem>
+              <DropdownMenuItem>{t('header.profile')}</DropdownMenuItem>
+              <DropdownMenuItem>{t('header.billing')}</DropdownMenuItem>
+              <DropdownMenuItem>{t('header.settings')}</DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border"/>
               <DropdownMenuItem className="text-destructive focus:bg-destructive/30 focus:text-destructive-foreground">
-                Déconnexion
+                {t('header.logout')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -145,3 +145,55 @@ export const getResponseReclamation = async (id) => {
         throw error.response ? error.response.data : error;
     }
 }
+
+
+/**************************************demande subvention partie paysan *************************************************/
+
+export const getAllSubventionNotExpiredYet = async () => {
+    try{
+        const response = await axiosInstance.get(`/paysan/demande/subvention/notexpired`);
+        return response.data.data;
+    } catch (error){
+        throw error.response ? error.response.data : error;
+    }
+}
+
+
+export const createDemandeSubvention = async (formData) => {
+    try {
+        const response = await axiosInstance.post(
+            `/paysan/demande/create`,
+            formData, // envoi direct du FormData
+            {
+                headers: {
+                    // Ne PAS définir Content-Type ici, axios le gère automatiquement pour FormData
+                    // Tu peux ajouter un token si nécessaire ici aussi
+                    // 'Authorization': `Bearer ${token}` 
+                },
+            }
+        );
+        return response.data.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+};
+
+
+
+export const getAllMyDemandePaysan = async () => {
+    try{
+        const response = await axiosInstance.get(`/paysan/demande`);
+        return response.data.data;
+    } catch (error){
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getResponseByDemandePaysan = async (id) => {
+    try{
+        const response = await axiosInstance.get(`/paysan/demande/traitement/${id}`);
+        return response.data.data;
+    } catch (error){
+        throw error.response ? error.response.data : error;
+    }
+}

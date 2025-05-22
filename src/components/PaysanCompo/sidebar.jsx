@@ -16,42 +16,47 @@ import {
 } from 'lucide-react';
 import { logout } from '../../services/api';
 import { useLocation } from 'react-router-dom';
-
-const menuItems = [
-  { icon: <LayoutGrid size={20} />, label: "Mon compte", href: "/espace-paysan"},
-  { icon: <Edit3 size={20} />, label: "Mise à jour situation", href: "/mise-a-jour-situation"},
-  { icon: <Calendar size={20} />, label: "Prise de rendez-vous", href: "/prise-de-rendez-vous"},
-  { icon: <Award size={20} />, label: "Demande de Subventions", href: "/demande-subventions"},
-  { icon: <FilePlus size={20} />, label: "Suivi des Subventions", href: "/suivi-subventions"},
-  { icon: <MessageCircle size={20} />, label: "Réclamations", href: "/reclamations"},
-  { icon: <ListChecks size={20} />, label: "Suivi des réclamations", href: "/suivi-reclamations"}
-];
+import { useTranslation } from 'react-i18next';
 
 
 
-const bottomMenuItems = [
-  { icon: <Settings size={20} />, label: "Paramètres", href: "#" },
-  { 
-    icon: <LogOut size={20} />, 
-    label: "Déconnexion", 
-    href: "#", // <-- Met un href vide ou # ici pour éviter rechargement
-    onClick: async (e) => {
-      e.preventDefault(); // bloque la navigation
-      try {
-        await logout();
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-      } catch (error) {
-        console.error("Erreur logout:", error);
-      }
-    }
-  },
-];
+
+
 
 export function Sidebar() {
   const [activeItem, setActiveItem] = React.useState("Mon compte");
   const location = useLocation();
   const currentPath = location.pathname;
+  const { t } = useTranslation();
+  
+  const bottomMenuItems = [
+  { icon: <Settings size={20} />, label: t('sidebar.settings'), href: "#" },
+    { 
+      icon: <LogOut size={20} />, 
+      label: t('sidebar.logout'), 
+      href: "#", // <-- Met un href vide ou # ici pour éviter rechargement
+      onClick: async (e) => {
+        e.preventDefault(); // bloque la navigation
+        try {
+          await logout();
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        } catch (error) {
+          console.error("Erreur logout:", error);
+        }
+      }
+    },
+  ];
+
+  const menuItems = [
+    { icon: <LayoutGrid size={20} />, label: t('sidebar.myAccount'), href: "/espace-paysan"},
+    { icon: <Edit3 size={20} />, label: t('sidebar.updateSituation'), href: "/mise-a-jour-situation"},
+    { icon: <Calendar size={20} />, label: t('sidebar.appointments'), href: "/prise-de-rendez-vous"},
+    { icon: <Award size={20} />, label: t('sidebar.grantApplications'), href: "/demande-subventions"},
+    { icon: <FilePlus size={20} />, label: t('sidebar.grantTracking'), href: "/suivi-subventions"},
+    { icon: <MessageCircle size={20} />, label: t('sidebar.complaints'), href: "/reclamations"},
+    { icon: <ListChecks size={20} />, label: t('sidebar.complaintTracking'), href: "/suivi-reclamations"}
+  ];
   
   return (
     <motion.div 

@@ -13,15 +13,14 @@ import { Header } from "../../components/PaysanCompo/header";
 import { Footer } from "../../components/PaysanCompo/footer";
 import { Toaster } from "../../components/PaysanCompo/toaster";
 import UseVerifyToken from '../../services/useVerifyToken';
-import { GetVillePaysan } from "../../services/api"; 
-import { getAddressePaysan } from "../../services/api"; 
-import { CreateReclamation } from "../../services/api"; 
-
+import { GetVillePaysan, getAddressePaysan, CreateReclamation } from "../../services/api";
+import { useTranslation } from 'react-i18next';
 
 function ReclamationsPage() {
-    UseVerifyToken();
-  
+  UseVerifyToken();
+  const { t } = useTranslation();
   const { toast } = useToast();
+
   const [formData, setFormData] = useState({
     id_ville: "",
     email: "",
@@ -30,42 +29,42 @@ function ReclamationsPage() {
     gsm: "",
     reclamation: "",
   });
+
   const [villes, setVilles] = useState([]);
 
-   useEffect(() => {
-     const fetchInitialData = async () => {
-       try {
-         // 1. Récupérer les villes
-         const villesRes = await GetVillePaysan();
-         setVilles(villesRes);
- 
-         // 2. Récupérer l’adresse existante
-         const adresseRes = await getAddressePaysan(); // ou getAddressePaysan()
-         if (adresseRes) {
-           setFormData({
-             id_ville: adresseRes.id_ville?.toString() || "", // attention au type
-             addresse: adresseRes.addresse || "",
-             email: adresseRes.email || "",
-             telephone_fixe: adresseRes.telephone_fixe || "",
-             gsm: adresseRes.gsm || "",
-           });
-           toast({
-             title: "Données chargées",
-             description: "Vos informations d’adresse existantes ont été chargées.",
-             variant: "default",
-           });
-         }
-       } catch (error) {
-         toast({
-           title: "Erreur",
-           description: "Impossible de charger vos informations.",
-           variant: "destructive",
-         });
-       }
-     };
- 
-     fetchInitialData();
-   }, [toast]);
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const villesRes = await GetVillePaysan();
+        setVilles(villesRes);
+
+        const adresseRes = await getAddressePaysan();
+        if (adresseRes) {
+          setFormData({
+            id_ville: adresseRes.id_ville?.toString() || "",
+            addresse: adresseRes.addresse || "",
+            email: adresseRes.email || "",
+            telephone_fixe: adresseRes.telephone_fixe || "",
+            gsm: adresseRes.gsm || "",
+          });
+
+          toast({
+            title: t("toast.loaded_title"),
+            description: t("toast.loaded_description"),
+            variant: "default",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: t("toast.error_title"),
+          description: t("toast.error_description"),
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchInitialData();
+  }, [toast, t]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,49 +76,64 @@ function ReclamationsPage() {
   };
 
   const handleSubmit = async (e) => {
-     e.preventDefault();
-    
-        
-        try {
-          const {
-            id_ville,
-            email,
-            addresse,
-            telephone_fixe,
-            gsm,
-            reclamation,
-          } = formData;
-    
-          const response = await CreateReclamation(
-            id_ville,
-            email,
-            addresse,
-            telephone_fixe,
-            gsm,
-            reclamation
-          );
-    
-    
-          toast({
-            title: "Reclamation est envoyer avec succès !",
-            description: "La reclamation a été enregistrée avec succès.",
-            variant: "default",
-            className: "bg-primary text-primary-foreground",
-          });
-        } catch (error) {
-          toast({
-            title: "Erreur",
-            description: error.message || "Échec de l'enregistrement de l'adresse.",
-            variant: "destructive",
-          });
-        }
+    e.preventDefault();
+    try {
+      const { id_ville, email, addresse, telephone_fixe, gsm, reclamation } = formData;
+
+      await CreateReclamation(id_ville, email, addresse, telephone_fixe, gsm, reclamation);
+
+      toast({
+        title: t("toast.success_title"),
+        description: t("toast.success_description"),
+        variant: "default",
+        className: "bg-primary text-primary-foreground",
+      });
+    } catch (error) {
+      toast({
+        title: t("toast.error_title"),
+        description: error.message || t("toast.error_description"),
+        variant: "destructive",
+      });
+    }
   };
 
   const inputFields = [
-    { id: "email", name: "email", label: "Email", type: "email", placeholder: "Ex: nom.prenom@example.com", icon: <Mail size={18} className="text-muted-foreground" />, required: true },
-    { id: "addresse", name: "addresse", label: "Adresse", type: "text", placeholder: "Ex: 123 Rue Annasr", icon: <Home size={18} className="text-muted-foreground" />, required: false },
-    { id: "telephone_fixe", name: "telephone_fixe", label: "Téléphone Fixe", type: "tel", placeholder: "Ex: 0522 XX XX XX", icon: <Phone size={18} className="text-muted-foreground" />, required: false },
-    { id: "gsm", name: "gsm", label: "GSM", type: "tel", placeholder: "Ex: 0661 XX XX XX", icon: <Smartphone size={18} className="text-muted-foreground" />, required: true },
+    {
+      id: "email",
+      name: "email",
+      label: t("form.email"),
+      type: "email",
+      placeholder: t("form.email_placeholder"),
+      icon: <Mail size={18} className="text-muted-foreground" />,
+      required: true,
+    },
+    {
+      id: "addresse",
+      name: "addresse",
+      label: t("form.address"),
+      type: "text",
+      placeholder: t("form.address_placeholder"),
+      icon: <Home size={18} className="text-muted-foreground" />,
+      required: false,
+    },
+    {
+      id: "telephone_fixe",
+      name: "telephone_fixe",
+      label: t("form.landline"),
+      type: "tel",
+      placeholder: t("form.landline_placeholder"),
+      icon: <Phone size={18} className="text-muted-foreground" />,
+      required: false,
+    },
+    {
+      id: "gsm",
+      name: "gsm",
+      label: t("form.mobile"),
+      type: "tel",
+      placeholder: t("form.mobile_placeholder"),
+      icon: <Smartphone size={18} className="text-muted-foreground" />,
+      required: true,
+    },
   ];
 
   return (
@@ -129,30 +143,28 @@ function ReclamationsPage() {
       transition={{ duration: 0.5 }}
       className="flex h-screen bg-background text-foreground antialiased"
     >
-      
       <Sidebar />
-
       <Card className="flex flex-col flex-1 overflow-hidden">
-              
-              <Header />
-      
+        <Header />
         <CardHeader className="flex-1 overflow-y-auto p-8 space-y-8">
           <CardTitle className="text-2xl flex items-center gap-3 text-primary">
             <MessageSquarePlus size={28} />
-            Nouvelle Réclamation
+            {t("reclamation.new_title")}
           </CardTitle>
           <CardDescription>
-            Veuillez remplir les champs ci-dessous pour soumettre votre réclamation. Les champs marqués d'un * sont obligatoires.
+            {t("reclamation.instructions")}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="p-6 md:p-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="id_ville" className="text-foreground/80 flex items-center gap-2"><MapPin size={16} /> Ville</Label>
+                <Label htmlFor="id_ville" className="text-foreground/80 flex items-center gap-2">
+                  <MapPin size={16} /> {t("form.city")}
+                </Label>
                 <Select onValueChange={handleSelectChange} value={formData.id_ville} name="id_ville">
                   <SelectTrigger id="id_ville" className="h-11 bg-background/70 border-border focus:border-primary transition-colors">
-                    <SelectValue placeholder="Sélectionnez votre ville" />
+                    <SelectValue placeholder={t("form.select_city")} />
                   </SelectTrigger>
                   <SelectContent>
                     {villes.map((ville) => (
@@ -165,8 +177,8 @@ function ReclamationsPage() {
               </div>
 
               {inputFields.map((field, index) => (
-                <motion.div 
-                  key={field.id} 
+                <motion.div
+                  key={field.id}
                   className="space-y-2"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -187,15 +199,15 @@ function ReclamationsPage() {
                   />
                 </motion.div>
               ))}
-            
+
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="reclamation" className="text-foreground/80 flex items-center gap-2">
-                  <MessageSquarePlus size={16} /> Votre Réclamation <span className="text-destructive">*</span>
+                  <MessageSquarePlus size={16} /> {t("form.reclamation")} <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
                   id="reclamation"
                   name="reclamation"
-                  placeholder="Décrivez votre réclamation ici..."
+                  placeholder={t("form.reclamation_placeholder")}
                   value={formData.reclamation}
                   onChange={handleChange}
                   className="min-h-[120px] bg-background/70 border-border focus:border-primary transition-colors"
@@ -205,24 +217,19 @@ function ReclamationsPage() {
             </div>
           </CardContent>
           <CardFooter className="flex-1 overflow-y-auto p-8 space-y-8">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="ml-auto"
-            >
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="ml-auto">
               <Button type="submit" size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Send size={18} className="mr-2" />
-                Envoyer la Réclamation
+                {t("form.submit_reclamation")}
               </Button>
             </motion.div>
           </CardFooter>
         </form>
-                <Footer />
-        
+        <Footer />
       </Card>
-            <Toaster />
-      
+      <Toaster />
     </motion.div>
   );
 }
+
 export default ReclamationsPage;

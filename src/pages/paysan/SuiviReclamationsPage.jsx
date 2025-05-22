@@ -21,8 +21,7 @@ import {
 } from "../../components/PaysanCompo/alert-dialog";
 import { getAllReclamation } from "../../services/api"; 
 import UseVerifyToken from '../../services/useVerifyToken';
-
-
+import { useTranslation } from 'react-i18next';
 
 const getStatusVariant = (status) => {
   switch (status) {
@@ -48,13 +47,14 @@ const formatDate = (dateString) => {
 };
 
 function SuiviReclamationsPage() {
-      UseVerifyToken();
-  
+  UseVerifyToken();
+  const { t } = useTranslation();
+
   const [reclamations, setReclamations] = useState([]);
   const [selectedReclamation, setSelectedReclamation] = useState(null);
   const [selectedReclamationResponse, setSelectedReclamationResponse] = useState(null);
   const [loadingResponse, setLoadingResponse] = useState(false);
-  
+
   useEffect(() => {
     const fetchReclamations = async () => {
       try {
@@ -84,20 +84,19 @@ function SuiviReclamationsPage() {
     fetchReclamations();
   }, []);
 
-
-const handleViewResponse = async (reclamation) => {
-  setSelectedReclamation(reclamation);
-  setLoadingResponse(true);
-  try {
-    const response = await getResponseReclamation(reclamation.id_reclamation);
-    setSelectedReclamationResponse(response);
-  } catch (error) {
-    console.error("Erreur lors du chargement de la réponse :", error);
-    setSelectedReclamationResponse("Erreur lors du chargement de la réponse.");
-  } finally {
-    setLoadingResponse(false);
-  }
-};
+  const handleViewResponse = async (reclamation) => {
+    setSelectedReclamation(reclamation);
+    setLoadingResponse(true);
+    try {
+      const response = await getResponseReclamation(reclamation.id_reclamation);
+      setSelectedReclamationResponse(response);
+    } catch (error) {
+      console.error("Erreur lors du chargement de la réponse :", error);
+      setSelectedReclamationResponse(t("suiviReclamationsPage.noResponseError") || "Erreur lors du chargement de la réponse.");
+    } finally {
+      setLoadingResponse(false);
+    }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -125,10 +124,10 @@ const handleViewResponse = async (reclamation) => {
         <CardHeader className="bg-muted/30 border-b border-border">
           <CardTitle className="text-2xl flex items-center gap-3 text-primary">
             <ListChecks size={28} />
-            Suivi de Mes Réclamations
+            {t("suiviReclamationsPage.title")}
           </CardTitle>
           <CardDescription>
-            Consultez l'état de vos réclamations soumises et les réponses apportées.
+            {t("suiviReclamationsPage.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-1 overflow-y-auto p-8 space-y-8">
@@ -140,20 +139,20 @@ const handleViewResponse = async (reclamation) => {
               transition={{ delay: 0.2 }}
             >
               <AlertCircle size={48} className="text-primary" />
-              <p className="text-lg">Aucune réclamation trouvée.</p>
-              <p>Vous n'avez pas encore soumis de réclamation. Dirigez-vous vers la page "Réclamations" pour en créer une.</p>
+              <p className="text-lg">{t("suiviReclamationsPage.noComplaintsFound")}</p>
+              <p>{t("suiviReclamationsPage.noComplaintsDesc")}</p>
             </motion.div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px]">ID</TableHead>
-                    <TableHead>Date de soumission</TableHead>
-                    <TableHead>Votre Reclamation</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead className="text-center">Réponse</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="w-[100px]">{t("suiviReclamationsPage.id")}</TableHead>
+                    <TableHead>{t("suiviReclamationsPage.submissionDate")}</TableHead>
+                    <TableHead>{t("suiviReclamationsPage.yourMessage")}</TableHead>
+                    <TableHead>{t("suiviReclamationsPage.status")}</TableHead>
+                    <TableHead className="text-center">{t("suiviReclamationsPage.response")}</TableHead>
+                    <TableHead className="text-right">{t("suiviReclamationsPage.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -172,7 +171,7 @@ const handleViewResponse = async (reclamation) => {
                       <TableCell>{rec.reclamation}</TableCell>
                       <TableCell>
                         <Badge variant={getStatusVariant(rec.inTreatment)} className="capitalize">
-                          {rec.inTreatment}
+                          {rec.inTreatment ? t("suiviReclamationsPage.statusResolved") : t("suiviReclamationsPage.statusInProgress")}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
@@ -185,10 +184,9 @@ const handleViewResponse = async (reclamation) => {
                       <TableCell className="text-right">
                         {rec.reponse && (
                           <Button variant="outline" size="sm" onClick={() => handleViewResponse(rec)}>
-                            Voir Réponse
+                            {t("suiviReclamationsPage.viewResponse")}
                           </Button>
                         )}
-
                       </TableCell>
                     </motion.tr>
                   ))}
@@ -197,7 +195,7 @@ const handleViewResponse = async (reclamation) => {
             </div>
           )}
         </CardContent>
-                        <Footer />
+        <Footer />
       </Card>
 
       {selectedReclamationResponse && (
@@ -210,20 +208,19 @@ const handleViewResponse = async (reclamation) => {
           <AlertDialogContent className="bg-card border-border">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-primary flex items-center gap-2">
-                <MailCheck size={24} /> Réponse à la réclamation R-{selectedReclamation.id_reclamation}
+                <MailCheck size={24} /> {t("suiviReclamationsPage.responseToComplaint", { id: selectedReclamation.id_reclamation })}
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground pt-2">
-                <span className="font-semibold">Date de reponse:</span> {formatDate(selectedReclamationResponse.date_creation_reclamation)}<br />
+                <span className="font-semibold">{t("suiviReclamationsPage.submissionDate")}:</span> {formatDate(selectedReclamationResponse.date_creation_reclamation)}<br />
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="my-4 p-4 rounded-md bg-muted/50 max-h-60 overflow-y-auto">
               {loadingResponse ? (
-                <p className="text-sm text-muted-foreground animate-pulse">Chargement de la réponse...</p>
+                <p className="text-sm text-muted-foreground animate-pulse">{t("suiviReclamationsPage.loadingResponse") || "Chargement de la réponse..."}</p>
               ) : (
                   <p className="text-sm text-foreground whitespace-pre-wrap">
-                    {selectedReclamationResponse?.reponse || "Aucune réponse disponible."}
+                    {selectedReclamationResponse?.reponse || t("suiviReclamationsPage.noResponseAvailable") || "Aucune réponse disponible."}
                   </p>
-
               )}
             </div>
             <AlertDialogFooter>
@@ -234,16 +231,16 @@ const handleViewResponse = async (reclamation) => {
                 }}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
-                Fermer
+                {t("suiviReclamationsPage.close")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       )}
 
-                  <Toaster />
-      
+      <Toaster />
     </motion.div>
   );
 }
+
 export default SuiviReclamationsPage;
