@@ -11,8 +11,8 @@ import SuivisReclamation from '../pages/paysan/SuiviReclamationsPage';
 import SuivisSubvention from '../pages/paysan/SuiviSubventionsPage';
 import AgentLoginPage from '../pages/Subventions/AgentLoginPage';
 import AgentDashboard from '../pages/Subventions/DashboardPage';
-import Subvention from '../pages/Subventions/ApplicationsPage';
-import Demandes from '../pages/Subventions/SubsidiesPage';
+import Demandes from '../pages/Subventions/ApplicationsPage';
+import Subvention from '../pages/Subventions/SubsidiesPage';
 import Terrain from '../pages/Subventions/MissionsPage';
 import Rapports from '../pages/Subventions/ReportsPage';
 import Layout from '../components/SubventionsCompo/Layout';
@@ -34,8 +34,8 @@ export default function AppRouter() {
       element: <Layout />,
       children: [
         { path: '/agent/dashboard-subvention', element: <AgentDashboard /> },
-        { path: '/agent/demandes', element: <Subvention /> },
-        { path: '/agent/subvention', element: <Demandes /> },
+        { path: '/agent/demandes', element: <Demandes /> },
+        { path: '/agent/subvention', element: <Subvention /> },
         { path: '/agent/missions-terrain', element: <Terrain /> },
         { path: '/agent/rapports', element: <Rapports /> },
       ],

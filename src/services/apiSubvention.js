@@ -1,18 +1,19 @@
 import axiosInstance from "../hooks/axiosInstanceSubvention";
-import axios from "axios";
 
 
-export const createAccount = async (identite,nometprenom,mail,mdp,phone,confirmation_mdp,date_de_naissance) => {
+export const createSubventions = async (categorie,description,montantMaximum,pourcentageSubvention,dateDebut,dateFin,conditionsEligibilite,piecesRequises,id_region) => {
     try {
-        const response = await axios.post('http://localhost:8888/utilisateur/auth/create', 
+        const response = await axiosInstance.post('http://localhost:8888/subvention/create', 
             {
-                identite,
-                nometprenom,
-                mail,
-                mdp,
-                phone,
-                confirmation_mdp,
-                date_de_naissance
+                categorie,
+                description,
+                montantMaximum,
+                pourcentageSubvention,
+                dateDebut,
+                dateFin,
+                conditionsEligibilite,
+                piecesRequises,
+                id_region
             },
             {
                 headers: {
@@ -27,14 +28,43 @@ export const createAccount = async (identite,nometprenom,mail,mdp,phone,confirma
 };
 
 
-export const getInformationCompte = async (id) => {
+export const getAllSubventions = async () => {
     try {
-        const response = await axiosInstance.get(`/utilisateur/getbyid/${id}`);
+        const response = await axiosInstance.get('/subvention/getall');
         return response.data;
     } catch (error) {
         throw error.response ? error.response.data : error;
     }
 };
+
+
+export const getAllSubventionsById = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/subvention/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+};
+
+export const updateSuvbention = async (id,data) => {
+    try {
+        const response = await axiosInstance.put(`/subvention/update/${id}`,data);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+};
+
+export const DeleteSubventions = async (id) => {
+    try {
+        const response = await axiosInstance.delete(`/subvention/delete/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+};
+
 
 
 export const logout = async () => {

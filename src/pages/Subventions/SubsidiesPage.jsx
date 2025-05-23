@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect , useState } from "react";
 import {
   Card,
   CardContent,
@@ -6,7 +6,11 @@ import {
   CardTitle,
   CardDescription,
 } from "../../components/SubventionsCompo/card";
+import { Toaster } from "../../components/PaysanCompo/toaster";
+import Swal from 'sweetalert2'
 import { Button } from "../../components/SubventionsCompo/button";
+import { useToast } from "../../components/PaysanCompo/use-toast";
+
 import {
   PlusCircle,
   Edit,
@@ -27,40 +31,17 @@ import {
   Tabs,
   TabsContent,
 } from "../../components/SubventionsCompo/tabs";
-import { useToast } from "../../components/SubventionsCompo/use-toast";
 import SubsidyTypeFormDialog from "../../components/SubventionsCompo/SubsidyTypeFormDialog";
-
-const initialSubsidyTypes = [
-  {
-    id: "SUB001",
-    nom: "Subvention Irrigation Goutte-à-goutte",
-    description:
-      "Aide pour l'installation de systèmes d'irrigation économes en eau.",
-    montantPlafond: 50000,
-    estActif: true,
-    criteres: "Surface min 1ha, agriculteur enregistré",
-  },
-  {
-    id: "SUB002",
-    nom: "Aide Acquisition Matériel Agricole",
-    description: "Subvention pour l'achat de tracteurs et autres équipements.",
-    montantPlafond: 150000,
-    estActif: true,
-    criteres: "Devis proforma, plan d'affaires",
-  },
-  {
-    id: "SUB003",
-    nom: "Développement Cultures Bio",
-    description: "Soutien à la conversion vers l'agriculture biologique.",
-    montantPlafond: 75000,
-    estActif: false,
-    criteres: "Certification bio en cours, formation spécifique",
-  },
-];
+import {
+  createSubventions,
+  getAllSubventions,
+  updateSuvbention,
+  DeleteSubventions
+} from "../../services/apiSubvention";
 
 const SubsidiesPage = () => {
   const { toast } = useToast();
-  const [subsidyTypes, setSubsidyTypes] = useState(initialSubsidyTypes);
+  const [subsidyTypes, setSubsidyTypes] = useState([]);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [currentSubsidy, setCurrentSubsidy] = useState(null);
 
@@ -69,48 +50,89 @@ const SubsidiesPage = () => {
     setIsFormDialogOpen(true);
   };
 
-  const handleSaveSubsidyType = (formData) => {
-    if (currentSubsidy) {
-      setSubsidyTypes(
-        subsidyTypes.map((s) =>
-          s.id === currentSubsidy.id
-            ? {
-                ...currentSubsidy,
-                ...formData,
-                montantPlafond: parseFloat(formData.montantPlafond),
-              }
-            : s
-        )
-      );
-      toast({ title: "Succès", description: "Type de subvention modifié." });
-    } else {
-      const newSubsidy = {
-        id: `SUB${String(subsidyTypes.length + 1).padStart(3, "0")}`,
-        ...formData,
-        montantPlafond: parseFloat(formData.montantPlafond),
-      };
-      setSubsidyTypes([...subsidyTypes, newSubsidy]);
-      toast({
-        title: "Succès",
-        description: "Nouveau type de subvention ajouté.",
-      });
-    }
+  const handleCloseDialog = () => {
     setIsFormDialogOpen(false);
     setCurrentSubsidy(null);
   };
 
-  const handleDelete = (id) => {
-    if (
-      window.confirm(
-        "Êtes-vous sûr de vouloir supprimer ce type de subvention ?"
-      )
-    ) {
-      setSubsidyTypes(subsidyTypes.filter((s) => s.id !== id));
-      toast({
-        title: "Succès",
-        description: "Type de subvention supprimé.",
-        variant: "destructive",
+  const categories = {
+    IRRIGATION_GOUTTE_A_GOUTTE: "Irrigation goutte à goutte",
+    IRRIGATION_PAR_ASPERSION: "Irrigation par aspersion",
+    PLANTATION_OLIVIERS: "Plantation d'oliviers",
+    PLANTATION_ARBRES_FRUITIERS: "Plantation d'arbres fruitiers",
+    ELEVAGE_BOVINS: "Élevage de bovins",
+    ELEVAGE_OVINS: "Élevage d'ovins",
+    MATERIEL_AGRICOLE: "Matériel agricole",
+    CONSTRUCTION_SERRE: "Construction de serre",
+    TRANSFORMATION_PRODUITS: "Transformation des produits agricoles",
+    ENERGIE_SOLAIRES: "Énergie solaire",
+    CLÔTURE_TERRAIN: "Clôture de terrain",
+    REBOISEMENT: "Reboisement"
+  };
+
+  const handleSaveSubsidyType = async (formData) => {
+    try {
+      if (currentSubsidy) {
+        await updateSuvbention(currentSubsidy.id, formData);
+        toast({ title: "Succès", description: "Subvention modifiée avec succès." });
+      } else {
+        await createSubventions(
+          formData.categorie,
+          formData.description,
+          formData.montantMaximum,
+          formData.pourcentageSubvention,
+          formData.dateDebut,
+          formData.dateFin,
+          formData.conditionsEligibilite,
+          formData.piecesRequises,
+          formData.id_region
+        );
+        toast({ title: "Succès", description: "Subvention créée avec succès." });
+      }
+      await fetchSubsidies();
+      setIsFormDialogOpen(false);
+    } catch (error) {
+      toast({ title: "Erreur", description: error.message || "Échec de la sauvegarde." });
+    }
+  };
+
+  const handleDelete = async (id) => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await DeleteSubventions(id);
+            await fetchSubsidies();
+          } catch (error) {
+            toast({ title: "Erreur", description: error.message || "Échec de la suppression." });
+          }
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+          });
+        }
       });
+
+  };
+
+  useEffect(() => {
+    fetchSubsidies();
+  }, []);
+
+  const fetchSubsidies = async () => {
+    try {
+      const data = await getAllSubventions();
+      setSubsidyTypes(data.data);
+    } catch (error) {
+      toast({ title: "Erreur", description: "Échec du chargement des subventions." });
     }
   };
 
@@ -154,8 +176,9 @@ const SubsidiesPage = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>ID</TableHead>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Plafond (DA)</TableHead>
+                    <TableHead>Categories</TableHead>
+                    <TableHead>Montant Maximum</TableHead>
+                    <TableHead>Pourcentage Subvention</TableHead>
                     <TableHead>Statut</TableHead>
                     <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
@@ -163,22 +186,19 @@ const SubsidiesPage = () => {
                 <TableBody>
                   {subsidyTypes.map((subsidy) => (
                     <TableRow key={subsidy.id}>
-                      <TableCell className="font-medium">
-                        {subsidy.id}
-                      </TableCell>
-                      <TableCell>{subsidy.nom}</TableCell>
-                      <TableCell>
-                        {subsidy.montantPlafond.toLocaleString()}
-                      </TableCell>
+                      <TableCell className="font-medium">{subsidy.id}</TableCell>
+                      <TableCell>{categories[subsidy.categorie]}</TableCell>
+                      <TableCell>{subsidy.montantMaximum.toLocaleString()}</TableCell>
+                      <TableCell>{subsidy.pourcentageSubvention}%</TableCell>
                       <TableCell>
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-semibold ${
                             subsidy.estActif
                               ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
+                              : "bg-green-100 text-green-700"
                           }`}
                         >
-                          {subsidy.estActif ? "Actif" : "Inactif"}
+                          {subsidy.estActif ? "Actif" : "Actif"}
                         </span>
                       </TableCell>
                       <TableCell className="text-center space-x-1">
@@ -210,13 +230,13 @@ const SubsidiesPage = () => {
 
       <SubsidyTypeFormDialog
         isOpen={isFormDialogOpen}
-        onClose={() => {
-          setIsFormDialogOpen(false);
-          setCurrentSubsidy(null);
-        }}
+        onClose={handleCloseDialog}
         onSave={handleSaveSubsidyType}
         subsidyTypeData={currentSubsidy}
+        categories={categories}
       />
+            <Toaster />
+      
     </motion.div>
   );
 };
