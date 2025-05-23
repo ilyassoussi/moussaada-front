@@ -1,10 +1,11 @@
 import axiosInstance from '../hooks/axiosInstance';
 import { useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { TerreContext } from '../context/TerreContext';
 
 const useVerifyToken = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const { setUserInfo } = useContext(UserContext); 
   const { setTerreInfo } = useContext(TerreContext);
@@ -29,16 +30,14 @@ const useVerifyToken = () => {
           setUserInfo(information); // <== stocker les infos
 
           switch (information.role.type_role) {
-            case 'Admin':
-              navigate('');
-              break;
             case 'Paysan':
               const infoTerreFromPaysan = await axiosInstance.get(`/paysan/info/terre`);
               setTerreInfo(infoTerreFromPaysan.data.data.getInfoResponse)
-              navigate('');
-              break;
-            case 'Service_terrain':
-              navigate('');
+              if (location.pathname === '/login') {
+                navigate('/espace-paysan');
+              } else {
+                navigate('');
+              }
               break;
             default:
               navigate('/login');
