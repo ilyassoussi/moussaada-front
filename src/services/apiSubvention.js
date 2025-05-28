@@ -37,7 +37,6 @@ export const getAllSubventions = async () => {
     }
 };
 
-
 export const getAllSubventionsById = async (id) => {
     try {
         const response = await axiosInstance.get(`/subvention/${id}`);
@@ -76,17 +75,15 @@ export const logout = async () => {
     }
 };
 
-export const CreateUpdateAddresse = async (id_ville,addresse,quartier,code_postal,email,telephone_fixe,gsm) => {
+export const TraitementDemande = async (id_demande,status,description,montantSubvention,nombre_de_plan) => {
     try {
         const response = await axiosInstance.post(`/paysan/addresse/create`,
             {
-                id_ville,
-                addresse,
-                quartier,
-                code_postal,
-                email,
-                telephone_fixe,
-                gsm
+                id_demande,
+                status,
+                description,
+                montantSubvention,
+                nombre_de_plan
             },
             {
                 headers: {
@@ -100,11 +97,51 @@ export const CreateUpdateAddresse = async (id_ville,addresse,quartier,code_posta
     }
 }
 
-export const getAddressePaysan = async () => {
+export const updateTraitement = async (id,id_demande,status,description,montantSubvention,nombre_de_plan) => {
+    try {
+        const response = await axiosInstance.put(`/paysan/update/${id}`,
+            {
+                id_demande,
+                status,
+                description,
+                montantSubvention,
+                nombre_de_plan
+            },
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getAllDemandeNoTraitment = async () => {
     try{
-        const response = await axiosInstance.get(`/paysan/addresse`);
+        const response = await axiosInstance.get(`/subvention/traitement/info-demande`);
         return response.data.data;
-    }catch (error){
+    } catch (error){
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getInfoTerre = async (numero_titre) => {
+    try{
+        const response = await axiosInstance.get(`/subvention/info/terre/numero-titre/${numero_titre}`);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getInfoDemandeByIddemande = async (id) => {
+    try{
+        const response = await axiosInstance.get(`/subvention/traitement/info-demande/${id}`);
+        return response.data;
+    } catch (error) {
         throw error.response ? error.response.data : error;
     }
 }
@@ -112,99 +149,6 @@ export const getAddressePaysan = async () => {
 export const GetVillePaysan = async () => {
     try {
         const response = await axiosInstance.get(`/paysan/addresse/ville`);
-        return response.data.data;
-    } catch (error){
-        throw error.response ? error.response.data : error;
-    }
-}
-
-
-export const CreateReclamation = async (id_ville,email,addresse,telephone_fixe,gsm,reclamation) => {
-    try {
-        const response = await axiosInstance.post(`/paysan/reclamation/create`,
-            {
-                id_ville,
-                email,
-                addresse,
-                telephone_fixe,
-                gsm,
-                reclamation
-            },
-            {
-                headers: {
-                'Content-Type': 'application/json',
-                },
-            }
-        );
-        return response;
-    } catch (error) {
-        throw error.response ? error.response.data : error;
-    }
-}
-
-export const getAllReclamation = async () => {
-    try{
-        const response = await axiosInstance.get(`/paysan/reclamation`);
-        return response.data.data;
-    }catch (error){
-        throw error.response ? error.response.data : error;
-    }
-}
-export const getResponseReclamation = async (id) => {
-    try{
-        const response = await axiosInstance.get(`/admin/reclamation/response/${id}`)
-        return response.data.data;
-    } catch (error){
-        throw error.response ? error.response.data : error;
-    }
-}
-
-
-/**************************************demande subvention partie paysan *************************************************/
-
-export const getAllSubventionNotExpiredYet = async () => {
-    try{
-        const response = await axiosInstance.get(`/paysan/demande/subvention/notexpired`);
-        return response.data.data;
-    } catch (error){
-        throw error.response ? error.response.data : error;
-    }
-}
-
-
-export const createDemandeSubvention = async (formData) => {
-    try {
-        const response = await axiosInstance.post(
-            `/paysan/demande/create`,
-            formData, // envoi direct du FormData
-            {
-                headers: {
-                    // Ne PAS définir Content-Type ici, axios le gère automatiquement pour FormData
-                    // Tu peux ajouter un token si nécessaire ici aussi
-                    // 'Authorization': `Bearer ${token}` 
-                },
-            }
-        );
-        return response.data.data;
-    } catch (error) {
-        throw error.response ? error.response.data : error;
-    }
-};
-
-
-
-export const getAllMyDemandePaysan = async () => {
-    try{
-        const response = await axiosInstance.get(`/paysan/demande`);
-        return response.data.data;
-    } catch (error){
-        throw error.response ? error.response.data : error;
-    }
-}
-
-export const getResponseByDemandePaysan = async (id) => {
-    try{
-        const response = await axiosInstance.get(`/paysan/demande/traitement/${id}`);
         return response.data.data;
     } catch (error){
         throw error.response ? error.response.data : error;

@@ -2,7 +2,8 @@ import React from 'react';
     import { NavLink, useNavigate } from 'react-router-dom';
     import { Home, FileText, Tractor, ClipboardList, LogOut, DollarSign } from 'lucide-react';
     import { motion } from 'framer-motion';
-    import { useToast } from './use-toast';
+import { Link } from "react-router-dom";
+
     import moussaadaArmerie from '../../assets/ArmoiriesduMaroc.svg'
 import { logout } from '../../services/apiSubvention';
 
@@ -34,10 +35,12 @@ import { logout } from '../../services/apiSubvention';
           transition={{ duration: 0.5, type: 'spring', stiffness: 100 }}
           className="w-64 bg-card text-card-foreground p-4 flex flex-col border-r border-border shadow-lg"
         >
-          <div className="flex items-center mb-8 p-2">
-            <img src={moussaadaArmerie} alt='icon moussaada' className="h-10 w-10 text-primary mr-3" />
-            <h1 className="text-2xl font-bold text-primary">MOUSSAADA</h1>
-          </div>
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="flex items-center mb-8 p-2">
+              <img src={moussaadaArmerie} alt='icon moussaada' className="h-10 w-10 text-primary mr-3" />
+              <h1 className="text-2xl font-bold text-primary">MOUSSAADA</h1>
+            </div>
+          </Link>
           <nav className="flex-1 space-y-2">
             {navItems.map((item) => (
               <NavLink

@@ -17,6 +17,7 @@ import {
 import { logout } from '../../services/api';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Link } from "react-router-dom";
 
 
 
@@ -66,14 +67,16 @@ export function Sidebar() {
       className="h-full w-72 bg-card text-card-foreground flex flex-col justify-between shadow-2xl" /* Increased width and shadow */
     >
       <div>
-        <div className="p-6 flex items-center space-x-3">
-          <img 
-            src={iconArmerie} 
-            alt="Moussaada Logo" 
-            className="h-10" /* Slightly smaller logo */
-          />
-          <span className="font-semibold text-xl">Moussaada</span>
-        </div>
+        <Link to="/" className="flex items-center space-x-2">
+          <div className="p-6 flex items-center space-x-3">
+            <img 
+              src={iconArmerie} 
+              alt="Moussaada Logo" 
+              className="h-10" /* Slightly smaller logo */
+            />
+            <span className="font-semibold text-xl">Moussaada</span>
+          </div>
+        </Link>
         
         <nav className="mt-6 px-4 space-y-2">
           {menuItems.map((item) => (
