@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +13,6 @@ import { Input } from "./input";
 import { Label } from "./label";
 import { Textarea } from "./textarea";
 import { useToast } from "./use-toast";
-import { Search, MapPin, Tractor } from "lucide-react";
 
 const SubventionInformationDialogue = ({
   isOpen,
@@ -65,11 +63,6 @@ const SubventionInformationDialogue = ({
     }
   }, [subvention, isOpen, resetForm]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleDialogClose = () => {
     resetForm();
     onClose();
@@ -102,7 +95,7 @@ const SubventionInformationDialogue = ({
                 id="categorie"
                 name="categorie"
                 value={formData.categorie}
-                onChange={handleInputChange}
+                disable
               />
             </div>
             <div>
@@ -111,7 +104,7 @@ const SubventionInformationDialogue = ({
                 id="montantMaximum"
                 name="montantMaximum"
                 value={formData.montantMaximum}
-                onChange={handleInputChange}
+                disable
               />
             </div>
             <div>
@@ -121,7 +114,7 @@ const SubventionInformationDialogue = ({
                 name="dateDebut"
                 type="date"
                 value={formData.dateFin ? new Date(formData.dateDebut).toISOString().split("T")[0] : ""}
-                onChange={handleInputChange}
+                disable
               />
             </div>
             <div>
@@ -131,7 +124,7 @@ const SubventionInformationDialogue = ({
                 name="dateFin"
                 type="date"
                 value={formData.dateFin ? new Date(formData.dateFin).toISOString().split("T")[0] : ""}
-                onChange={handleInputChange}
+                disable
               />
             </div>
             <div>
@@ -140,8 +133,8 @@ const SubventionInformationDialogue = ({
                 id="pourcentageSubvention"
                 name="pourcentageSubvention"
                 type="text"
+                disable
                 value={formData.pourcentageSubvention}
-                onChange={handleInputChange}
               />
             </div>
             <div>
@@ -151,7 +144,7 @@ const SubventionInformationDialogue = ({
                 name="piecesRequises"
                 type="text"
                 value={formData.piecesRequises}
-                onChange={handleInputChange}
+                disable
               />
             </div>
           </div>
@@ -162,8 +155,7 @@ const SubventionInformationDialogue = ({
               id="conditionsEligibilite"
               name="conditionsEligibilite"
               value={formData.conditionsEligibilite}
-              onChange={handleInputChange}
-              placeholder="Ajoutez des notes ou détails importants ici..."
+              disable
             />
           </div>
         </div>

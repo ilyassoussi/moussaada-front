@@ -77,7 +77,7 @@ export const logout = async () => {
 
 export const TraitementDemande = async (id_demande,status,description,montantSubvention,nombre_de_plan) => {
     try {
-        const response = await axiosInstance.post(`/paysan/addresse/create`,
+        const response = await axiosInstance.post(`/subvention/traitement/create`,
             {
                 id_demande,
                 status,
@@ -97,27 +97,27 @@ export const TraitementDemande = async (id_demande,status,description,montantSub
     }
 }
 
-export const updateTraitement = async (id,id_demande,status,description,montantSubvention,nombre_de_plan) => {
-    try {
-        const response = await axiosInstance.put(`/paysan/update/${id}`,
-            {
-                id_demande,
-                status,
-                description,
-                montantSubvention,
-                nombre_de_plan
-            },
-            {
-                headers: {
-                'Content-Type': 'application/json',
-                },
-            }
-        );
-        return response;
-    } catch (error) {
-        throw error.response ? error.response.data : error;
-    }
-}
+// export const updateTraitement = async (id,id_demande,status,description,montantSubvention,nombre_de_plan) => {
+//     try {
+//         const response = await axiosInstance.put(`/paysan/update/${id}`,
+//             {
+//                 id_demande,
+//                 status,
+//                 description,
+//                 montantSubvention,
+//                 nombre_de_plan
+//             },
+//             {
+//                 headers: {
+//                 'Content-Type': 'application/json',
+//                 },
+//             }
+//         );
+//         return response;
+//     } catch (error) {
+//         throw error.response ? error.response.data : error;
+//     }
+// }
 
 export const getAllDemandeNoTraitment = async () => {
     try{
@@ -131,7 +131,7 @@ export const getAllDemandeNoTraitment = async () => {
 export const getInfoTerre = async (numero_titre) => {
     try{
         const response = await axiosInstance.get(`/subvention/info/terre/numero-titre/${numero_titre}`);
-        return response.data;
+        return response.data.data;
     } catch (error) {
         throw error.response ? error.response.data : error;
     }
@@ -153,4 +153,27 @@ export const GetVillePaysan = async () => {
     } catch (error){
         throw error.response ? error.response.data : error;
     }
+}
+
+export const demandeTechnique = async (id_traitent_demande,titre,description,date_de_sortie) => {
+
+    try {
+        const response = await axiosInstance.post(`/subvention/demande-technique/create`,
+            {
+                id_traitent_demande,
+                titre,
+                description,
+                date_de_sortie
+            },
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response.data.data
+    }catch(error){
+        throw error.response ? error.response.data : error;
+    }
+
 }

@@ -15,6 +15,7 @@ import { Label } from "./label";
 import { Textarea } from "./textarea";
 import { useToast } from "./use-toast";
 import { Search, MapPin, Tractor } from "lucide-react";
+import { TraitementDemande,getInfoTerre , demandeTechnique } from "../../services/apiSubvention";
 
 const ApplicationFormDialog = ({
   isOpen,
@@ -25,24 +26,46 @@ const ApplicationFormDialog = ({
 }) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    agriculteur: "",
+    id_demande: "",
     typeSubvention: "",
     dateSoumission: "",
     statut: "En attente",
     titreFoncier: "",
-    details: "",
   });
+
+  const [formDataEnvo, setformDataEnvo] = useState({
+    statut: "EN_ATTENTE",
+    description: "",
+    montantSubvention: "",
+    nombre_de_plan: "",
+  });
+
   const [terrainInfo, setTerrainInfo] = useState(null);
   const [titreFoncierSearch, setTitreFoncierSearch] = useState("");
+  const [missionData, setMissionData] = useState({
+    id_traitent_demande: "",
+    titre: "",
+    description: "",
+  });
 
   const resetForm = useCallback(() => {
     setFormData({
-      agriculteur: "",
+      id_demande: "",
       typeSubvention: "",
       dateSoumission: "",
-      statut: "En attente",
+      statut: "EN_ATTENTE",
       titreFoncier: "",
-      details: "",
+    });
+    setformDataEnvo({
+      statut: "EN_ATTENTE",
+      description: "",
+      montantSubvention: "",
+      nombre_de_plan: "",
+    });
+    setMissionData({
+      id_traitent_demande: "",
+      titre: "",
+      description: "",
     });
     setTerrainInfo(null);
     setTitreFoncierSearch("");
@@ -52,29 +75,19 @@ const ApplicationFormDialog = ({
     if (isOpen) {
       if (applicationData) {
         setFormData({
-          agriculteur: applicationData.agriculteur || "",
+          id_demande: applicationData.id_demande || "",
           typeSubvention: applicationData.id_subvention || "",
           dateSoumission: applicationData.dateDepot || "",
-          statut: applicationData.statusDemande || "En attente",
+          statut: applicationData.statusDemande || "EN_ATTENTE",
           titreFoncier: applicationData.numero_titre || "",
-          details: applicationData.description || "",
         });
         setTerrainInfo(applicationData.terrainInfo || null);
-        setTitreFoncierSearch(applicationData.titreFoncier || "");
+        setTitreFoncierSearch(applicationData.numero_titre || "");
       } else {
         resetForm();
       }
     }
   }, [applicationData, isOpen, resetForm]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleTitreFoncierSearchChange = (e) => {
-    setTitreFoncierSearch(e.target.value);
-  };
 
   const handleSearchTerrain = async () => {
     if (!titreFoncierSearch) {
@@ -85,31 +98,31 @@ const ApplicationFormDialog = ({
       });
       return;
     }
+
     toast({
       title: "Recherche en cours...",
       description: `Recherche des informations pour le titre ${titreFoncierSearch}.`,
     });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const fetchedTerrainInfo = {
-      titre: titreFoncierSearch,
-      proprietaire: "Propriétaire Fictif",
-      superficie: `${Math.floor(Math.random() * 20) + 1} Ha`,
-      localisation: `Localisation Fictive ${Math.floor(Math.random() * 100)}`,
-      typeSol: Math.random() > 0.5 ? "Sablo-limoneux" : "Argilo-calcaire",
-      observations: "Terrain conforme aux normes (simulation).",
-    };
-    setTerrainInfo(fetchedTerrainInfo);
-    setFormData((prev) => ({ ...prev, titreFoncier: titreFoncierSearch }));
-    toast({
-      title: "Informations trouvées",
-      description: `Les informations pour ${titreFoncierSearch} ont été chargées.`,
-    });
-  };
+    try {
+      const fetchedTerrainInfo = await getInfoTerre(titreFoncierSearch);
+      setTerrainInfo(fetchedTerrainInfo);
+      setFormData((prev) => ({
+        ...prev,
+        titreFoncier: titreFoncierSearch,
+      }));
 
-  const resetTerrainSearchLocal = () => {
-    setTitreFoncierSearch(applicationData?.titreFoncier || ""); // Reset to original if editing, else clear
-    setTerrainInfo(applicationData?.terrainInfo || null);
+      toast({
+        title: "Informations trouvées",
+        description: `Les informations pour ${titreFoncierSearch} ont été chargées.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur lors de la récupération",
+        description: error?.message || "Aucune information trouvée pour ce numéro.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDialogClose = () => {
@@ -117,13 +130,73 @@ const ApplicationFormDialog = ({
     onClose();
   };
 
-  const handleSubmit = () => {
-    onSave(formData, terrainInfo);
+  const handleSubmit = async () => {
+    if (applicationData && applicationData.id_demande) {
+      try {
+        await TraitementDemande(
+          formData.id_demande,
+          formDataEnvo.statut,
+          formDataEnvo.description,
+          formDataEnvo.montantSubvention,
+          formDataEnvo.nombre_de_plan
+        );
+
+        // Si statut = EN_ATTENTE_EVALUATION_TERRAIN => on crée la mission technique
+        if (formDataEnvo.statut === "EN_ATTENTE_EVALUATION_TERRAIN") {
+          if (!missionData.titre || !missionData.description) {
+            toast({
+              title: "Erreur",
+              description: "Veuillez remplir le titre et la description de la mission.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          try {
+            await demandeTechnique(
+              formData.id_demande,
+              missionData.titre,
+              missionData.description,
+              new Date().toISOString().split("T")[0]
+            );
+
+            toast({
+              title: "Mission technique créée",
+              description: "La mission terrain a été créée avec succès.",
+            });
+          } catch (error) {
+            toast({
+              title: "Erreur Mission",
+              description: error.message || "Erreur lors de la création de la mission.",
+              variant: "destructive",
+            });
+            return; // Stopper ici si la mission échoue
+          }
+        }
+        toast({
+          title: "Succès",
+          description: "La demande a été traitée avec succès.",
+        });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        toast({
+          title: "Erreur",
+          description:
+            error.message || "Une erreur est survenue lors du traitement.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      onSave(formData, terrainInfo);
+    }
   };
 
   const handleMissionSend = () => {
     if (applicationData && applicationData.id) {
-      onSendToMission(applicationData.id);
+      onSendToMission(applicationData.id, missionData);
     }
   };
 
@@ -146,81 +219,46 @@ const ApplicationFormDialog = ({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
+          {/* Subvention Infos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="agriculteur">Agriculteur</Label>
-              <Input
-                id="agriculteur"
-                name="agriculteur"
-                value={formData.agriculteur}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
               <Label htmlFor="typeSubvention">Type de Subvention</Label>
-              <Input
-                id="typeSubvention"
-                name="typeSubvention"
-                value={formData.typeSubvention}
-                onChange={handleInputChange}
-              />
+              <Input id="typeSubvention" value={formData.typeSubvention} disabled />
             </div>
             <div>
               <Label htmlFor="dateSoumission">Date de Soumission</Label>
               <Input
                 id="dateSoumission"
-                name="dateSoumission"
                 type="date"
-                value={formData.dateSoumission ? new Date(formData.dateSoumission).toISOString().split("T")[0] : ""}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="statut">Statut</Label>
-              <select
-                id="statut"
-                name="statut"
-                value={formData.statut}
-                onChange={handleInputChange}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                disabled={
-                  !!applicationData &&
-                  (applicationData.statut === "Approuvée" ||
-                    applicationData.statut === "Rejetée" ||
-                    applicationData.statut === "Mission requise")
+                value={
+                  formData.dateSoumission
+                    ? new Date(formData.dateSoumission).toISOString().split("T")[0]
+                    : ""
                 }
-              >
-                <option value="En attente">En attente</option>
-                <option value="En instruction">En instruction</option>
-                <option value="Mission requise">Mission requise</option>
-                <option value="Approuvée">Approuvée</option>
-                <option value="Rejetée">Rejetée</option>
-              </select>
+                disabled
+              />
             </div>
           </div>
 
+          {/* Titre Foncier */}
           <div className="space-y-2">
-            <Label htmlFor="titreFoncierSearchDialog">
-              Numéro de Titre Foncier
-            </Label>
+            <Label htmlFor="titreFoncierSearchDialog">Numéro de Titre Foncier</Label>
             <div className="flex space-x-2">
               <Input
                 id="titreFoncierSearchDialog"
-                value={formData.titreFoncier}
-                onChange={handleTitreFoncierSearchChange}
-                placeholder="Ex: TF12345"
+                value={titreFoncierSearch}
+                onChange={(e) => setTitreFoncierSearch(e.target.value)}
+                placeholder="Ex: TF-123456"
+                disabled
               />
-              <Button
-                onClick={handleSearchTerrain}
-                variant="secondary"
-                type="button"
-              >
+              <Button onClick={handleSearchTerrain} variant="secondary" type="button">
                 <Search className="h-4 w-4 mr-2" />
                 Rechercher
               </Button>
             </div>
           </div>
 
+          {/* Terrain Info */}
           {terrainInfo && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -230,73 +268,174 @@ const ApplicationFormDialog = ({
             >
               <h4 className="font-semibold text-md flex items-center">
                 <MapPin className="h-5 w-5 mr-2 text-primary" />
-                Informations du Terrain (Titre: {terrainInfo.titre})
+                Informations du Terrain (Titre: {terrainInfo.numeroTitre})
               </h4>
-              <p className="text-sm">
-                <span className="font-medium">Propriétaire:</span>{" "}
-                {terrainInfo.proprietaire}
-              </p>
-              <p className="text-sm">
-                <span className="font-medium">Superficie:</span>{" "}
-                {terrainInfo.superficie}
-              </p>
-              <p className="text-sm">
-                <span className="font-medium">Localisation:</span>{" "}
-                {terrainInfo.localisation}
-              </p>
-              <p className="text-sm">
-                <span className="font-medium">Type de Sol:</span>{" "}
-                {terrainInfo.typeSol}
-              </p>
-              <p className="text-sm">
-                <span className="font-medium">Observations:</span>{" "}
-                {terrainInfo.observations}
-              </p>
-              <Button
-                variant="link"
-                size="sm"
-                onClick={resetTerrainSearchLocal}
-                className="text-destructive p-0 h-auto"
-                type="button"
-              >
-                Effacer les informations
-              </Button>
+              <p className="text-sm"><strong>Propriétaire :</strong> {terrainInfo.proprietaires.nomComplet}</p>
+              <p className="text-sm"><strong>Superficie :</strong> {terrainInfo.superficieM2}</p>
+              <p className="text-sm"><strong>Localisation :</strong> {terrainInfo.localisation}</p>
+              <p className="text-sm"><strong>En Litige :</strong> {terrainInfo.enLitige ? "OUI" : "NON"}</p>
+              <p className="text-sm"><strong>hypothèque :</strong> {terrainInfo.hypothequee ? "OUI" : "NON"}</p>
             </motion.div>
           )}
 
+          {/* Champs Envoi */}
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="montantSubvention">Montant de subvention</Label>
+              <Input
+                id="montantSubvention"
+                type="number"
+                value={formDataEnvo.montantSubvention}
+                onChange={(e) =>
+                  setformDataEnvo((prev) => ({
+                    ...prev,
+                    montantSubvention: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="nombre_de_plan">Nombre de plan</Label>
+              <Input
+                id="nombre_de_plan"
+                type="number"
+                value={formDataEnvo.nombre_de_plan}
+                onChange={(e) =>
+                  setformDataEnvo((prev) => ({
+                    ...prev,
+                    nombre_de_plan: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div> */}
+
           <div>
-            <Label htmlFor="details">Détails supplémentaires</Label>
-            <Textarea
-              id="details"
-              name="details"
-              value={formData.details}
-              onChange={handleInputChange}
-              placeholder="Ajoutez des notes ou détails importants ici..."
-            />
+            <Label htmlFor="statut">Statut</Label>
+            <select
+              id="statut"
+              value={formData.statut}
+              onChange={(e) =>
+                setformDataEnvo((prev) => ({ ...prev, statut: e.target.value }))
+              }
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <option value="EN_ATTENTE">En attente</option>
+              <option value="EN_COURS_ETUDE">En instruction</option>
+              <option value="EN_ATTENTE_EVALUATION_TERRAIN">Mission terrain</option>
+              <option value="VALIDEE">Approuvée</option>
+              <option value="REFUSEE">Rejetée</option>
+            </select>
           </div>
+        {/* Champs Envoi visibles uniquement si statut == VALIDEE ou REFUSEE */}
+        {["VALIDEE", "REFUSEE" ,"EN_COURS_ETUDE" , "EN_ATTENTE"].includes(formDataEnvo.statut) && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="montantSubvention">Montant de subvention</Label>
+                <Input
+                  id="montantSubvention"
+                  type="number"
+                  value={formDataEnvo.montantSubvention}
+                  onChange={(e) =>
+                    setformDataEnvo((prev) => ({
+                      ...prev,
+                      montantSubvention: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="nombre_de_plan">Nombre de plan</Label>
+                <Input
+                  id="nombre_de_plan"
+                  type="number"
+                  value={formDataEnvo.nombre_de_plan}
+                  onChange={(e) =>
+                    setformDataEnvo((prev) => ({
+                      ...prev,
+                      nombre_de_plan: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formDataEnvo.description}
+                onChange={(e) =>
+                  setformDataEnvo((prev) => ({ ...prev, description: e.target.value }))
+                }
+                placeholder="Ajoutez des notes ou détails importants ici..."
+              />
+            </div>
+          </>
+        )}
+
+          {/* Champs spécifiques pour Mission Terrain */}
+          {formDataEnvo.statut === "EN_ATTENTE_EVALUATION_TERRAIN" && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+              <div>
+                <Label>ID Traitement Demande</Label>
+                <Input
+                  value={formData.id_demande}
+                  onChange={(e) =>
+                    setMissionData((prev) => ({
+                      ...prev,
+                      id_traitent_demande: e.target.value,
+                    }))
+                  }
+                  disabled
+                />
+              </div>
+              <div>
+                <Label>Titre Mission</Label>
+                <Input
+                  value={missionData.titre}
+                  onChange={(e) =>
+                    setMissionData((prev) => ({ ...prev, titre: e.target.value }))
+                  }
+                />
+              </div>
+              <div>
+                <Label>Description Mission</Label>
+                <Textarea
+                  value={missionData.description}
+                  onChange={(e) =>
+                    setMissionData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </motion.div>
+          )}
         </div>
+
         <DialogFooter className="pt-4">
           <DialogClose asChild>
-            <Button variant="outline" type="button">
-              Annuler
-            </Button>
+            <Button variant="outline" type="button">Annuler</Button>
           </DialogClose>
-          {applicationData &&
-            applicationData.statut !== "Approuvée" &&
-            applicationData.statut !== "Rejetée" &&
-            applicationData.statut !== "Mission requise" && (
-              <Button
-                onClick={handleMissionSend}
-                variant="secondary"
-                type="button"
-              >
-                <Tractor className="h-4 w-4 mr-2" />
-                Envoyer en Mission Terrain
-              </Button>
-            )}
+
+          {formDataEnvo.statut === "EN_ATTENTE_EVALUATION_TERRAIN" && (
+            <Button
+              onClick={handleSubmit}
+              variant="secondary"
+              type="button"
+            >
+              <Tractor className="h-4 w-4 mr-2" />
+              Envoyer en Mission Terrain
+            </Button>
+          )}
+        {["VALIDEE", "REFUSEE" ,"EN_COURS_ETUDE" , "EN_ATTENTE"].includes(formDataEnvo.statut) && (
           <Button onClick={handleSubmit} type="button">
-            {applicationData ? "Enregistrer Modifications" : "Créer Demande"}
+            Enregistre
           </Button>
+        )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

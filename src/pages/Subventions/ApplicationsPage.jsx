@@ -22,7 +22,6 @@ import {
 } from "../../components/SubventionsCompo/table";
 import ApplicationFormDialog from "../../components/SubventionsCompo/ApplicationFormDialog";
 import { getAllSubventionsById, getAllDemandeNoTraitment } from "../../services/apiSubvention";
-import { getInfoTerre } from "../../services/apiSubvention";
 
 const ApplicationsPage = () => {
   const { toast } = useToast();
@@ -188,10 +187,6 @@ useEffect(() => {
             <Download className="h-4 w-4 mr-2" />
             Exporter
           </Button>
-          <Button onClick={() => handleOpenForm()}>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            Nouvelle Demande
-          </Button>
         </div>
       </div>
 
@@ -211,6 +206,8 @@ useEffect(() => {
                 <TableHead>Titre Foncier</TableHead>
                 <TableHead>Date Soumission</TableHead>
                 <TableHead>Statut</TableHead>
+                <TableHead>Commentaire de paysan</TableHead>
+                <TableHead>Papier requis </TableHead>
                 <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -240,6 +237,21 @@ useEffect(() => {
                     >
                       {formatStatus(app.statusDemande)}
                     </span>
+                  </TableCell>
+                  <TableCell>{app.description || "N/A"}</TableCell>
+                  <TableCell>
+                    {app.devis_fournisseur ? (
+                    <a
+                    href={`http://localhost:8888/utilisateur/auth/pdf/download/${encodeURIComponent(app.devis_fournisseur)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline hover:text-blue-800"
+                  >
+                    Voir PDF
+                  </a>
+                    ) : (
+                      <span className="text-gray-500 italic">Non disponible</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-center space-x-1">
                     <Button

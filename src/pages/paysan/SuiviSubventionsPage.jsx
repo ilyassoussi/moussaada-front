@@ -198,7 +198,7 @@ function SuiviSubventionsPage() {
                       variants={itemVariants}
                       layout
                     >
-                      <TableCell className="font-medium">SUB-{String(sub.id_demande).slice(-5)}</TableCell>
+                      <TableCell className="font-medium">DEM-{String(sub.id_demande).slice(-5)}</TableCell>
                       <TableCell className="flex items-center gap-2"><Award size={16} className="text-primary/70" /> {sub.type_demande}</TableCell>
                       <TableCell>{formatDate(sub.dateDepot)}</TableCell>
                       <TableCell><FileText size={16} className="inline mr-1 text-muted-foreground" />{sub.numero_titre}</TableCell>
