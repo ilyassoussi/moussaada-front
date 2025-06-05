@@ -155,6 +155,12 @@ export const GetVillePaysan = async () => {
     }
 }
 
+
+
+
+/***********************************************************Mission Technique *************************************************************/
+
+
 export const demandeTechnique = async (id_traitent_demande,titre,description,date_de_sortie) => {
 
     try {
@@ -172,8 +178,88 @@ export const demandeTechnique = async (id_traitent_demande,titre,description,dat
             }
         );
         return response.data.data
+    } catch(error) {
+        throw error.response ? error.response.data : error;
+    }
+
+}
+
+
+export const AlldemandeTechnique = async () => {
+    try {
+        const response = await axiosInstance.get(`/subvention/demande-technique`);
+        return response.data.data
+    }catch(error){
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const EnCoursdemandeTechnique = async () => {
+
+    try {
+        const response = await axiosInstance.get(`/subvention/demande-technique/en-cours`,
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response.data.data
     }catch(error){
         throw error.response ? error.response.data : error;
     }
 
 }
+
+
+export const demandeTechniqueById = async (id) => {
+
+    try {
+        const response = await axiosInstance.get(`/subvention/demande-technique/${id}`,
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response.data.data
+    }catch(error){
+        throw error.response ? error.response.data : error;
+    }
+
+}
+
+
+export const DeletedemandeTechniqueById = async (id) => {
+
+    try {
+        const response = await axiosInstance.delete(`/subvention/demande-technique/delete/${id}`,
+            {
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response.data
+    }catch(error){
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const ReponsedemandeTechnique = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/subvention/demande-technique/reponse/${id}`);
+        return response.data.data
+    } catch(error) {
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const AllRapport = async () => {
+    try {
+        const reponse = await axiosInstance.get(`/subvention/demande-technique/reponse/get-rapport`);
+        return reponse.data.data;
+    } catch(error){
+        throw error.response ? error.response.data : error;    
+    }
+} 

@@ -241,15 +241,15 @@ useEffect(() => {
                   <TableCell>{app.description || "N/A"}</TableCell>
                   <TableCell>
                     {app.devis_fournisseur ? (
-                    <a
-                    href={`http://localhost:8888/utilisateur/auth/pdf/download/${encodeURIComponent(app.devis_fournisseur)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline hover:text-blue-800"
-                  >
-                    Voir PDF
-                  </a>
-                    ) : (
+                      <a
+                        href={`http://localhost:8888/utilisateur/auth/pdf/download/${encodeURIComponent(app.devis_fournisseur)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline hover:text-blue-800"
+                      >
+                        Voir PDF
+                      </a>
+                      ) : (
                       <span className="text-gray-500 italic">Non disponible</span>
                     )}
                   </TableCell>
