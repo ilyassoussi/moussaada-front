@@ -138,9 +138,13 @@ const MissionsPage = () => {
     const fetchMissions = async () => {
       try {
         const data = await AlldemandeTechnique();
-        setMissions(data);
+        if(data){
+          setMissions(data);
+        } else {
+          setMissions([])
+        }
+          
         setLoading(false);
-
         // Mise à jour automatique des infos si SUR_TERRAIN ou TERMINEE
         data.forEach(async (mission) => {
           if (

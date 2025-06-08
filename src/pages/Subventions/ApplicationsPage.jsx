@@ -8,10 +8,10 @@ import {
 } from "../../components/SubventionsCompo/card";
 import { Button } from "../../components/SubventionsCompo/button";
 import SubventionDetailsDialog from "../../components/SubventionsCompo/SubventionInformationDialogue";
-
 import { PlusCircle, Filter, Download, Info, Tractor } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "../../components/SubventionsCompo/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/TerrainCompo/select';
 import {
   Table,
   TableHeader,
@@ -23,13 +23,19 @@ import {
 import ApplicationFormDialog from "../../components/SubventionsCompo/ApplicationFormDialog";
 import { getAllSubventionsById, getAllDemandeNoTraitment } from "../../services/apiSubvention";
 
+const ITEMS_PER_PAGE = 6;
+
 const ApplicationsPage = () => {
   const { toast } = useToast();
   const [applications, setApplications] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentApplication, setCurrentApplication] = useState(null);
   const [selectedSubvention, setSelectedSubvention] = useState(null);
   const [showSubventionDialog, setShowSubventionDialog] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
+
   const handleOpenForm = useCallback((app = null) => {
     setCurrentApplication(app);
     setIsFormOpen(true);
@@ -59,10 +65,7 @@ const ApplicationsPage = () => {
               : app
           )
         );
-        toast({
-          title: "Succès",
-          description: "Demande de subvention modifiée.",
-        });
+        toast({ title: "Succès", description: "Demande modifiée." });
       } else {
         const newApp = {
           id: `DEM${String(applications.length + 1).padStart(3, "0")}`,
@@ -70,10 +73,7 @@ const ApplicationsPage = () => {
           terrainInfo: terrainInfoData,
         };
         setApplications((prevApps) => [...prevApps, newApp]);
-        toast({
-          title: "Succès",
-          description: "Nouvelle demande de subvention créée.",
-        });
+        toast({ title: "Succès", description: "Demande créée." });
       }
       handleCloseForm();
     },
@@ -88,51 +88,48 @@ const ApplicationsPage = () => {
         )
       );
       toast({
-        title: "Mission Terrain Initiée",
-        description: `La demande ${applicationId} a été envoyée pour une visite terrain.`,
-        variant: "default",
+        title: "Mission Initiée",
+        description: `Demande ${applicationId} envoyée.`,
       });
       handleCloseForm();
     },
     [toast, handleCloseForm]
   );
 
-useEffect(() => {
-  const fetchApplications = async () => {
-    try {
-      const demandes = await getAllDemandeNoTraitment();
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const demandes = await getAllDemandeNoTraitment();
+        const demandesAvecSubvention = await Promise.all(
+          demandes.map(async (demande) => {
+            try {
+              const subventionData = await getAllSubventionsById(demande.id_subvention);
+              return { ...demande, subvention: subventionData };
+            } catch {
+              return { ...demande, subvention: null };
+            }
+          })
+        );
+        setApplications(demandesAvecSubvention);
+      } catch (error) {
+        toast({
+          title: "Erreur",
+          description: "Échec de chargement des demandes.",
+          variant: "destructive",
+        });
+      }
+    };
+    fetchApplications();
+  }, [toast]);
 
-      const demandesAvecSubvention = await Promise.all(
-        demandes.map(async (demande) => {
-          try {
-            const subventionData = await getAllSubventionsById(demande.id_subvention);
-            return {
-              ...demande,
-              subvention: subventionData,
-            };
-          } catch (error) {
-            console.error(`Erreur récupération subvention ${demande.id_subvention}`, error);
-            return {
-              ...demande,
-              subvention: null,
-            };
-          }
-        })
-      );
-
-      setApplications(demandesAvecSubvention);
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Échec de chargement des demandes de subvention.",
-        variant: "destructive",
-      });
+  useEffect(() => {
+    let filtered = [...applications];
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((app) => app.statusDemande === statusFilter);
     }
-  };
-
-  fetchApplications();
-}, [toast]);
-
+    setFilteredApplications(filtered);
+    setCurrentPage(1); // reset page when filter changes
+  }, [applications, statusFilter]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -150,6 +147,7 @@ useEffect(() => {
         return "text-gray-500 bg-gray-100";
     }
   };
+
   const formatStatus = (status) => {
     switch (status) {
       case "EN_ATTENTE":
@@ -157,7 +155,7 @@ useEffect(() => {
       case "EN_COURS_ETUDE":
         return "En cours d'étude";
       case "EN_ATTENTE_EVALUATION_TERRAIN":
-        return "En attente évaluation terrain";
+        return "En attente terrain";
       case "VALIDEE":
         return "Validée";
       case "REFUSEE":
@@ -167,35 +165,38 @@ useEffect(() => {
     }
   };
 
+  const totalPages = Math.ceil(filteredApplications.length / ITEMS_PER_PAGE);
+  const paginatedApps = filteredApplications.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-primary">
-          Gestion des Demandes
-        </h1>
+        <h1 className="text-3xl font-bold text-primary">Gestion des Demandes</h1>
         <div className="flex items-center space-x-2">
-          <Button variant="outline">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtrer
-          </Button>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Exporter
-          </Button>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-48">
+            <Filter className="w-4 h-4 mr-2" />
+            <SelectValue placeholder="Filtrer par statut" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous les statuts</SelectItem>
+            <SelectItem value="EN_ATTENTE">En attente</SelectItem>
+            <SelectItem value="EN_COURS_ETUDE">En cours d'étude</SelectItem>
+            <SelectItem value="EN_ATTENTE_EVALUATION_TERRAIN">En attente terrain</SelectItem>
+            <SelectItem value="VALIDEE">Refusé</SelectItem>
+            <SelectItem value="REFUSEE">Validée</SelectItem>
+          </SelectContent>
+        </Select>
         </div>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle>Liste des Demandes de Subvention</CardTitle>
-          <CardDescription>
-            Consultez et gérez toutes les demandes de subvention.
-          </CardDescription>
+          <CardTitle>Liste des Demandes</CardTitle>
+          <CardDescription>Consultez et gérez les demandes de subvention.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -204,36 +205,30 @@ useEffect(() => {
                 <TableHead>ID Demande</TableHead>
                 <TableHead>ID Subvention</TableHead>
                 <TableHead>Titre Foncier</TableHead>
-                <TableHead>Date Soumission</TableHead>
+                <TableHead>Date</TableHead>
                 <TableHead>Statut</TableHead>
-                <TableHead>Commentaire de paysan</TableHead>
-                <TableHead>Papier requis </TableHead>
+                <TableHead>Commentaire</TableHead>
+                <TableHead>PDF</TableHead>
                 <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {applications.map((app) => (
+              {paginatedApps.map((app) => (
                 <TableRow key={app.id_demande}>
-                  <TableCell className="font-medium">
-                    {app.id_demande}
-                  </TableCell>
+                  <TableCell>{app.id_demande}</TableCell>
                   <TableCell>
                     <button
-                      onClick={() => handleShowSubventionDetails(app.subvention.data)}
+                      onClick={() => handleShowSubventionDetails(app.subvention?.data)}
                       className="text-blue-600 underline hover:text-blue-800"
                     >
                       {app.id_subvention}
                     </button>
                   </TableCell>
                   <TableCell>{app.numero_titre || "N/A"}</TableCell>
-                  <TableCell>
-                    {new Date(app.dateDepot).toLocaleDateString("fr-FR")}
-                  </TableCell>
+                  <TableCell>{new Date(app.dateDepot).toLocaleDateString("fr-FR")}</TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                        app.statusDemande
-                      )}`}
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(app.statusDemande)}`}
                     >
                       {formatStatus(app.statusDemande)}
                     </span>
@@ -242,24 +237,21 @@ useEffect(() => {
                   <TableCell>
                     {app.devis_fournisseur ? (
                       <a
-                        href={`http://localhost:8888/utilisateur/auth/pdf/download/${encodeURIComponent(app.devis_fournisseur)}`}
+                        href={`http://localhost:8888/utilisateur/auth/pdf/download/${encodeURIComponent(
+                          app.devis_fournisseur
+                        )}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 underline hover:text-blue-800"
                       >
                         Voir PDF
                       </a>
-                      ) : (
+                    ) : (
                       <span className="text-gray-500 italic">Non disponible</span>
                     )}
                   </TableCell>
                   <TableCell className="text-center space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleOpenForm(app)}
-                      title="Modifier/Voir"
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => handleOpenForm(app)} title="Modifier/Voir">
                       <Info className="h-4 w-4 text-blue-600" />
                     </Button>
                     {app.statut !== "Mission requise" &&
@@ -269,10 +261,10 @@ useEffect(() => {
                           variant="ghost"
                           size="icon"
                           onClick={() => {
-                            setCurrentApplication(app); // Pour que le dialog sache quelle app mettre à jour
+                            setCurrentApplication(app);
                             handleSendToMission(app.id);
                           }}
-                          title="Envoyer en Mission Terrain"
+                          title="Envoyer en Mission"
                         >
                           <Tractor className="h-4 w-4 text-orange-500" />
                         </Button>
@@ -282,6 +274,19 @@ useEffect(() => {
               ))}
             </TableBody>
           </Table>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center mt-4">
+            <Button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>
+              Précédent
+            </Button>
+            <span>
+              Page {currentPage} sur {totalPages}
+            </span>
+            <Button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}>
+              Suivant
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

@@ -45,6 +45,8 @@ const ApplicationFormDialog = ({
   const [missionData, setMissionData] = useState({
     id_traitent_demande: "",
     titre: "",
+    numero_terre: "",
+    suvbention_demande: "",
     description: "",
   });
 
@@ -65,6 +67,8 @@ const ApplicationFormDialog = ({
     setMissionData({
       id_traitent_demande: "",
       titre: "",
+      numero_terre: "",
+      suvbention_demande: "",
       description: "",
     });
     setTerrainInfo(null);
@@ -143,10 +147,14 @@ const ApplicationFormDialog = ({
 
         // Si statut = EN_ATTENTE_EVALUATION_TERRAIN => on crée la mission technique
         if (formDataEnvo.statut === "EN_ATTENTE_EVALUATION_TERRAIN") {
-          if (!missionData.titre || !missionData.description) {
+            const missionPayload = {
+              ...missionData,
+              numero_terre: titreFoncierSearch,
+            };
+          if (!missionPayload.numero_terre || !missionPayload.suvbention_demande || !missionPayload.titre) {
             toast({
               title: "Erreur",
-              description: "Veuillez remplir le titre et la description de la mission.",
+              description: "Veuillez remplir le numero de titre , type subvention demande et le titre de la mission.",
               variant: "destructive",
             });
             return;
@@ -155,9 +163,10 @@ const ApplicationFormDialog = ({
           try {
             await demandeTechnique(
               formData.id_demande,
-              missionData.titre,
-              missionData.description,
-              new Date().toISOString().split("T")[0]
+              missionPayload.titre,
+              missionPayload.numero_terre,
+              missionPayload.suvbention_demande,
+              missionPayload.description,
             );
 
             toast({
@@ -314,7 +323,7 @@ const ApplicationFormDialog = ({
             <Label htmlFor="statut">Statut</Label>
             <select
               id="statut"
-              value={formData.statut}
+              value={formDataEnvo.statut}
               onChange={(e) =>
                 setformDataEnvo((prev) => ({ ...prev, statut: e.target.value }))
               }
@@ -397,6 +406,24 @@ const ApplicationFormDialog = ({
                   value={missionData.titre}
                   onChange={(e) =>
                     setMissionData((prev) => ({ ...prev, titre: e.target.value }))
+                  }
+                />
+              </div>
+              <div>
+                <Label>Numero de terre</Label>
+                <Input
+                  value={titreFoncierSearch}
+                  onChange={(e) =>
+                    setMissionData((prev) => ({ ...prev, numero_terre: e.target.value }))
+                  }
+                />
+              </div>
+              <div>
+                <Label>Subvention demande</Label>
+                <Input
+                  value={missionData.suvbention_demande}
+                  onChange={(e) =>
+                    setMissionData((prev) => ({ ...prev, suvbention_demande: e.target.value }))
                   }
                 />
               </div>

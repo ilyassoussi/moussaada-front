@@ -161,15 +161,16 @@ export const GetVillePaysan = async () => {
 /***********************************************************Mission Technique *************************************************************/
 
 
-export const demandeTechnique = async (id_traitent_demande,titre,description,date_de_sortie) => {
+export const demandeTechnique = async (id_traitent_demande,titre,numero_terre,suvbention_demande,description) => {
 
     try {
         const response = await axiosInstance.post(`/subvention/demande-technique/create`,
             {
                 id_traitent_demande,
                 titre,
+                numero_terre,
+                suvbention_demande,
                 description,
-                date_de_sortie
             },
             {
                 headers: {
@@ -259,6 +260,14 @@ export const AllRapport = async () => {
     try {
         const reponse = await axiosInstance.get(`/subvention/demande-technique/reponse/get-rapport`);
         return reponse.data.data;
+    } catch(error){
+        throw error.response ? error.response.data : error;    
+    }
+} 
+
+export const validateRapport = async (idRapport) => {
+    try {
+        await axiosInstance.post(`/subvention/demande-technique/vaildate-rapport/${idRapport}`);
     } catch(error){
         throw error.response ? error.response.data : error;    
     }

@@ -16,6 +16,8 @@ import Subvention from '../pages/Subventions/SubsidiesPage';
 import Terrain from '../pages/Subventions/MissionsPage';
 import Rapports from '../pages/Subventions/ReportsPage';
 import Layout from '../components/SubventionsCompo/Layout';
+import TerrainEspace from '../pages/Terrain/TerrainPages';
+import LoginTerrain from '../pages/Terrain/Login/LoginPage';
 
 
 export default function AppRouter() {
@@ -40,6 +42,8 @@ export default function AppRouter() {
         { path: '/agent/rapports', element: <Rapports /> },
       ],
     },
+    { path: '/agent/espace-technicien', element: <TerrainEspace /> },
+    { path: 'boTerrain1266654', element: <LoginTerrain /> },
   ]);
   return routes;
 }
