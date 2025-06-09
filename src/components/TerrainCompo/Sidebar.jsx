@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FileText, 
-  ClipboardList, 
-  Settings, 
+import {
+  FileText,
+  ClipboardList,
+  LogOut,
   X,
   Sprout,
   BarChart3,
@@ -12,7 +12,7 @@ import {
 import { Button } from './button';
 import logo from '../../assets/ArmoiriesduMaroc.svg'
 import { Link } from "react-router-dom";
-
+import { logout } from "../../services/apiTerrain"
 const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
   const menuItems = [
     {
@@ -40,13 +40,22 @@ const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
       description: 'Validations et refus'
     },
     {
-      id: 'parametres',
-      label: 'Paramètres',
-      icon: Settings,
-      description: 'Configuration du compte'
+      id: 'Deconnexion',
+      label: 'Deconnexion',
+      icon: LogOut,
+      description: 'Deconnexion du compte'
     }
   ];
-
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      await logout();
+      localStorage.removeItem("token-terrain");
+      window.location.href = "/boTerrain1266654";
+    } catch (error) {
+      console.error("Erreur logout:", error);
+    }
+  };
   const sidebarVariants = {
     open: {
       x: 0,
@@ -76,7 +85,7 @@ const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
       }
     }
   };
-  
+
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
 
   useEffect(() => {
@@ -116,7 +125,7 @@ const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
       transition: { duration: 0.1 }
     }
   });
-  
+
   const textVariants = {
     open: { opacity: 1, display: 'block', transition: { delay: 0.2 } },
     closed: { opacity: 0, display: 'none', transition: { duration: 0.1 } }
@@ -148,12 +157,12 @@ const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
           <div className={`p-6 border-b border-green-100 agricultural-gradient flex items-center 
             ${getSidebarState() === 'closedDesktop' ? 'justify-center h-[73px]' : 'justify-between'}
           `}>
-            <motion.div 
+            <motion.div
               animate={getSidebarState() === 'open' || window.innerWidth < 1024 ? 'open' : 'closed'}
               variants={textVariants}
               className="flex items-center space-x-3"
             >
-             <Link to="/" className="flex items-center space-x-2">
+              <Link to="/" className="flex items-center space-x-2">
                 <div className="flex items-center  p-2">
                   <img
                     src={logo}
@@ -164,15 +173,15 @@ const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
                 </div>
               </Link>
             </motion.div>
-            
-            { (getSidebarState() !== 'open' && window.innerWidth >=1024) && (
-                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                   <img
-                    src={logo}
-                    alt="icon moussaada"
-                    className="w-6 h-6 "
-                  />
-                 </div>
+
+            {(getSidebarState() !== 'open' && window.innerWidth >= 1024) && (
+              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                <img
+                  src={logo}
+                  alt="icon moussaada"
+                  className="w-6 h-6 "
+                />
+              </div>
             )}
 
             <Button
@@ -180,9 +189,9 @@ const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
               size="icon"
               onClick={onToggle}
               className={`text-white hover:bg-white/20 
-                ${getSidebarState() === 'closedDesktop' && window.innerWidth >=1024 ? 'lg:block' : 'lg:hidden'}
+                ${getSidebarState() === 'closedDesktop' && window.innerWidth >= 1024 ? 'lg:block' : 'lg:hidden'}
                 ${getSidebarState() === 'open' && window.innerWidth < 1024 ? 'block' : 'hidden'}
-                ${getSidebarState() === 'open' && window.innerWidth >=1024 ? 'lg:block' : ''}
+                ${getSidebarState() === 'open' && window.innerWidth >= 1024 ? 'lg:block' : ''}
               `}
             >
               <X className="w-5 h-5" />
@@ -192,52 +201,56 @@ const Sidebar = ({ activeSection, onSectionChange, isOpen, onToggle }) => {
           <nav className={`flex-1 p-4 space-y-2 overflow-y-auto scrollbar-hide mt-10
             ${getSidebarState() === 'closedDesktop' ? 'flex flex-col items-center' : ''}
           `}>
-              {menuItems.map((item, index) => {
-                const Icon = item.icon;
-                const isActive = activeSection === item.id;
-                
-                return (
-                  <motion.div
-                    key={item.id}
-                    variants={itemVariants(getSidebarState() === 'open' || window.innerWidth < 1024)}
-                    initial="closed"
-                    animate="open"
-                  >
-                    <button
-                      onClick={() => {
+            {menuItems.map((item, index) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+
+              return (
+                <motion.div
+                  key={item.id}
+                  variants={itemVariants(getSidebarState() === 'open' || window.innerWidth < 1024)}
+                  initial="closed"
+                  animate="open"
+                >
+                  <button
+                    onClick={(e) => {
+                      if (item.id === 'Deconnexion') {
+                        handleLogout(e);
+                      } else {
                         onSectionChange(item.id);
                         if (window.innerWidth < 1024 && isOpen) onToggle();
-                      }}
-                      title={item.label}
-                      className={`w-full p-4 rounded-xl text-left transition-all duration-300 hover-lift group flex items-center space-x-4
+                      }
+                    }}
+                    title={item.label}
+                    className={`w-full p-4 rounded-xl text-left transition-all duration-300 hover-lift group flex items-center space-x-4
                         ${isActive ? 'agricultural-gradient text-white shadow-lg' : 'hover:bg-green-50 text-gray-700'}
                         ${getSidebarState() === 'closedDesktop' ? 'justify-center' : ''}
                       `}
-                    >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors 
+                  >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors 
                         ${isActive ? 'bg-white/20' : 'bg-green-100 group-hover:bg-green-200'}
                       `}>
-                        <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-green-600'}`} />
-                      </div>
-                      <motion.div 
-                        className={`flex-1 ${getSidebarState() === 'closedDesktop' ? 'hidden' : 'block'}`}
-                        variants={textVariants}
-                        animate={getSidebarState() === 'open' || window.innerWidth < 1024 ? 'open' : 'closed'}
-                      >
-                        <h3 className={`font-semibold ${isActive ? 'text-white' : 'text-gray-900'}`}>
-                          {item.label}
-                        </h3>
-                        <p className={`text-sm ${isActive ? 'text-green-100' : 'text-gray-500'}`}>
-                          {item.description}
-                        </p>
-                      </motion.div>
-                    </button>
-                  </motion.div>
-                );
-              })}
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-green-600'}`} />
+                    </div>
+                    <motion.div
+                      className={`flex-1 ${getSidebarState() === 'closedDesktop' ? 'hidden' : 'block'}`}
+                      variants={textVariants}
+                      animate={getSidebarState() === 'open' || window.innerWidth < 1024 ? 'open' : 'closed'}
+                    >
+                      <h3 className={`font-semibold ${isActive ? 'text-white' : 'text-gray-900'}`}>
+                        {item.label}
+                      </h3>
+                      <p className={`text-sm ${isActive ? 'text-green-100' : 'text-gray-500'}`}>
+                        {item.description}
+                      </p>
+                    </motion.div>
+                  </button>
+                </motion.div>
+              );
+            })}
           </nav>
 
-          <motion.div 
+          <motion.div
             className={`p-4 border-t border-gray-200 ${getSidebarState() === 'closedDesktop' ? 'hidden' : 'block'}`}
             variants={textVariants}
             animate={getSidebarState() === 'open' || window.innerWidth < 1024 ? 'open' : 'closed'}
