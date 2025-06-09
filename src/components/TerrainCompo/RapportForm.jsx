@@ -10,16 +10,8 @@ import {
   Save,
   AlertCircle,
   ArrowLeft,
-  User,
-  Globe,
-  DollarSign,
-  BookOpen,
-  ClipboardCheck,
-  MessageSquare,
-  Compass,
   Maximize,
   Droplets,
-  Sun,
   Edit2,
   ClipboardList
 } from 'lucide-react';
@@ -28,7 +20,7 @@ import { Input } from './input';
 import { Textarea } from './textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { toast } from './use-toast';
-import { getDemandeByIdReponse, getInfoTerre } from '../../services/apiTerrain';
+import { getDemandeByIdReponse, getInfoTerre, createGenerateRapport } from '../../services/apiTerrain';
 
 const RapportForm = ({ reponseAssociee, onBackToList }) => {
   const initialFormData = {
@@ -63,56 +55,60 @@ const RapportForm = ({ reponseAssociee, onBackToList }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [terrainsInfo, setTerrainsInfo] = useState({});
   const [error, setError] = useState(null);
+  const [reponseData, setReponseData] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchTerrainsInfo = async (demandes) => {
     const infoMap = {};
 
-    await Promise.all(
-      demandes.map(async (demande) => {
-        try {
-          const info = await getInfoTerre(demande.numero_terre);
-          infoMap[demande.numero_terre] = info;
-        } catch (err) {
-          console.error(`Erreur pour la terre ${demande.numero_terre}`, err);
-        }
-      })
-    );
+    try {
+      const info = await getInfoTerre(demandes.numero_terre);
+      infoMap[demandes.numero_terre] = info;
+
+    } catch (err) {
+      console.error(`Erreur pour la terre ${demandes.numero_terre}`, err);
+    }
 
     setTerrainsInfo(infoMap);
   };
+
   useEffect(() => {
-    console.log(reponseAssociee)
-    const fetchReponses = async () => {
+    const fetchReponseAndTerrain = async () => {
+      if (!reponseAssociee?.id_response) return;
+
       try {
+        // Étape 1 : Récupérer la réponse
         const data = await getDemandeByIdReponse(reponseAssociee.id_response);
-        console.log("ici "+ data)
-        await fetchTerrainsInfo(data); // Attend que les infos terrains soient prêtes
+        setReponseData(data);
 
-        const terrain = data.find(d => d.numero_terre); // suppose qu'il y a un champ numero_terre
+        // Étape 2 : Récupérer le numero_terre depuis la réponse
+        const numeroTerre = data?.numero_terre;
+        if (!numeroTerre) return;
 
-        setFormData({
+        // Étape 3 : Récupérer les infos du terrain
+        const info = await getInfoTerre(numeroTerre);
+        setTerrainsInfo({ [numeroTerre]: info });
+
+        // Étape 4 : Initialiser les champs du formulaire
+        setFormData(prev => ({
           ...initialFormData,
-          id_response: reponseAssociee.id_response || '',
-          agriculteur: terrainsInfo[terrain?.numero_terre]?.proprietaires?.nomComplet || 'Chargement...',
-          nomTechnicien: reponseAssociee.nomTechnicien || '',
-          dateVisite: reponseAssociee.date_de_sortie
+          id_reponse: reponseAssociee.id_response || '',
+          agriculteur: info?.proprietaires?.nomComplet || 'Chargement...',
+          nomTechnicien: reponseAssociee?.nomTechnicien || '',
+          dateVisite: reponseAssociee?.date_de_sortie
             ? new Date(reponseAssociee.date_de_sortie).toISOString().split('T')[0]
             : '',
-        });
+          titreFoncier: info?.numeroTitre || '',
+          localisation: info?.localisation || '',
+        }));
       } catch (err) {
-        setError('Erreur lors du chargement des réponses.');
+        console.error('Erreur lors du chargement de la réponse ou du terrain :', err);
+        setError('Erreur lors du chargement des données.');
       }
     };
 
-    if (reponseAssociee) {
-      fetchReponses();
-      console.log(fetchReponses())
-    } else {
-      setFormData(initialFormData);
-    }
-  }, [reponseAssociee, terrainsInfo]);
-
+    fetchReponseAndTerrain();
+  }, [reponseAssociee]);
 
 
   const handleInputChange = (field, value) => {
@@ -140,41 +136,65 @@ const RapportForm = ({ reponseAssociee, onBackToList }) => {
   const handleSubmit = async (action) => {
     setIsSubmitting(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const rapportData = {
-      ...formData,
-      reponseId: reponseAssociee ? reponseAssociee.id_response : null,
-      photos: formData.photos.map(p => p.name),
-    };
+    await new Promise(resolve => setTimeout(resolve, 1000)); // animation de chargement
 
     if (action === 'save') {
-      console.log("Rapport sauvegardé (brouillon):", rapportData);
       toast({
         title: "Rapport sauvegardé",
         description: "Votre rapport a été sauvegardé en brouillon.",
         variant: "default"
       });
-    } else {
-      console.log("Rapport envoyé:", rapportData);
-      toast({
-        title: "Rapport envoyé",
-        description: "Votre rapport a été envoyé au service de subventions.",
-        variant: "success"
-      });
-
-      const storedRapports = JSON.parse(localStorage.getItem('rapportsFinaux')) || [];
-      localStorage.setItem('rapportsFinaux', JSON.stringify([...storedRapports, { ...rapportData, id: `RAP-FIN-${Date.now()}` }]));
-
-      if (reponseAssociee) {
-        const storedReponses = JSON.parse(localStorage.getItem('reponsesTemporaires')) || [];
-        const updatedReponses = storedReponses.map(r =>
-          r.id === reponseAssociee.id ? { ...r, statut: 'complete' } : r
+    } else if (action === 'send') {
+      try {
+        const pdfBlob = await createGenerateRapport(
+          formData.id_reponse,
+          formData.titreFoncier,
+          formData.nomTechnicien,
+          formData.dateVisite,
+          formData.region,
+          formData.commune,
+          formData.gpsLatitude,
+          formData.gpsLongitude,
+          formData.superficieReelleMesuree,
+          formData.typeSol,
+          formData.etatSol,
+          formData.cultureActuelle,
+          formData.systemeIrrigationExistant,
+          formData.besoinReel,
+          formData.photos.map(p => p.file),
+          formData.coherenceDemande,
+          formData.remarqueCoherence,
+          formData.devisJustifie,
+          formData.remarquesTechnicien,
+          formData.avis,
+          formData.justificationAvis,
+          formData.montantEstimeProjet
         );
-        localStorage.setItem('reponsesTemporaires', JSON.stringify(updatedReponses));
-      }
 
-      onBackToList();
+        // Créer un lien de téléchargement
+        const encodedUrl = encodeURIComponent(pdfBlob.rapport);
+        window.open(
+          `http://localhost:8888/utilisateur/auth/pdf/download/${encodedUrl}`,
+          "_blank"
+        );
+
+        toast({
+          title: "PDF généré",
+          description: "Le rapport technique a été généré avec succès.",
+          variant: "success"
+        });
+
+        // Revenir à la liste
+        onBackToList();
+
+      } catch (err) {
+        console.error("Erreur lors de la génération du PDF:", err);
+        toast({
+          title: "Erreur",
+          description: "Échec de la génération du rapport PDF.",
+          variant: "destructive"
+        });
+      }
     }
 
     setIsSubmitting(false);
@@ -210,7 +230,7 @@ const RapportForm = ({ reponseAssociee, onBackToList }) => {
       onChange: (e) => handleInputChange(fieldName, e.target.value),
       placeholder,
     };
-    const readOnly = (fieldName === 'id_response' || fieldName === 'agriculteur' || fieldName === 'nomTechnicien' || fieldName === 'dateVisite') && !!reponseAssociee;
+    const readOnly = (fieldName === 'id_reponse' || fieldName === 'agriculteur' || fieldName === 'nomTechnicien' || fieldName === 'dateVisite' , fieldName === 'localisation' , fieldName === 'titreFoncier') && !!reponseAssociee;
 
     return (
       <div key={fieldName}>
@@ -256,7 +276,7 @@ const RapportForm = ({ reponseAssociee, onBackToList }) => {
                 {reponseAssociee ? `Rapport pour ${reponseAssociee.id_response}` : 'Nouveau Rapport de Visite'}
               </h2>
               <p className="text-green-100">
-                {reponseAssociee ? `Agriculteur: ${reponseAssociee.agriculteur}` : 'Remplissez les informations de votre visite terrain'}
+                {reponseAssociee ? `Agriculteur: ${formData.agriculteur}` : 'Remplissez les informations de votre visite terrain'}
               </p>
             </div>
           </div>
@@ -267,7 +287,7 @@ const RapportForm = ({ reponseAssociee, onBackToList }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {renderSection("Informations Générales", <Calendar className="w-5 h-5 mr-2 text-green-600" />, [
-            renderField("ID Demande", "id_response", "Auto-rempli", "text"),
+            renderField("ID Demande", "id_reponse", "Auto-rempli", "text"),
             renderField("Agriculteur", "agriculteur", "Auto-rempli", "text"),
             renderField("Nom du Technicien", "nomTechnicien", "Nom du technicien", "text"),
             renderField("Date de Visite", "dateVisite", "", "date"),
@@ -305,18 +325,18 @@ const RapportForm = ({ reponseAssociee, onBackToList }) => {
 
           {renderTextareaSection("Analyse de la Demande", <ClipboardList className="w-5 h-5 mr-2 text-green-600" />, [
             renderField("Cohérence Demande/Terrain", "coherenceDemande", "La demande est-elle cohérente avec le terrain ?", "select", [
-              { value: "oui", label: "Oui" }, { value: "partiellement", label: "Partiellement" }, { value: "non", label: "Non" }
+              { value: true, label: "Oui" }, { value: false, label: "Non" }
             ]),
             renderField("Remarques sur la Cohérence", "remarqueCoherence", "Expliquez votre évaluation de cohérence", "textarea"),
             renderField("Rendement Estimé Après Projet (si applicable)", "rendementEstime", "Ex: +20%, 5T/ha...", "text"),
             renderField("Devis Justifié et Cohérent?", "devisJustifie", "Le devis fourni est-il justifié ?", "select", [
-              { value: "oui", label: "Oui" }, { value: "partiellement", label: "Partiellement" }, { value: "non", label: "Non" }
+              { value: true, label: "Oui" }, { value: false, label: "Non" }
             ]),
           ])}
 
           {renderTextareaSection("Conclusion du Technicien", <Edit2 className="w-5 h-5 mr-2 text-green-600" />, [
             renderField("Remarques Générales du Technicien", "remarquesTechnicien", "Autres observations ou commentaires", "textarea"),
-            renderField("Montant Estimé du Projet (€)", "montantEstimeProjet", "Estimation du coût total", "number"),
+            renderField("Montant Estimé du Projet (MAD)", "montantEstimeProjet", "Estimation du coût total", "number"),
             renderField("Avis du Technicien", "avis", "Favorable, Défavorable, Réservé...", "select", [
               { value: "favorable", label: "Favorable" },
               { value: "defavorable", label: "Défavorable" },

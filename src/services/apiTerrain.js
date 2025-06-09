@@ -111,7 +111,7 @@ export const getAllRapport = async () => {
 };
 
 export const createGenerateRapport = async (
-    id_response,
+    id_reponse,
     titreFoncier,
     nomTechnicien,
     dateVisite,
@@ -136,7 +136,7 @@ export const createGenerateRapport = async (
 ) => {
     try {
         const formData = new FormData();
-        formData.append("id_response", id_response);
+        formData.append("id_reponse", id_reponse);
         formData.append("titreFoncier", titreFoncier);
         formData.append("nomTechnicien", nomTechnicien);
         formData.append("dateVisite", dateVisite);
@@ -173,7 +173,6 @@ export const createGenerateRapport = async (
             "/terrain/rapport/generate",
             formData,
             {
-                responseType: "blob", // Important pour recevoir un fichier PDF
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
