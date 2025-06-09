@@ -38,6 +38,17 @@ export const getDemandeById = async (id_demande_subvention) => {
     }
 };
 
+export const getDemandeByIdReponse = async (id_reponse) => {
+    try {
+        const response = await axiosInstance.get(
+            `/terrain/response/demande/by-idreponse/${id_reponse}`
+        );
+        return response.data.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error;
+    }
+};
+
 export const getInfoTerre = async (titre_terre) => {
     try {
         const response = await axiosInstance.get(

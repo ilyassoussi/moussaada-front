@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Upload,
@@ -9,18 +8,32 @@ import {
   FileText,
   Send,
   Save,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft,
+  User,
+  Globe,
+  DollarSign,
+  BookOpen,
+  ClipboardCheck,
+  MessageSquare,
+  Compass,
+  Maximize,
+  Droplets,
+  Sun,
+  Edit2,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from './button';
 import { Input } from './input';
 import { Textarea } from './textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { toast } from './use-toast';
-import {createGenerateRapport} from '../../services/apiTerrain';
+import { getDemandeByIdReponse, getInfoTerre } from '../../services/apiTerrain';
 
-const RapportForm = () => {
-  const [formData, setFormData] = useState({
-    demandeId: '',
+const RapportForm = ({ reponseAssociee, onBackToList }) => {
+  const initialFormData = {
+    id_response: '',
+    agriculteur: '',
     titreFoncier: '',
     nomTechnicien: '',
     dateVisite: '',
@@ -45,10 +58,62 @@ const RapportForm = () => {
     justificationAvis: '',
     montantEstimeProjet: '',
     photos: []
-  });
+  };
 
-
+  const [formData, setFormData] = useState(initialFormData);
+  const [terrainsInfo, setTerrainsInfo] = useState({});
+  const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchTerrainsInfo = async (demandes) => {
+    const infoMap = {};
+
+    await Promise.all(
+      demandes.map(async (demande) => {
+        try {
+          const info = await getInfoTerre(demande.numero_terre);
+          infoMap[demande.numero_terre] = info;
+        } catch (err) {
+          console.error(`Erreur pour la terre ${demande.numero_terre}`, err);
+        }
+      })
+    );
+
+    setTerrainsInfo(infoMap);
+  };
+  useEffect(() => {
+    console.log(reponseAssociee)
+    const fetchReponses = async () => {
+      try {
+        const data = await getDemandeByIdReponse(reponseAssociee.id_response);
+        console.log("ici "+ data)
+        await fetchTerrainsInfo(data); // Attend que les infos terrains soient prêtes
+
+        const terrain = data.find(d => d.numero_terre); // suppose qu'il y a un champ numero_terre
+
+        setFormData({
+          ...initialFormData,
+          id_response: reponseAssociee.id_response || '',
+          agriculteur: terrainsInfo[terrain?.numero_terre]?.proprietaires?.nomComplet || 'Chargement...',
+          nomTechnicien: reponseAssociee.nomTechnicien || '',
+          dateVisite: reponseAssociee.date_de_sortie
+            ? new Date(reponseAssociee.date_de_sortie).toISOString().split('T')[0]
+            : '',
+        });
+      } catch (err) {
+        setError('Erreur lors du chargement des réponses.');
+      }
+    };
+
+    if (reponseAssociee) {
+      fetchReponses();
+      console.log(fetchReponses())
+    } else {
+      setFormData(initialFormData);
+    }
+  }, [reponseAssociee, terrainsInfo]);
+
+
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -61,7 +126,7 @@ const RapportForm = () => {
     const files = Array.from(event.target.files);
     setFormData(prev => ({
       ...prev,
-      photos: [...prev.photos, ...files]
+      photos: [...prev.photos, ...files.map(file => ({ file, name: file.name }))]
     }));
   };
 
@@ -75,72 +140,97 @@ const RapportForm = () => {
   const handleSubmit = async (action) => {
     setIsSubmitting(true);
 
-    const payload = new FormData();
-    payload.append('demandeId', formData.demandeId);
-    payload.append('agriculteur', formData.agriculteur);
-    payload.append('dateVisite', formData.dateVisite);
-    payload.append('typeVisite', formData.typeVisite);
-    payload.append('localisation', formData.localisation);
-    payload.append('structureAgricole', formData.structureAgricole);
-    payload.append('superficie', formData.superficie);
-    payload.append('typeCulture', formData.typeCulture);
-    payload.append('rendementEstime', formData.rendementEstime);
-    payload.append('problemesIdentifies', formData.problemesIdentifies);
-    payload.append('materielsUtilises', formData.materielsUtilises);
-    payload.append('personnelPresent', formData.personnelPresent);
-    payload.append('observations', formData.observations);
-    payload.append('recommandations', formData.recommandations);
-    payload.append('conformite', formData.conformite);
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-    formData.photos.forEach((photo, index) => {
-      payload.append('photos', photo);
-    });
+    const rapportData = {
+      ...formData,
+      reponseId: reponseAssociee ? reponseAssociee.id_response : null,
+      photos: formData.photos.map(p => p.name),
+    };
 
-    try {
-      const response = await createGenerateRapport(payload);
-
-      if (response.code !== 201) {
-        throw new Error('Erreur lors de la génération du rapport');
-      }
-
-      const result = await response.data;
-
+    if (action === 'save') {
+      console.log("Rapport sauvegardé (brouillon):", rapportData);
       toast({
-        title: action === 'save' ? 'Rapport sauvegardé' : 'Rapport généré avec succès',
-        description: result.message || 'Votre rapport a été traité avec succès.',
-        variant: 'success'
+        title: "Rapport sauvegardé",
+        description: "Votre rapport a été sauvegardé en brouillon.",
+        variant: "default"
+      });
+    } else {
+      console.log("Rapport envoyé:", rapportData);
+      toast({
+        title: "Rapport envoyé",
+        description: "Votre rapport a été envoyé au service de subventions.",
+        variant: "success"
       });
 
-      // Réinitialiser uniquement si c’est un envoi complet
-      if (action !== 'save') {
-        setFormData({
-          demandeId: '',
-          agriculteur: '',
-          dateVisite: '',
-          typeVisite: '',
-          localisation: '',
-          structureAgricole: '',
-          superficie: '',
-          typeCulture: '',
-          rendementEstime: '',
-          problemesIdentifies: '',
-          materielsUtilises: '',
-          personnelPresent: '',
-          observations: '',
-          recommandations: '',
-          conformite: '',
-          photos: []
-        });
+      const storedRapports = JSON.parse(localStorage.getItem('rapportsFinaux')) || [];
+      localStorage.setItem('rapportsFinaux', JSON.stringify([...storedRapports, { ...rapportData, id: `RAP-FIN-${Date.now()}` }]));
+
+      if (reponseAssociee) {
+        const storedReponses = JSON.parse(localStorage.getItem('reponsesTemporaires')) || [];
+        const updatedReponses = storedReponses.map(r =>
+          r.id === reponseAssociee.id ? { ...r, statut: 'complete' } : r
+        );
+        localStorage.setItem('reponsesTemporaires', JSON.stringify(updatedReponses));
       }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: error.message,
-        variant: 'destructive'
-      });
+
+      onBackToList();
     }
 
     setIsSubmitting(false);
+  };
+
+  const renderSection = (title, icon, fields) => (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        {icon}
+        {title}
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {fields}
+      </div>
+    </div>
+  );
+
+  const renderTextareaSection = (title, icon, fields) => (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        {icon}
+        {title}
+      </h3>
+      <div className="space-y-4">
+        {fields}
+      </div>
+    </div>
+  );
+
+  const renderField = (label, fieldName, placeholder, type = "text", options = []) => {
+    const commonProps = {
+      value: formData[fieldName],
+      onChange: (e) => handleInputChange(fieldName, e.target.value),
+      placeholder,
+    };
+    const readOnly = (fieldName === 'id_response' || fieldName === 'agriculteur' || fieldName === 'nomTechnicien' || fieldName === 'dateVisite') && !!reponseAssociee;
+
+    return (
+      <div key={fieldName}>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+        {type === "select" ? (
+          <Select value={formData[fieldName]} onValueChange={(value) => handleInputChange(fieldName, value)}>
+            <SelectTrigger className={readOnly ? "bg-gray-100" : ""}>
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        ) : type === "textarea" ? (
+          <Textarea {...commonProps} rows={4} className={readOnly ? "bg-gray-100" : ""} readOnly={readOnly} />
+        ) : (
+          <Input {...commonProps} type={type} className={readOnly ? "bg-gray-100" : ""} readOnly={readOnly} />
+        )}
+      </div>
+    );
   };
 
 
@@ -150,236 +240,92 @@ const RapportForm = () => {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-4xl mx-auto space-y-6"
     >
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 text-white">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-            <FileText className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold">Nouveau Rapport de Visite</h2>
-            <p className="text-green-100">Remplissez les informations de votre visite terrain</p>
+      <div className="flex items-center mb-4">
+        {onBackToList && (
+          <Button variant="ghost" size="icon" onClick={onBackToList} className="mr-2 hover:bg-green-50">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        )}
+        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 text-white flex-grow">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <FileText className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">
+                {reponseAssociee ? `Rapport pour ${reponseAssociee.id_response}` : 'Nouveau Rapport de Visite'}
+              </h2>
+              <p className="text-green-100">
+                {reponseAssociee ? `Agriculteur: ${reponseAssociee.agriculteur}` : 'Remplissez les informations de votre visite terrain'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Informations Générales */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Calendar className="w-5 h-5 mr-2 text-green-600" />
-              Informations Générales
-            </h3>
+          {renderSection("Informations Générales", <Calendar className="w-5 h-5 mr-2 text-green-600" />, [
+            renderField("ID Demande", "id_response", "Auto-rempli", "text"),
+            renderField("Agriculteur", "agriculteur", "Auto-rempli", "text"),
+            renderField("Nom du Technicien", "nomTechnicien", "Nom du technicien", "text"),
+            renderField("Date de Visite", "dateVisite", "", "date"),
+            renderField("Titre Foncier", "titreFoncier", "Numéro du titre foncier", "text"),
+          ])}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID Demande
-                </label>
-                <Select value={formData.demandeId} onValueChange={(value) => handleInputChange('demandeId', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner une demande" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DEM-2024-001">DEM-2024-001 - Mohamed Alami</SelectItem>
-                    <SelectItem value="DEM-2024-002">DEM-2024-002 - Fatima Zahra</SelectItem>
-                    <SelectItem value="DEM-2024-004">DEM-2024-004 - Aicha Benali</SelectItem>
-                    <SelectItem value="DEM-2024-005">DEM-2024-005 - Omar Tazi</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          {renderSection("Localisation", <MapPin className="w-5 h-5 mr-2 text-green-600" />, [
+            renderField("Région", "region", "Région de la visite", "text"),
+            renderField("Commune", "commune", "Commune de la visite", "text"),
+            renderField("Latitude GPS", "gpsLatitude", "Ex: 33.5731", "text"),
+            renderField("Longitude GPS", "gpsLongitude", "Ex: -7.5898", "text"),
+            renderField("Adresse / Localisation Détaillée", "localisation", "Complément d'adresse ou description", "text"),
+          ])}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date de Visite
-                </label>
-                <Input
-                  type="date"
-                  value={formData.dateVisite}
-                  onChange={(e) => handleInputChange('dateVisite', e.target.value)}
-                />
-              </div>
+          {renderSection("Détails de la Parcelle", <Maximize className="w-5 h-5 mr-2 text-green-600" />, [
+            renderField("Superficie Réelle Mesurée (ha)", "superficieReelleMesuree", "Ex: 4.75", "number"),
+            renderField("Superficie Demandée (ha)", "superficie", "Ex: 5.00", "number"),
+            renderField("Type de Sol", "typeSol", "Ex: Argileux, Sablonneux...", "select", [
+              { value: "argileux", label: "Argileux" }, { value: "limoneux", label: "Limoneux" },
+              { value: "sableux", label: "Sableux" }, { value: "humifere", label: "Humifère" },
+              { value: "calcaire", label: "Calcaire" }, { value: "tourbeux", label: "Tourbeux" },
+            ]),
+            renderField("État du Sol", "etatSol", "Ex: Humide, Sec, Compacté...", "select", [
+              { value: "humide", label: "Humide" }, { value: "sec", label: "Sec" },
+              { value: "compacte", label: "Compacté" }, { value: "bien_draine", label: "Bien Drainé" },
+              { value: "erode", label: "Érodé" },
+            ]),
+            renderField("Culture Actuelle", "cultureActuelle", "Ex: Blé, Tomates...", "text"),
+          ])}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Type de Visite
-                </label>
-                <Select value={formData.typeVisite} onValueChange={(value) => handleInputChange('typeVisite', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Type de visite" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="initiale">Visite Initiale</SelectItem>
-                    <SelectItem value="suivi">Visite de Suivi</SelectItem>
-                    <SelectItem value="controle">Visite de Contrôle</SelectItem>
-                    <SelectItem value="finale">Visite Finale</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          {renderTextareaSection("Système d'Irrigation et Besoins", <Droplets className="w-5 h-5 mr-2 text-green-600" />, [
+            renderField("Système d'Irrigation Existant", "systemeIrrigationExistant", "Description du système actuel", "textarea"),
+            renderField("Besoin Réel Constaté", "besoinReel", "Description des besoins en irrigation", "textarea"),
+          ])}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Localisation
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    placeholder="Coordonnées GPS ou adresse"
-                    value={formData.localisation}
-                    onChange={(e) => handleInputChange('localisation', e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          {renderTextareaSection("Analyse de la Demande", <ClipboardList className="w-5 h-5 mr-2 text-green-600" />, [
+            renderField("Cohérence Demande/Terrain", "coherenceDemande", "La demande est-elle cohérente avec le terrain ?", "select", [
+              { value: "oui", label: "Oui" }, { value: "partiellement", label: "Partiellement" }, { value: "non", label: "Non" }
+            ]),
+            renderField("Remarques sur la Cohérence", "remarqueCoherence", "Expliquez votre évaluation de cohérence", "textarea"),
+            renderField("Rendement Estimé Après Projet (si applicable)", "rendementEstime", "Ex: +20%, 5T/ha...", "text"),
+            renderField("Devis Justifié et Cohérent?", "devisJustifie", "Le devis fourni est-il justifié ?", "select", [
+              { value: "oui", label: "Oui" }, { value: "partiellement", label: "Partiellement" }, { value: "non", label: "Non" }
+            ]),
+          ])}
 
-          {/* Détails Complémentaires */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Compléments de Visite
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Structure Agricole
-                </label>
-                <Input
-                  placeholder="Type de structure (ex : serre, champ ouvert...)"
-                  value={formData.structureAgricole}
-                  onChange={(e) => handleInputChange('structureAgricole', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Superficie (en ha)
-                </label>
-                <Input
-                  type="number"
-                  placeholder="Ex : 2.5"
-                  value={formData.superficie}
-                  onChange={(e) => handleInputChange('superficie', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Type de Culture
-                </label>
-                <Input
-                  placeholder="Ex : Blé, Tomate, etc."
-                  value={formData.typeCulture}
-                  onChange={(e) => handleInputChange('typeCulture', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Rendement Estimé (kg/ha)
-                </label>
-                <Input
-                  type="number"
-                  placeholder="Ex : 2500"
-                  value={formData.rendementEstime}
-                  onChange={(e) => handleInputChange('rendementEstime', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Problèmes Identifiés
-                </label>
-                <Textarea
-                  placeholder="Lister les problèmes observés sur le terrain..."
-                  value={formData.problemesIdentifies}
-                  onChange={(e) => handleInputChange('problemesIdentifies', e.target.value)}
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Matériels Utilisés
-                </label>
-                <Textarea
-                  placeholder="Liste des équipements/machines utilisés..."
-                  value={formData.materielsUtilises}
-                  onChange={(e) => handleInputChange('materielsUtilises', e.target.value)}
-                  rows={3}
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Personnel Présent
-                </label>
-                <Input
-                  placeholder="Ex : Ingénieur agricole, technicien, ouvrier..."
-                  value={formData.personnelPresent}
-                  onChange={(e) => handleInputChange('personnelPresent', e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
+          {renderTextareaSection("Conclusion du Technicien", <Edit2 className="w-5 h-5 mr-2 text-green-600" />, [
+            renderField("Remarques Générales du Technicien", "remarquesTechnicien", "Autres observations ou commentaires", "textarea"),
+            renderField("Montant Estimé du Projet (€)", "montantEstimeProjet", "Estimation du coût total", "number"),
+            renderField("Avis du Technicien", "avis", "Favorable, Défavorable, Réservé...", "select", [
+              { value: "favorable", label: "Favorable" },
+              { value: "defavorable", label: "Défavorable" },
+              { value: "reserve", label: "Avec Réserves" },
+            ]),
+            renderField("Justification de l'Avis", "justificationAvis", "Expliquez votre avis", "textarea"),
+          ])}
 
 
-          {/* Observations */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Observations de Terrain
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Observations Détaillées
-                </label>
-                <Textarea
-                  placeholder="Décrivez vos observations sur l'état des installations, la conformité aux normes, les conditions du terrain..."
-                  value={formData.observations}
-                  onChange={(e) => handleInputChange('observations', e.target.value)}
-                  rows={6}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Recommandations
-                </label>
-                <Textarea
-                  placeholder="Vos recommandations pour l'amélioration ou la mise en conformité..."
-                  value={formData.recommandations}
-                  onChange={(e) => handleInputChange('recommandations', e.target.value)}
-                  rows={4}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Évaluation de Conformité
-                </label>
-                <Select value={formData.conformite} onValueChange={(value) => handleInputChange('conformite', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Niveau de conformité" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="conforme">Conforme</SelectItem>
-                    <SelectItem value="partiellement">Partiellement Conforme</SelectItem>
-                    <SelectItem value="non_conforme">Non Conforme</SelectItem>
-                    <SelectItem value="en_cours">En Cours d'Installation</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          {/* Photos */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Camera className="w-5 h-5 mr-2 text-green-600" />
@@ -408,6 +354,7 @@ const RapportForm = () => {
                   {formData.photos.map((photo, index) => (
                     <div key={index} className="relative group">
                       <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                        {/* <img-replace src={URL.createObjectURL(photo.file)} alt={photo.name} className="object-cover w-full h-full rounded-lg" /> */}
                         <Camera className="w-8 h-8 text-gray-400" />
                       </div>
                       <button
@@ -425,9 +372,7 @@ const RapportForm = () => {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Actions */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
 
@@ -453,7 +398,6 @@ const RapportForm = () => {
             </div>
           </div>
 
-          {/* Aide */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
             <div className="flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
@@ -465,26 +409,6 @@ const RapportForm = () => {
                   <li>• Documentez tous les équipements</li>
                   <li>• Mentionnez les non-conformités</li>
                 </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Statistiques */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Mes Statistiques</h3>
-
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Rapports ce mois</span>
-                <span className="font-semibold text-green-600">12</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Visites planifiées</span>
-                <span className="font-semibold text-blue-600">8</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Taux de conformité</span>
-                <span className="font-semibold text-yellow-600">85%</span>
               </div>
             </div>
           </div>
