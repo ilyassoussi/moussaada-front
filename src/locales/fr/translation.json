@@ -159,19 +159,19 @@
     "grantTypeEnergSol": "Subvention Énergie Solaire",
     "grantTypeJeuneAgri": "Subvention Jeune Agriculteur"
   },
-    "categories": {
-      "IRRIGATION_GOUTTE_A_GOUTTE": "Irrigation goutte à goutte",
-      "IRRIGATION_PAR_ASPERSION": "Irrigation par aspersion",
-      "PLANTATION_OLIVIERS": "Plantation d'oliviers",
-      "PLANTATION_ARBRES_FRUITIERS": "Plantation d'arbres fruitiers",
-      "ELEVAGE_BOVINS": "Élevage de bovins",
-      "ELEVAGE_OVINS": "Élevage d'ovins",
-      "MATERIEL_AGRICOLE": "Matériel agricole",
-      "CONSTRUCTION_SERRE": "Construction de serre",
-      "TRANSFORMATION_PRODUITS": "Transformation des produits agricoles",
-      "ENERGIE_SOLAIRES": "Énergie solaire",
-      "CLÔTURE_TERRAIN": "Clôture de terrain",
-      "REBOISEMENT": "Reboisement"
+  "categories": {
+    "IRRIGATION_GOUTTE_A_GOUTTE": "Irrigation goutte à goutte",
+    "IRRIGATION_PAR_ASPERSION": "Irrigation par aspersion",
+    "PLANTATION_OLIVIERS": "Plantation d'oliviers",
+    "PLANTATION_ARBRES_FRUITIERS": "Plantation d'arbres fruitiers",
+    "ELEVAGE_BOVINS": "Élevage de bovins",
+    "ELEVAGE_OVINS": "Élevage d'ovins",
+    "MATERIEL_AGRICOLE": "Matériel agricole",
+    "CONSTRUCTION_SERRE": "Construction de serre",
+    "TRANSFORMATION_PRODUITS": "Transformation des produits agricoles",
+    "ENERGIE_SOLAIRES": "Énergie solaire",
+    "CLÔTURE_TERRAIN": "Clôture de terrain",
+    "REBOISEMENT": "Reboisement"
   },
   "suiviSubventionsPage": {
     "title": "Suivi de Mes Demandes de Subvention",
@@ -213,5 +213,97 @@
   },
   "general": {
     "requiredField": "*"
+  },
+  "appName":{
+    "appname":"MOUSSAADA"
+  },
+  "nav": {
+    "news": "Nos actualités",
+    "Services": "Services",
+    "about": "À Propos",
+    "Contact": "Contact"
+  },
+  "hero": {
+    "title": "Département Provincial de l'Agriculture",
+    "subtitle": "Soutenir l'agriculture durable et la prospérité rurale.",
+    "cta": "Découvrir nos services"
+  },
+  "newsPage": {
+    "title": "Actualités Agricoles",
+    "Subtitle": "Restez informé des dernières nouvelles, événements et opportunités dans le secteur agricole.",
+    "Rechercher": "Rechercher",
+    "searchPlaceholder": "Rechercher ...",
+    "filterByCategory": "Filtrer par catégorie",
+    "allCategories": "Toutes les catégories",
+    "readMore": "Lire la suite",
+    "loadingNews": "Chargement des actualités...",
+    "noNews": "Aucune actualité à afficher pour le moment."
+  },
+  "connect":{
+    "seconnecter": "Se Connecter"
+  },
+  "servicesPage": {
+    "title": "Nos Services et Subventions",
+    "Subtitle": "Explorez les diverses aides et programmes que nous offrons pour soutenir votre activité agricole",
+    "Rechercher": "Rechercher",
+    "searchPlaceholder": "Rechercher une subvention...",
+    "filterByType": "Type de subvention",
+    "filterByEligibility": "Éligibilité",
+    "filterByDeadline": "Date limite",
+    "allTypes": "Tous types",
+    "viewDetails": "Voir les détails",
+    "noServices": "Aucun service ou subvention ne correspond à vos critères.",
+    "eligibility": "Éligibilité",
+    "deadline": "Date limite",
+    "applyNow": "Postuler maintenant",
+    "description": "Description",
+    "requiredDocuments": "Documents Requis",
+    "applicationProcess": "Processus de Candidature",
+    "contactForQuestions": "Contact pour Questions",
+    "relatedSubsidies": "Subventions Connexes",
+    "print": "Imprimer",
+    "share": "Partager"
+  },
+  "aboutPage": {
+    "title": "À Propos de Nous",
+    "missionVision": "Mission et Vision",
+    "organizationalStructure": "Structure Organisationnelle",
+    "teamMembers": "Notre Équipe",
+    "history": "Notre Histoire",
+    "departmentImpact": "Impact du Département",
+    "photoGallery": "Galerie Photos"
+  },
+  "contactPage": {
+    "title": "Contactez-Nous",
+    "getInTouch": "Restons en contact",
+    "contactForm": {
+      "name": "Nom complet",
+      "email": "Adresse e-mail",
+      "subject": "Sujet",
+      "selectSubject": "Sélectionnez un sujet",
+      "message": "Votre message",
+      "attachment": "Pièce jointe (optionnel)",
+      "submit": "Envoyer le Message",
+      "submitting": "Envoi en cours..."
+    },
+    "contactInfo": "Informations de Contact",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "workingHours": "Horaires d'Ouverture",
+    "faq": "Questions Fréquemment Posées"
+  },
+  "footer": {
+    "copyright": "© {{year}} MOUSSAADA. Tous droits réservés.",
+    "followUs": "Suivez-nous"
+  },
+  "languages": {
+    "fr": "Français",
+    "ar": "العربية"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue.",
+    "comingSoon": "Bientôt disponible"
   }
 }

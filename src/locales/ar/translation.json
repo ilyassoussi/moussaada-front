@@ -208,5 +208,97 @@
   },
   "general": {
     "requiredField": "*"
+  },
+  "nav": {
+    "news": "الأخبار",
+    "Services": "الخدمات والإعانات",
+    "about": "من نحن",
+    "Contact": "اتصل بنا"
+  },
+  "hero": {
+    "title": "المديرية الإقليمية للفلاحة",
+    "subtitle": "دعم الفلاحة المستدامة والازدهار القروي.",
+    "cta": "اكتشف خدماتنا"
+  },
+  "newsPage": {
+    "title": "أخبار الفلاحة",
+    "Subtitle": ".ابق على اطلاع بأحدث الأخبار والأحداث والفرص في القطاع الزراعي",
+    "Rechercher": "ابحث",
+    "searchPlaceholder": "ابحث عن ...",
+    "filterByCategory": "تصفية حسب الفئة",
+    "allCategories": "جميع الفئات",
+    "readMore": "اقرأ المزيد",
+    "loadingNews": "جاري تحميل الأخبار...",
+    "noNews": "لا توجد أخبار لعرضها حاليا."
+  },
+  "appName":{
+    "appname":"مساعدة"
+  },
+  "connect":{
+    "seconnecter": "اتصال"
+  },
+  "servicesPage": {
+    "title": "خدماتنا وإعاناتنا",
+    "Subtitle": "استكشف المنح والبرامج المتنوعة التي نقدمها لدعم أعمالك الزراعية",
+    "Rechercher": "ابحث",
+    "searchPlaceholder": "ابحث عن إعانة...",
+    "filterByType": "نوع الإعانة",
+    "filterByEligibility": "الأهلية",
+    "filterByDeadline": "آخر أجل",
+    "allTypes": "جميع الأنواع",
+    "viewDetails": "عرض التفاصيل",
+    "noServices": "لا توجد خدمات أو إعانات تطابق معاييرك.",
+    "eligibility": "شروط الأهلية",
+    "deadline": "آخر أجل للتقديم",
+    "applyNow": "قدم الآن",
+    "description": "الوصف",
+    "requiredDocuments": "الوثائق المطلوبة",
+    "applicationProcess": "عملية التقديم",
+    "contactForQuestions": "الاتصال للاستفسارات",
+    "relatedSubsidies": "إعانات ذات صلة",
+    "print": "طباعة",
+    "share": "مشاركة"
+  },
+  "aboutPage": {
+    "title": "من نحن",
+    "missionVision": "الرؤية والرسالة",
+    "organizationalStructure": "الهيكل التنظيمي",
+    "teamMembers": "فريقنا",
+    "history": "تاريخنا",
+    "departmentImpact": "تأثير المديرية",
+    "photoGallery": "معرض الصور"
+  },
+  "contactPage": {
+    "title": "اتصل بنا",
+    "getInTouch": "تواصل معنا",
+    "contactForm": {
+      "name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "subject": "الموضوع",
+      "selectSubject": "اختر موضوعًا",
+      "message": "رسالتك",
+      "attachment": "مرفق (اختياري)",
+      "submit": "إرسال الرسالة",
+      "submitting": "جاري الإرسال..."
+    },
+    "contactInfo": "معلومات الاتصال",
+    "address": "العنوان",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "workingHours": "أوقات العمل",
+    "faq": "الأسئلة الشائعة"
+  },
+  "footer": {
+    "copyright": "© {{year}} مساعدة. جميع الحقوق محفوظة.",
+    "followUs": "تابعنا على"
+  },
+  "languages": {
+    "fr": "Français",
+    "ar": "العربية"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما.",
+    "comingSoon": "قريبا"
   }
 }

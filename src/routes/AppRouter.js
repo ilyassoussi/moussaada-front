@@ -18,6 +18,11 @@ import Rapports from '../pages/Subventions/ReportsPage';
 import Layout from '../components/SubventionsCompo/Layout';
 import TerrainEspace from '../pages/Terrain/TerrainPages';
 import LoginTerrain from '../pages/Terrain/Login/LoginPage';
+import Services from '../pages/User/ServicesPage';
+import Actualites from '../pages/User/NewsPage';
+import ServicesUnique from '../pages/User/ServiceDetailPage';
+import Propos from '../pages/User/PorposNous';
+import Admin from '../pages/Admin/Admin';
 
 
 export default function AppRouter() {
@@ -31,7 +36,12 @@ export default function AppRouter() {
     { path: '/reclamations', element: <Reclamation /> },
     { path: '/suivi-subventions', element: <SuivisSubvention /> },
     { path: '/suivi-reclamations', element: <SuivisReclamation /> },
+    { path: '/nos-services', element: <Services /> },
+    { path: '/services/subvention/:id', element: <ServicesUnique /> },
+    { path: '/nos-actualites', element: <Actualites /> },
+    { path: '/qui-somme-nous', element: <Propos /> },
     { path: '/boSubventions55684', element: <AgentLoginPage /> },
+    { path: '/boadmin55684', element: <Admin /> },
     {
       element: <Layout />,
       children: [

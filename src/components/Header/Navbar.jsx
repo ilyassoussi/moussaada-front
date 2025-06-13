@@ -1,22 +1,29 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, Menu, X, Home, Info, ShoppingCart, Tractor, Phone, LogIn, Paperclip, NewspaperIcon } from "lucide-react";
+import { Leaf,Globe, Menu, X, Home, Info, ShoppingCart, Tractor, Phone, LogIn, Paperclip, NewspaperIcon } from "lucide-react";
 import { Button } from "../Button/button";
 import { Link } from "react-router-dom";
 import iconArmerieMaroc from '../../assets/ArmoiriesduMaroc.svg'
-
+import { useTranslation } from 'react-i18next';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../PublicPage/ui/dropdown-menu';
 const Navbar = ({ linkColor = "text-gray-700", linkHoverColor = "hover:text-green-700" }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenLocal, setIsOpenLocal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-
+  const { t, i18n } = useTranslation();
+  
   const navItems = [
-    { name: "Nos actualités", icon: NewspaperIcon, href: "/nos-actualie" },
-    { name: "Services", icon: Tractor, href: "/services" },
-    { name: "À Propos", icon: Info, href: "/about" }, // Example for in-page link
+    { name: "news", icon: NewspaperIcon, href: "/nos-actualites" },
+    { name: "Services", icon: Tractor, href: "/nos-services" },
+    { name: "about", icon: Info, href: "/qui-somme-nous" }, // Example for in-page link
     { name: "Contact", icon: Phone, href: "/contact" },
   ];
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    setIsOpenLocal(false);
+  };
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -107,7 +114,7 @@ const Navbar = ({ linkColor = "text-gray-700", linkHoverColor = "hover:text-gree
                   isScrolled || isOpen ? 'text-transparent' : 'text-transparent'
                 }`}
               >
-                MOUSSAADA
+                {t('appName.appname')}
               </span>
             </Link>
           </motion.div>
@@ -125,7 +132,7 @@ const Navbar = ({ linkColor = "text-gray-700", linkHoverColor = "hover:text-gree
                     transition:{ delay: 0.1 * index + 0.2 }
                 }}
               >
-                {item.name}
+              {t(`nav.${item.name}`)}
               </NavLink>
             ))}
           </div>
@@ -139,7 +146,7 @@ const Navbar = ({ linkColor = "text-gray-700", linkHoverColor = "hover:text-gree
           >
             <Link to="/login">
               <Button variant="outline" className={`grow-on-hover ${isScrolled || isOpen ? "border-green-600 text-green-600 hover:bg-green-600 hover:text-white" : "border-green-600 text-green-600 hover:bg-green-600 hover:text-white"}`}>
-                <LogIn className="mr-2 h-4 w-4" /> Se Connecter
+                <LogIn className="mr-2 h-4 w-4" /> {t('connect.seconnecter')}
               </Button>
             </Link>
           </motion.div>
@@ -162,6 +169,24 @@ const Navbar = ({ linkColor = "text-gray-700", linkHoverColor = "hover:text-gree
                 </motion.div>
               </AnimatePresence>
             </motion.button>
+          </div>
+          <div className="flex items-center space-x-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-gray-700 hover:bg-green-50 hover:text-green-600">
+                  <Globe className={`h-5 w-5 ${linkColor || 'text-gray-500'}`} />
+                  <span className="sr-only">Changer de langue</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white shadow-xl rounded-lg border-gray-100">
+                <DropdownMenuItem onClick={() => changeLanguage('fr')} className={`cursor-pointer hover:bg-green-50 ${i18n.language === 'fr' ? 'bg-green-50 text-green-700 font-semibold' : ''}`}>
+                  {t('languages.fr')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('ar')} className={`cursor-pointer hover:bg-green-50 ${i18n.language === 'ar' ? 'bg-green-50 text-green-700 font-semibold' : ''}`}>
+                  {t('languages.ar')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
