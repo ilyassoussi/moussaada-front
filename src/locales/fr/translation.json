@@ -1,0 +1,309 @@
+
+{
+  "sidebar": {
+    "myAccount": "Mon compte",
+    "updateSituation": "Mise à jour situation",
+    "appointments": "Prise de rendez-vous",
+    "grantApplications": "Demande de Subventions",
+    "grantTracking": "Suivi des Subventions",
+    "complaints": "Réclamations",
+    "complaintTracking": "Suivi des réclamations",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "mySpace": "MonEspace"
+  },
+  "header": {
+    "searchPlaceholder": "Recherchez ici...",
+    "myAccount": "Mon Compte",
+    "profile": "Profil",
+    "billing": "Facturation",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "toggleTheme": "Changer de thème"
+  },
+  "welcomeBanner": {
+    "welcome": "BIENVENUE,",
+    "description": "Accédez rapidement à vos informations, mettez à jour votre situation et explorez les services disponibles.",
+    "exploreServices": "Explorer mes services"
+  },
+  "accountSituation": {
+    "title": "Situation de Compte",
+    "personalInfo": "Informations Personnelles",
+    "lastNameAndFirstName": "NOM ET PRÉNOM",
+    "identite": "IDENTITÉ",
+    "datenaissance": "Date de naissance",
+    "detailpersonalInfo": "Détails d'Informations",
+    "affiliationNumber": "N° AFFILIATION",
+    "membershipStateNumber": "N° ADHÉSION/ÉTAT",
+    "affiliationDate": "DATE AFFILIATION",
+    "contributionInfo": "Informations de Cotisation",
+    "validationContribution": "COTISATION VALIDATION (EN DHS)",
+    "validatedPeriod": "PÉRIODE VALIDÉE (EN MOIS)",
+    "buybackContribution": "COTISATION RACHAT (EN DHS)",
+    "boughtBackPeriod": "PÉRIODE RACHETÉE (EN MOIS ET JOURS)",
+    "months": "Mois",
+    "days": "Jours",
+    "notApplicable": "N/A",
+    "landInfo": "Informations des Terres",
+    "owner": "Propriétaires",
+    "location": "Localisation",
+    "area": "Superficie",
+    "registrationDate": "Date d'enregistrement",
+    "inDispute": "En litige",
+    "mortgaged": "Hypothéquée",
+    "yes": "OUI",
+    "no": "NON",
+    "noLandFound": "Aucune terre trouvée."
+  },
+  "footer": {
+    "copyright": "MOUSSAADA - Propulsé par la Directions provinciale de l'agriculture. Tous droits réservés."
+  },
+  "updateSituationPage": {
+    "title": "Mise à Jour de la Situation",
+    "description": "Modifiez vos informations personnelles et de contact. Les données sont sauvegardées localement.",
+    "existingDataLoaded": "Données existantes chargées",
+    "existingDataLoadedDesc": "Vos informations précédemment sauvegardées ont été chargées.",
+    "infoLoadedMessage": "Des données existantes ont été chargées. Vous pouvez les modifier ci-dessous.",
+    "city": "Ville",
+    "selectCity": "Sélectionnez votre ville",
+    "address": "Adresse",
+    "addressPlaceholder": "Ex: 123 Rue Annasr",
+    "neighborhood": "Quartier",
+    "neighborhoodPlaceholder": "Ex: Hay Salam",
+    "postalCode": "Code Postal",
+    "postalCodePlaceholder": "Ex: 20000",
+    "email": "Email",
+    "emailPlaceholder": "Ex: nom.prenom@example.com",
+    "landline": "Téléphone Fixe",
+    "landlinePlaceholder": "Ex: 0522 XX XX XX",
+    "mobile": "GSM",
+    "mobilePlaceholder": "Ex: 0661 XX XX XX",
+    "saveChanges": "Sauvegarder les Modifications",
+    "updateSuccessTitle": "Mise à jour réussie !",
+    "updateSuccessDescription": "Vos informations de situation ont été sauvegardées localement.",
+    "updateFailed": "Échec de l'enregistrement de l'adresse.",
+    "loadError": "Impossible de charger vos informations."
+  },
+  "common": {
+    "error": "Erreur"
+  },
+  
+  "reclamation": {
+    "new_title": "Nouvelle Réclamation",
+    "instructions": "Veuillez remplir les champs ci-dessous pour soumettre votre réclamation. Les champs marqués d'un * sont obligatoires."
+  },
+  "form": {
+    "city": "Ville",
+    "select_city": "Sélectionnez votre ville",
+    "email": "Email",
+    "email_placeholder": "Ex: nom.prenom@example.com",
+    "address": "Adresse",
+    "address_placeholder": "Ex: 123 Rue Annasr",
+    "landline": "Téléphone Fixe",
+    "landline_placeholder": "Ex: 0522 XX XX XX",
+    "mobile": "GSM",
+    "mobile_placeholder": "Ex: 0661 XX XX XX",
+    "reclamation": "Votre Réclamation",
+    "reclamation_placeholder": "Décrivez votre réclamation ici...",
+    "submit_reclamation": "Envoyer la Réclamation"
+  },
+  "toast": {
+    "success_title": "Réclamation envoyée avec succès !",
+    "success_description": "La réclamation a été enregistrée avec succès.",
+    "error_title": "Erreur",
+    "error_description": "Échec de l'enregistrement de la réclamation.",
+    "loaded_title": "Données chargées",
+    "loaded_description": "Vos informations d’adresse existantes ont été chargées."
+  },
+  "suiviReclamationsPage": {
+    "title": "Suivi de Mes Réclamations",
+    "description": "Consultez l'état de vos réclamations soumises et les réponses apportées.",
+    "noComplaintsFound": "Aucune réclamation trouvée.",
+    "noComplaintsDesc": "Vous n'avez pas encore soumis de réclamation. Dirigez-vous vers la page \"Réclamations\" pour en créer une.",
+    "id": "ID",
+    "submissionDate": "Date de soumission",
+    "subjectEmail": "Objet (Email)",
+    "status": "Statut",
+    "response": "Réponse",
+    "actions": "Actions",
+    "viewResponse": "Voir Réponse",
+    "responseToComplaint": "Réponse à la réclamation R-{{id}}",
+    "yourMessage": "Votre message:",
+    "close": "Fermer",
+    "statusSubmitted": "Soumise",
+    "statusInProgress": "En cours",
+    "statusResolved": "Résolue",
+    "statusClosed": "Clôturée"
+  },
+  "demandeSubventionPage": {
+    "title": "Demande de Subvention",
+    "description": "Remplissez le formulaire ci-dessous pour soumettre votre demande de subvention. Les champs marqués d'un * sont obligatoires.",
+    "grantType": "Type de Subvention",
+    "selectGrantType": "Sélectionnez un type de subvention",
+    "propertyTitleNumber": "Numéro de Titre Foncier/Réquisition",
+    "propertyTitleNumberPlaceholder": "Ex: T12345/R",
+    "supplierQuotePDF": "Devis Fournisseur (PDF)",
+    "requestDescription": "Description de la demande",
+    "requestDescriptionPlaceholder": "Décrivez brièvement votre projet et la subvention demandée...",
+    "submitRequest": "Soumettre la Demande",
+    "fileSelected": "Fichier sélectionné",
+    "fileSelectedDesc": "Fichier: {{fileName}}",
+    "invalidFileType": "Type de fichier invalide",
+    "invalidFileTypeDesc": "Veuillez sélectionner un fichier PDF.",
+    "missingFile": "Fichier manquant",
+    "missingFileDesc": "Veuillez téléverser le devis fournisseur au format PDF.",
+    "requestSentTitle": "Demande de subvention envoyée !",
+    "requestSentDesc": "Votre demande a été enregistrée avec succès.",
+    "grantTypeAgriMat": "Subvention Matériel Agricole",
+    "grantTypeIrrigMod": "Subvention Irrigation Moderne",
+    "grantTypeEnergSol": "Subvention Énergie Solaire",
+    "grantTypeJeuneAgri": "Subvention Jeune Agriculteur"
+  },
+  "categories": {
+    "IRRIGATION_GOUTTE_A_GOUTTE": "Irrigation goutte à goutte",
+    "IRRIGATION_PAR_ASPERSION": "Irrigation par aspersion",
+    "PLANTATION_OLIVIERS": "Plantation d'oliviers",
+    "PLANTATION_ARBRES_FRUITIERS": "Plantation d'arbres fruitiers",
+    "ELEVAGE_BOVINS": "Élevage de bovins",
+    "ELEVAGE_OVINS": "Élevage d'ovins",
+    "MATERIEL_AGRICOLE": "Matériel agricole",
+    "CONSTRUCTION_SERRE": "Construction de serre",
+    "TRANSFORMATION_PRODUITS": "Transformation des produits agricoles",
+    "ENERGIE_SOLAIRES": "Énergie solaire",
+    "CLÔTURE_TERRAIN": "Clôture de terrain",
+    "REBOISEMENT": "Reboisement"
+  },
+  "suiviSubventionsPage": {
+    "title": "Suivi de Mes Demandes de Subvention",
+    "description": "Consultez l'état de vos demandes de subvention et les réponses associées.",
+    "noGrantsFound": "Aucune demande de subvention trouvée.",
+    "noGrantsDesc": "Vous n'avez pas encore soumis de demande. Dirigez-vous vers la page \"Demande de Subventions\" pour en créer une.",
+    "requestID": "ID Demande",
+    "grantType": "Type de Subvention",
+    "depositDate": "Date de Dépôt",
+    "titleNumber": "N° Titre",
+    "status": "Statut",
+    "response": "Réponse",
+    "actions": "Actions",
+    "viewDetails": "Voir Détails",
+    "requestDetails": "Détails de la demande SUB-{{id}}",
+    "type": "Type:",
+    "quote": "Devis:",
+    "descriptionLabel": "Description:",
+    "responseStatus": "Réponse / Statut Actuel:",
+    "noResponseYet": "Aucune réponse pour le moment.",
+    "close": "Fermer",
+    "statusDeposited": "Déposée",
+    "statusInstruction": "EN ATTENTE EVALUATION TERRAIN",
+    "statusEncours": "En cours",
+    "statusApproved": "Approuvée",
+    "statusRejected": "Rejetée",
+    "statusPaid": "Payée"
+  },
+  "cities": {
+    "casablanca": "Casablanca",
+    "rabat": "Rabat",
+    "marrakech": "Marrakech",
+    "fes": "Fès",
+    "tanger": "Tanger"
+  },
+  "pageNotFound": {
+    "title": "404 - Page Non Trouvée",
+    "description": "Désolé, la page que vous cherchez n'existe pas."
+  },
+  "general": {
+    "requiredField": "*"
+  },
+  "appName":{
+    "appname":"MOUSSAADA"
+  },
+  "nav": {
+    "news": "Nos actualités",
+    "Services": "Services",
+    "about": "À Propos",
+    "Contact": "Contact"
+  },
+  "hero": {
+    "title": "Département Provincial de l'Agriculture",
+    "subtitle": "Soutenir l'agriculture durable et la prospérité rurale.",
+    "cta": "Découvrir nos services"
+  },
+  "newsPage": {
+    "title": "Actualités Agricoles",
+    "Subtitle": "Restez informé des dernières nouvelles, événements et opportunités dans le secteur agricole.",
+    "Rechercher": "Rechercher",
+    "searchPlaceholder": "Rechercher ...",
+    "filterByCategory": "Filtrer par catégorie",
+    "allCategories": "Toutes les catégories",
+    "readMore": "Lire la suite",
+    "loadingNews": "Chargement des actualités...",
+    "noNews": "Aucune actualité à afficher pour le moment."
+  },
+  "connect":{
+    "seconnecter": "Se Connecter"
+  },
+  "servicesPage": {
+    "title": "Nos Services et Subventions",
+    "Subtitle": "Explorez les diverses aides et programmes que nous offrons pour soutenir votre activité agricole",
+    "Rechercher": "Rechercher",
+    "searchPlaceholder": "Rechercher une subvention...",
+    "filterByType": "Type de subvention",
+    "filterByEligibility": "Éligibilité",
+    "filterByDeadline": "Date limite",
+    "allTypes": "Tous types",
+    "viewDetails": "Voir les détails",
+    "noServices": "Aucun service ou subvention ne correspond à vos critères.",
+    "eligibility": "Éligibilité",
+    "deadline": "Date limite",
+    "applyNow": "Postuler maintenant",
+    "description": "Description",
+    "requiredDocuments": "Documents Requis",
+    "applicationProcess": "Processus de Candidature",
+    "contactForQuestions": "Contact pour Questions",
+    "relatedSubsidies": "Subventions Connexes",
+    "print": "Imprimer",
+    "share": "Partager"
+  },
+  "aboutPage": {
+    "title": "À Propos de Nous",
+    "missionVision": "Mission et Vision",
+    "organizationalStructure": "Structure Organisationnelle",
+    "teamMembers": "Notre Équipe",
+    "history": "Notre Histoire",
+    "departmentImpact": "Impact du Département",
+    "photoGallery": "Galerie Photos"
+  },
+  "contactPage": {
+    "title": "Contactez-Nous",
+    "getInTouch": "Restons en contact",
+    "contactForm": {
+      "name": "Nom complet",
+      "email": "Adresse e-mail",
+      "subject": "Sujet",
+      "selectSubject": "Sélectionnez un sujet",
+      "message": "Votre message",
+      "attachment": "Pièce jointe (optionnel)",
+      "submit": "Envoyer le Message",
+      "submitting": "Envoi en cours..."
+    },
+    "contactInfo": "Informations de Contact",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "workingHours": "Horaires d'Ouverture",
+    "faq": "Questions Fréquemment Posées"
+  },
+  "footer": {
+    "copyright": "© {{year}} MOUSSAADA. Tous droits réservés.",
+    "followUs": "Suivez-nous"
+  },
+  "languages": {
+    "fr": "Français",
+    "ar": "العربية"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue.",
+    "comingSoon": "Bientôt disponible"
+  }
+}

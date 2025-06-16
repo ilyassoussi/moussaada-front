@@ -5,8 +5,11 @@ import { Toaster } from "../../../components/ui/toaster";
 import AuthForm from "./AuthForm";
 import Footer from "../../../components/Footer/Footer";
 import NavBar from '../../../components/Header/Navbar';
+import UseVerifyToken from '../../../services/useVerifyToken';
 
 const LoginPage = () => {
+  UseVerifyToken();
+
   return (
     <div className="min-h-screen flex flex-col ">
       <NavBar />
@@ -25,7 +28,7 @@ const LoginPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
               >
-                Grow Your Farm with <span className="text-lime-600">AgriConnect</span>
+                Grow Your Farm with <span className="text-lime-600">Moussaada</span>
               </motion.h1>
               
               <motion.p 

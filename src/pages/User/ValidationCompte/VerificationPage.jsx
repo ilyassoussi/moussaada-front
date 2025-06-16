@@ -8,7 +8,7 @@ import { ArrowLeft, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import Swal from 'sweetalert2'
 import '../../../styles/animations.css';
 
-import { ValidateNumber } from '../../../services/api'; // <-- importe ta fonction API
+import { ValidateNumber } from '../../../services/api';
 import { Navigate } from 'react-router-dom';
 
 const VerificationPage = () => {
