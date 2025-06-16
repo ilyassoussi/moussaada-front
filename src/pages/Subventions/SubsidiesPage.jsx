@@ -130,7 +130,7 @@ const SubsidiesPage = () => {
   const fetchSubsidies = async () => {
     try {
       const data = await getAllSubventions();
-      setSubsidyTypes(data.data);
+      setSubsidyTypes(data);
     } catch (error) {
       toast({ title: "Erreur", description: "Échec du chargement des subventions." });
     }

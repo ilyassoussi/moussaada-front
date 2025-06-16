@@ -4,35 +4,59 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from '../../components/AdminCompo/toaster';
 import LoginPage from '../../components/AdminCompo/LoginPage';
 import Dashboard from '../../components/AdminCompo/Dashboard';
+import { login } from  '../../services/auth';
+import { logout } from  '../../services/apiAdmin';
+import { useToast } from '../../components/PaysanCompo/use-toast';
+import useVerifyTokenAdmin from '../../services/useVerifyTokenAdmin'
 
 function Admin() {
+    useVerifyTokenAdmin();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
 
     useEffect(() => {
         // Vérifier si l'utilisateur est déjà connecté
-        const adminToken = localStorage.getItem('adminToken');
+        const adminToken = localStorage.getItem('token-admin');
         if (adminToken) {
+            console.log(adminToken)
             setIsAuthenticated(true);
+        }else {
+            setIsAuthenticated(false);
         }
         setIsLoading(false);
     }, []);
 
-    const handleLogin = (credentials) => {
-        // Simulation d'authentification (remplacer par vraie logique)
-        if (credentials.email === 'admin@moussaada.dz' && credentials.password === 'admin123') {
-            localStorage.setItem('adminToken', 'admin-authenticated');
+    const handleLogin = async (credentials) => {
+        try {
+            const data = await login(credentials.email, credentials.password); // Appel de l'API
+            const token = data?.Token;
+
+            if (!token) throw new Error("Token manquant dans la réponse");
+
+            // Stocker le token
+            localStorage.setItem("token-admin", token);
+            // Redirection
             setIsAuthenticated(true);
-            return true;
+        } catch (err) {
+            toast({
+                title: "Échec de la connexion",
+                description: err.message || "Identifiant ou mot de passe incorrect.",
+                variant: 'destructive',
+            });
         }
-        return false;
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('adminToken');
-        setIsAuthenticated(false);
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            await logout();
+            localStorage.removeItem('token-admin');
+            setIsAuthenticated(false);
+        } catch (error) {
+        console.error("Erreur logout:", error);
+        }
     };
-
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center agricultural-pattern">

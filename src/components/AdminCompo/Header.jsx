@@ -55,7 +55,6 @@ const Header = ({ onLogout, toggleSidebar }) => {
             
             <div className="hidden sm:block">
               <p className="text-sm font-medium text-gray-800">Administrateur</p>
-              <p className="text-xs text-gray-500">admin@moussaada.dz</p>
             </div>
             
             <Button

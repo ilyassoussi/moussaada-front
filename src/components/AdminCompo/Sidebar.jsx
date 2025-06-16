@@ -11,7 +11,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-
+import logo from '../../assets/ArmoiriesduMaroc.svg'
 const Sidebar = ({ activeSection, setActiveSection, isOpen, setIsOpen }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
@@ -33,15 +33,17 @@ const Sidebar = ({ activeSection, setActiveSection, isOpen, setIsOpen }) => {
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           {isOpen && (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                <Sprout className="w-5 h-5 text-white" />
+            <a href="/">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                  <img src={logo} className="w-15 h-15 text-white" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-gray-800">MOUSSAADA</h2>
+                  <p className="text-xs text-gray-500">Admin Dashboard</p>
+                </div>
               </div>
-              <div>
-                <h2 className="font-bold text-gray-800">MOUSSAADA</h2>
-                <p className="text-xs text-gray-500">Admin Dashboard</p>
-              </div>
-            </div>
+            </a>
           )}
           
           <button

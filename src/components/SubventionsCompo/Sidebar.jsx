@@ -16,7 +16,7 @@ import { logout } from "../../services/apiSubvention";
 
 const navItems = [
   { name: "Tableau de Bord", path: "/agent/dashboard-subvention", icon: Home },
-  { name: "Gention Subventions", path: "/agent/subvention", icon: FileText },
+  { name: "Gestion Subventions", path: "/agent/subvention", icon: FileText },
   { name: "Gestion Demandes ", path: "/agent/demandes", icon: DollarSign },
   { name: "Missions Terrain", path: "/agent/missions-terrain", icon: Tractor },
   { name: "Rapports", path: "/agent/rapports", icon: ClipboardList },

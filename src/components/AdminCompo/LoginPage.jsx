@@ -7,6 +7,7 @@ import { Label } from './label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
 import { toast } from './use-toast';
 import { Sprout, Shield, Users, FileText } from 'lucide-react';
+import logo from '../../assets/ArmoiriesduMaroc.svg'
 
 const LoginPage = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -77,8 +78,8 @@ const LoginPage = ({ onLogin }) => {
               transition={{ delay: 0.2 }}
               className="flex items-center justify-center lg:justify-start gap-3 mb-6"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
-                <Sprout className="w-6 h-6 text-white" />
+              <div className="w-12 h-12  from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <img src={logo} className="w-10 h-10 text-white" />
               </div>
               <h1 className="text-4xl font-bold gradient-text">MOUSSAADA</h1>
             </motion.div>
@@ -136,7 +137,7 @@ const LoginPage = ({ onLogin }) => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="admin@moussaada.dz"
+                    placeholder="admin@moussaada.ma"
                     value={credentials.email}
                     onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
                     className="h-12 border-2 focus:border-green-500 transition-colors"
@@ -174,12 +175,12 @@ const LoginPage = ({ onLogin }) => {
                   )}
                 </Button>
               </form>
-
+{/* 
               <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800 font-medium mb-2">Compte de démonstration :</p>
                 <p className="text-xs text-blue-600">Email: admin@moussaada.dz</p>
                 <p className="text-xs text-blue-600">Mot de passe: admin123</p>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </motion.div>

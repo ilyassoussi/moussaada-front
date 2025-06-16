@@ -8,8 +8,10 @@ import UserManagement from './UserManagement';
 import ComplaintsManagement from './ComplaintsManagement';
 import TrainingManagement from './TrainingManagement';
 import DashboardOverview from './DashboardOverview';
+import useVerifyTokenAdmin from '../../services/useVerifyTokenAdmin'
 
 const Dashboard = ({ onLogout }) => {
+  useVerifyTokenAdmin();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 

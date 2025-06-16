@@ -34,7 +34,7 @@ const Navbar = ({ linkColor = "text-gray-700", linkHoverColor = "hover:text-gree
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-  };
+  };  
 
   const logoVariants = {
     initial: { y: -50, opacity: 0 },

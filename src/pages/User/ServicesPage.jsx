@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { ArrowRight, CalendarDays, CheckSquare, Search, SlidersHorizontal } from 'lucide-react';
 import NavBar from '../../components/Header/Navbar';
 import Footer from "../../components/Footer/Footer";
-import {getAllSubventions} from '../../services/apiSubvention';
+import { getAllSubventions } from '../../services/apiSubvention';
 
 
 const ServiceCard = ({ service }) => {
@@ -24,12 +24,12 @@ const ServiceCard = ({ service }) => {
       transition={{ duration: 0.3 }}
     >
       <div className="relative h-48 bg-green-600 flex items-center justify-center overflow-hidden">
-        <img  
-            alt= {t(`categories.${service.categorie}`)}
-            className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-300"
+        <img
+          alt={t(`categories.${service.categorie}`)}
+          className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-300"
           src="https://images.unsplash.com/photo-1595872018818-97555653a011" />
         <div className="relative z-10 p-2 bg-black/20 rounded-full">
-            {service.icon}
+          {service.icon}
         </div>
       </div>
       <div className="p-6 flex flex-col flex-grow">
@@ -38,11 +38,11 @@ const ServiceCard = ({ service }) => {
         <div className="text-xs text-gray-500 space-y-1.5 mb-4">
           <div className="flex items-center">
             <CheckSquare className="w-3.5 h-3.5 mr-1.5 text-green-600" />
-            <span>{t('servicesPage.eligibility')}: {service.conditionsEligibilite	}</span>
+            <span>{t('servicesPage.eligibility')}: {service.conditionsEligibilite}</span>
           </div>
           <div className="flex items-center">
             <CalendarDays className="w-3.5 h-3.5 mr-1.5 text-green-600" />
-            <span>{t('servicesPage.deadline')}: {service.dateFin	 === "Permanent" ? "Permanent" : new Date(service.dateFin).toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            <span>{t('servicesPage.deadline')}: {service.dateFin === "Permanent" ? "Permanent" : new Date(service.dateFin).toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </div>
         </div>
         <Button className="w-full mt-auto agricultural-gradient-light hover:opacity-90" asChild>
@@ -62,7 +62,7 @@ const ServicesPage = () => {
   const [eligibilityFilter, setEligibilityFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [subventions, setSubventions] = useState([]);
-
+  const [searchDate, setSearchDate] = useState('');
   useEffect(() => {
     const fetchSubventions = async () => {
       setLoading(true);
@@ -81,17 +81,29 @@ const ServicesPage = () => {
 
   const serviceTypes = [...new Set(subventions.map(s => s.categorie))];
 
-  const filteredServices = subventions.filter(service => {
-    const matchesSearch = t(`categories.${service.categorie}`).toLowerCase().includes(searchTerm.toLowerCase()) || service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === 'all' || service.categorie === typeFilter;
-    return matchesSearch && matchesType;
-  });
+  const filteredServices = subventions
+    .filter(service => {
+      const matchesSearch =
+        t(`categories.${service.categorie}`).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.description.toLowerCase().includes(searchTerm.toLowerCase());
 
+      const matchesType = typeFilter === 'all' || service.categorie === typeFilter;
+
+      const matchesDate = searchDate
+        ? new Date(service.dateCreation).toISOString().slice(0, 10) === searchDate
+        : true;
+
+      return matchesSearch && matchesType && matchesDate;
+    })
+    .sort((a, b) => {
+      // tri croissant par dateCreation
+      return new Date(a.dateCreation) - new Date(b.dateCreation);
+    });
   return (
     <div className="bg-gradient-to-b from-green-50 via-lime-50 to-white">
       <NavBar linkColor="text-black" linkHoverColor="hover:text-green-600" />
       <div className="container mt-24 mb-24 mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           className="text-center mb-12 md:mb-16"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,7 +117,7 @@ const ServicesPage = () => {
         </motion.div>
 
         {/* Filters */}
-        <motion.div 
+        <motion.div
           className="mb-10 p-6 bg-white rounded-xl shadow-md border border-gray-100"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -140,6 +152,18 @@ const ServicesPage = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <label htmlFor="date-filter" className="block text-sm font-medium text-gray-700 mb-1">{t('servicesPage.filterByDate')}</label>
+              <Input
+                id="date-filter"
+                type="date"
+                value={searchDate}
+                onChange={(e) => setSearchDate(e.target.value)}
+                className=""
+                min="1900-01-01"
+                max="2100-12-31"
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -167,7 +191,7 @@ const ServicesPage = () => {
                 ))}
               </motion.div>
             ) : (
-              <motion.div 
+              <motion.div
                 key="no-services"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
