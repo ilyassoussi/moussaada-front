@@ -3,8 +3,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "./button";
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export function WelcomeBanner({ name }) {
+  const { t } = useTranslation();
+
   return (
     <motion.div 
       className="relative overflow-hidden rounded-xl shadow-2xl group" /* Enhanced shadow and rounded corners */
@@ -27,7 +30,7 @@ export function WelcomeBanner({ name }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          BIENVENUE,
+          {t('welcomeBanner.welcome')}
         </motion.h1>
         <motion.h2 
           className="text-2xl font-medium text-primary-foreground/90" /* Slightly muted secondary text */
@@ -49,7 +52,7 @@ export function WelcomeBanner({ name }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          Accédez rapidement à vos informations, mettez à jour votre situation et explorez les services disponibles.
+          {t('welcomeBanner.description')}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -57,7 +60,7 @@ export function WelcomeBanner({ name }) {
           transition={{ duration: 0.5, delay: 0.7 }}
         >
           <Button size="lg" variant="secondary" className="group bg-accent hover:bg-accent/90 text-primary-foreground">
-            Explorer mes services
+            {t('welcomeBanner.exploreServices')}
             <ArrowRight size={20} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </motion.div>

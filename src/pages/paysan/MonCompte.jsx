@@ -1,5 +1,4 @@
-
-import React from "react";
+import {React , useContext} from "react";
 import { Toaster } from "../../components/PaysanCompo/toaster";
 import { Sidebar } from "../../components/PaysanCompo/sidebar";
 import { Header } from "../../components/PaysanCompo/header";
@@ -8,9 +7,12 @@ import { AccountSituation } from "../../components/PaysanCompo/account-situation
 import { Footer } from "../../components/PaysanCompo/footer";
 import { motion } from "framer-motion";
 import UseVerifyToken from '../../services/useVerifyToken';
+import { UserContext } from '../../context/UserContext';
 
 function MonCompte() {
   UseVerifyToken();
+  const { userInfo } = useContext(UserContext);
+
   return (
     <div className="flex h-screen bg-background text-foreground antialiased">
       <Sidebar />
@@ -24,7 +26,7 @@ function MonCompte() {
           transition={{ duration: 0.5 }}
           className="flex-1 overflow-y-auto p-8 space-y-8"
         >
-          <WelcomeBanner name="ES-SALLAMY ZAKARIA" />
+          <WelcomeBanner name={userInfo?.nometprenom} />
           <AccountSituation />
         </motion.main>
         

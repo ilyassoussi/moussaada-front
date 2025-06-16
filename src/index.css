@@ -34,7 +34,7 @@
 
     --radius: 0.5rem;
   }
-  .dark{
+  .light{
     --background: 240 10% 3.9%; /* Dark blue-gray */
     --foreground: 0 0% 98%; /* Almost white */
 
@@ -65,7 +65,7 @@
 
     --radius: 0.75rem; /* Slightly larger radius */
   }
-  .light { /* Define light theme variables if needed, or adjust dark to be default */
+  .dark { /* Define light theme variables if needed, or adjust dark to be default */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 

@@ -1,45 +1,49 @@
 
-import React from "react";
+import {React , useContext} from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import {
   Table,
   TableBody,
   TableCell,
-  TableRow,
-  TableHead,
-  TableHeader
+  TableRow
 } from "./table";
-import { Briefcase, CalendarDays, DollarSign, FileClock, Landmark, UserCircle2 } from "lucide-react";
+import { Briefcase, CalendarDays, Landmark, Mail, Phone, UserCircle2 } from "lucide-react";
+import { UserContext } from '../../context/UserContext';
+import { TerreContext } from '../../context/TerreContext';
+import { useTranslation } from 'react-i18next';
 
 export function AccountSituation() {
-  const personalInfo = [
-    { icon: <UserCircle2 className="text-primary" size={20}/>, label: "NOM ET PRÉNOM", value: "ES-SALLAMY ZAKARIA" },
-    { icon: <Briefcase className="text-primary" size={20}/>, label: "MATRICULE", value: "453335" },
-    { icon: <Landmark className="text-primary" size={20}/>, label: "ORGANISME EMPLOYEUR", value: "OFFICE NATIONAL DES CHEMINS DE FER (O.N.C.F)" }
-  ];
+  const { t } = useTranslation();
+  const { userInfo } = useContext(UserContext);
+  const { terreInfo } = useContext(TerreContext);
 
-  const accountInfo = [
-    { 
-      icon: <DollarSign className="text-primary" size={20}/>,
-      label: "COTISATION VALIDATION (EN DHS)", 
-      value: "0.00",
-      rightLabel: "PÉRIODE VALIDÉE (EN MOIS)",
-      rightValue: "N/A"
-    },
-    { 
-      icon: <FileClock className="text-primary" size={20}/>,
-      label: "COTISATION RACHAT (EN DHS)", 
-      value: "0.00",
-      rightLabel: "PÉRIODE RACHETÉE (EN MOIS ET JOURS)",
-      rightValue: "0 Mois 0 Jours" /* Updated format */
-    }
-  ];
+  const dateISO = userInfo?.date_de_naissance;
+
+  const dateObj = new Date(dateISO);
+  const formattedDate = dateObj.toLocaleDateString('fr-FR'); // format français jour/mois/année
+
+const personalInfo = [
+  { icon: <UserCircle2 className="text-primary" size={20} />, label: t('accountSituation.lastNameAndFirstName'), value: userInfo?.nometprenom },
+  { icon: <Briefcase className="text-primary" size={20} />, label: t('accountSituation.identite'), value: userInfo?.identite },
+];
+
+
+  // const TerreInfo = [
+  //   { 
+  //     icon: <DollarSign className="text-primary" size={20}/>,
+  //     label: "Valeur Terre (EN DHS)", 
+  //     value: "1 500 0000.00",
+  //     rightLabel: "PÉRIODE VALIDÉE (EN MOIS)",
+  //     rightValue: "N/A"
+  //   }
+    
+  // ];
 
   const affiliationInfo = [
-    { icon: <UserCircle2 className="text-primary" size={20}/>, label: "N° AFFILIATION", value: "969654608" },
-    { icon: <Briefcase className="text-primary" size={20}/>, label: "N° ADHÉSION/ÉTAT", value: "353080001" },
-    { icon: <CalendarDays className="text-primary" size={20}/>, label: "DATE AFFILIATION", value: "05/12/2018" }
+    { icon: <Phone className="text-primary" size={20}/>, label: t('updateSituationPage.mobile'), value: userInfo?.phone },
+    { icon: <Mail className="text-primary" size={20}/>, label: t('updateSituationPage.email'), value: userInfo?.mail },
+    { icon: <CalendarDays className="text-primary" size={20}/>, label: t('accountSituation.datenaissance'), value: formattedDate }
   ];
 
   const itemVariants = {
@@ -65,7 +69,7 @@ export function AccountSituation() {
         <CardHeader className="bg-muted/30 border-b border-border">
           <CardTitle className="text-xl flex items-center gap-2">
             <Briefcase size={24} className="text-primary"/>
-            Situation de Compte
+            {t('accountSituation.title')}
           </CardTitle>
         </CardHeader>
         
@@ -73,7 +77,7 @@ export function AccountSituation() {
           <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
             
             <motion.div variants={itemVariants} custom={0}>
-              <h4 className="text-lg font-semibold mb-4 text-primary">Informations Personnelles</h4>
+              <h4 className="text-lg font-semibold mb-4 text-primary">{t('accountSituation.personalInfo')}</h4>
               <Table>
                 <TableBody>
                   {personalInfo.map((item, i) => (
@@ -90,7 +94,7 @@ export function AccountSituation() {
             </motion.div>
             
             <motion.div variants={itemVariants} custom={1} className="md:border-l md:pl-8 border-border">
-              <h4 className="text-lg font-semibold mb-4 text-primary">Détails d'Affiliation</h4>
+              <h4 className="text-lg font-semibold mb-4 text-primary">{t('accountSituation.detailpersonalInfo')}</h4>
               <Table>
                 <TableBody>
                   {affiliationInfo.map((item, i) => (
@@ -107,23 +111,66 @@ export function AccountSituation() {
             </motion.div>
 
             <motion.div variants={itemVariants} custom={2} className="md:col-span-2 mt-4 pt-6 border-t border-border">
-              <h4 className="text-lg font-semibold mb-4 text-primary">Informations des Terres</h4>
+              <h4 className="text-lg font-semibold mb-4 text-primary">{t('accountSituation.landInfo')}</h4>
                <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
-                {accountInfo.map((item, i) => (
-                  <Card key={i} className="bg-muted/20 hover:shadow-primary/20 transition-shadow">
-                    <CardContent className="p-4">
-                       <div className="flex items-start gap-3 mb-2">
-                        <motion.span whileHover={{ rotate: 15 }}>{item.icon}</motion.span>
-                        <p className="font-semibold text-foreground">{item.label}</p>
-                      </div>
-                      <p className="text-2xl font-bold text-primary mb-3">{item.value}</p>
-                      <div className="text-sm text-muted-foreground">
-                        <p className="font-medium">{item.rightLabel} :</p>
-                        <p>{item.rightValue}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {terreInfo?.length > 0 ? (
+                    terreInfo.map((terre, i) => (
+                      <Card key={terre.id || i} className="bg-muted/20 hover:shadow-primary/20 transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3 mb-2">
+                            <motion.span whileHover={{ rotate: 15 }}>
+                              <Landmark className="text-primary" size={20} />
+                            </motion.span>
+
+                            <p className="font-semibold text-foreground">
+                              {terre.numeroTitre || t('accountSituation.notApplicable')}
+                            </p>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                              <p>{t('accountSituation.owner')} :</p>
+                              <span>{terre.proprietaires.nomComplet}</span>
+                            </div>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                                <p>{t('accountSituation.location')} :</p>
+                                <span>{terre.localisation}</span>
+                            </div>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <div className="flex justify-between font-medium">
+                             <p>{t('accountSituation.area')} :</p>
+  <span>{terre.superficieM2 ? `${terre.superficieM2} ha` : t('accountSituation.notApplicable')}</span>
+                            </div>
+                          </div>
+
+                          <div className="text-sm text-muted-foreground">
+<div className="flex justify-between font-medium">
+  <p>{t('accountSituation.registrationDate')} :</p>
+  <span>{terre.dateEnregistrement ? new Date(terre.dateEnregistrement).toLocaleDateString('fr-FR') : t('accountSituation.notApplicable')}</span>
+</div>
+                          </div>
+
+                          <div className="text-sm text-muted-foreground">
+<div className="flex justify-between font-medium">
+  <p>{t('accountSituation.inDispute')} :</p>
+  <span>{terre.enLitige ? t('accountSituation.yes') : t('accountSituation.no')}</span>
+</div>
+                          </div>
+
+                          <div className="text-sm text-muted-foreground">
+<div className="flex justify-between font-medium">
+  <p>{t('accountSituation.mortgaged')} :</p>
+  <span>{terre.hypothequee ? t('accountSituation.yes') : t('accountSituation.no')}</span>
+</div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground">{t('accountSituation.noLandFound')}</p>
+                  )}
               </div>
             </motion.div>
 

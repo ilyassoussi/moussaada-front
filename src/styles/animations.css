@@ -4,9 +4,11 @@
     transform: translateY(-10px) rotate(0deg);
     opacity: 0;
   }
+
   10% {
     opacity: 0.7;
   }
+
   100% {
     transform: translateY(300px) rotate(360deg);
     opacity: 0;
@@ -23,15 +25,19 @@
     transform: translateY(0) rotate(0deg);
     opacity: 0;
   }
+
   10% {
     opacity: 0.2;
   }
+
   50% {
     transform: translateY(70vh) translateX(100px) rotate(180deg);
   }
+
   90% {
     opacity: 0.2;
   }
+
   100% {
     transform: translateY(100vh) translateX(-50px) rotate(360deg);
     opacity: 0;
@@ -43,15 +49,19 @@
     transform: translateY(0) rotate(0deg);
     opacity: 0;
   }
+
   10% {
     opacity: 0.2;
   }
+
   50% {
     transform: translateY(70vh) translateX(-100px) rotate(-180deg);
   }
+
   90% {
     opacity: 0.2;
   }
+
   100% {
     transform: translateY(100vh) translateX(50px) rotate(-360deg);
     opacity: 0;
@@ -64,4 +74,46 @@
 
 .animate-float-rotate-reverse {
   animation: floatRotateReverse 25s ease-in-out infinite;
+}
+
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 1.5s ease-out;
 }
