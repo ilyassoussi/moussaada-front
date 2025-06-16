@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstanceSubvention = axios.create({
-    baseURL: 'http://localhost:8888', 
+    baseURL: '', 
 });
 
 // Ajouter automatiquement le token à chaque requête

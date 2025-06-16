@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8888/utilisateur/auth/login";
+const API_URL = "/utilisateur/auth/login";
 
 export const login = async (identite, mdp) => {
     try {

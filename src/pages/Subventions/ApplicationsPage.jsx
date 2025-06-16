@@ -237,7 +237,7 @@ const ApplicationsPage = () => {
                   <TableCell>
                     {app.devis_fournisseur ? (
                       <a
-                        href={`http://localhost:8888/utilisateur/auth/pdf/download/${encodeURIComponent(
+                        href={`/utilisateur/auth/pdf/download/${encodeURIComponent(
                           app.devis_fournisseur
                         )}`}
                         target="_blank"

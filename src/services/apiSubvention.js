@@ -3,7 +3,7 @@ import axiosInstance from "../hooks/axiosInstanceSubvention";
 
 export const createSubventions = async (categorie,description,montantMaximum,pourcentageSubvention,dateDebut,dateFin,conditionsEligibilite,piecesRequises,id_region) => {
     try {
-        const response = await axiosInstance.post('http://localhost:8888/subvention/create', 
+        const response = await axiosInstance.post('/subvention/create', 
             {
                 categorie,
                 description,

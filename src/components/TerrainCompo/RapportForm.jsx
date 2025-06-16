@@ -174,7 +174,7 @@ const RapportForm = ({ reponseAssociee, onBackToList }) => {
         // Créer un lien de téléchargement
         const encodedUrl = encodeURIComponent(pdfBlob.rapport);
         window.open(
-          `http://localhost:8888/utilisateur/auth/pdf/download/${encodedUrl}`,
+          `/utilisateur/auth/pdf/download/${encodedUrl}`,
           "_blank"
         );
 

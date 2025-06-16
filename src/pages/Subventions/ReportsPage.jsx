@@ -38,7 +38,7 @@ const handleViewReport = async (mission) => {
       if (mission?.rapport) {
         const encodedUrl = encodeURIComponent(mission.rapport);
         window.open(
-          `http://localhost:8888/utilisateur/auth/pdf/download/${encodedUrl}`,
+          `/utilisateur/auth/pdf/download/${encodedUrl}`,
           "_blank"
         );
       } else {
