@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8888/utilisateur/auth/media";
+const API_URL = "/utilisateur/auth/media";
 
 export const getImage = async (filename) => {
     try {

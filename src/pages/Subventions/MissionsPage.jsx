@@ -91,7 +91,7 @@ const MissionsPage = () => {
       if (response?.id_rapport?.rapport) {
         const encodedUrl = encodeURIComponent(response.id_rapport.rapport);
         window.open(
-          `http://localhost:8888/utilisateur/auth/pdf/download/${encodedUrl}`,
+          `/utilisateur/auth/pdf/download/${encodedUrl}`,
           "_blank"
         );
       } else {

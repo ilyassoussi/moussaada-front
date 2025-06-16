@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const createAccount = async (identite,nometprenom,mail,mdp,phone,confirmation_mdp,date_de_naissance) => {
     try {
-        const response = await axios.post('http://localhost:8888/utilisateur/auth/create', 
+        const response = await axios.post('/utilisateur/auth/create', 
             {
                 identite,
                 nometprenom,
@@ -30,7 +30,7 @@ export const createAccount = async (identite,nometprenom,mail,mdp,phone,confirma
 export const ValidateNumber = async (idcompte, number) => {
     try {
     const response = await axios.post(
-            `http://localhost:8888/utilisateur/auth/validate/account/${idcompte}`,number.toString(),
+            `/utilisateur/auth/validate/account/${idcompte}`,number.toString(),
             {
             headers: {
                 'Content-Type': 'application/json',
