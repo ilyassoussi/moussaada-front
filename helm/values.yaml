@@ -1,8 +1,8 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
-  repository: docker.hub/ilyassoussi/moussaada-front
-  tag: latest
+  repository: ilyassoussi/moussaada-front
+  tag: 1.0.1
   pullPolicy: IfNotPresent
 
 service:
@@ -11,3 +11,7 @@ service:
 
 env:
   SPRING_PROFILES_ACTIVE: kubernetes  
+
+ingress:
+  enabled: true
+  host: moussaada.34.30.83.254.nip.io
