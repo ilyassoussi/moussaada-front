@@ -79,26 +79,28 @@ const ServicesPage = () => {
     fetchSubventions();
   }, [searchTerm, typeFilter, eligibilityFilter]);
 
-  const serviceTypes = [...new Set(subventions.map(s => s.categorie))];
+  const serviceTypes = subventions && Array.isArray(subventions) 
+  ? [...new Set(subventions.map(s => s.categorie))] 
+  : [];
 
-  const filteredServices = subventions
-    .filter(service => {
-      const matchesSearch =
-        t(`categories.${service.categorie}`).toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchTerm.toLowerCase());
+const filteredServices = Array.isArray(subventions)
+  ? subventions
+      .filter(service => {
+        const matchesSearch =
+          t(`categories.${service.categorie}`).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          service.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesType = typeFilter === 'all' || service.categorie === typeFilter;
+        const matchesType = typeFilter === 'all' || service.categorie === typeFilter;
 
-      const matchesDate = searchDate
-        ? new Date(service.dateCreation).toISOString().slice(0, 10) === searchDate
-        : true;
+        const matchesDate = searchDate
+          ? new Date(service.dateCreation).toISOString().slice(0, 10) === searchDate
+          : true;
 
-      return matchesSearch && matchesType && matchesDate;
-    })
-    .sort((a, b) => {
-      // tri croissant par dateCreation
-      return new Date(a.dateCreation) - new Date(b.dateCreation);
-    });
+        return matchesSearch && matchesType && matchesDate;
+      })
+      .sort((a, b) => new Date(a.dateCreation) - new Date(b.dateCreation))
+  : [];
+  
   return (
     <div className="bg-gradient-to-b from-green-50 via-lime-50 to-white">
       <NavBar linkColor="text-black" linkHoverColor="hover:text-green-600" />
