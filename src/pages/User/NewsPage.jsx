@@ -67,20 +67,20 @@ const NewsPage = () => {
       console.error("Erreur lors du chargement des actualités :", error);
     }
   };
-  const categories = [...new Set(actualites.map(news => news.titre))];
 
-  const filteredNews = actualites
-    .filter(news => {
-      const matchesSearch =
-        news.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        news.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredNews = Array.isArray(actualites)
+  ? actualites
+      .filter(news => {
+        const matchesSearch =
+          news.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          news.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesDate = !searchDate || new Date(news.date_creation).toISOString().slice(0, 10) === searchDate;
+        const matchesDate = !searchDate || new Date(news.date_creation).toISOString().slice(0, 10) === searchDate;
 
-      return matchesSearch && matchesDate;
-    })
-    .sort((a, b) => new Date(b.date_creation) - new Date(a.date_creation)); // tri décroissant par date
-
+        return matchesSearch && matchesDate;
+      })
+      .sort((a, b) => new Date(b.date_creation) - new Date(a.date_creation)) // tri décroissant
+  : [];
 
   const totalPages = Math.ceil(filteredNews.length / ITEMS_PER_PAGE);
   const paginatedNews = filteredNews.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
