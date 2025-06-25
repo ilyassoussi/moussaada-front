@@ -58,7 +58,8 @@ jobs:
       - name: Configure kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          # echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          echo "{{ $HOME }}"
 
       # - name: Deploy with Helm
       #   run: helm upgrade --install moussaada-front ./helm/ --set image.tag=${{ github.sha }}
