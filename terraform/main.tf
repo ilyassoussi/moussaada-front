@@ -1,5 +1,6 @@
 provider "google" {
-  project = "ton-projet-id"
+  credentials = file("/home/ilyas/Downloads/credential_GCP.json")
+  project = "crafty-cache-463522-g2"
   region  = "us-central1"
   zone    = "us-central1-a"
 }
@@ -22,7 +23,7 @@ resource "google_container_node_pool" "primary_nodes" {
   cluster    = google_container_cluster.primary.name
 
   node_config {
-    machine_type = "e2-small"  # <- free tier compatible
+    machine_type = "e2-medium"
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
     ]
@@ -30,4 +31,9 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 
   initial_node_count = 1
+
+    autoscaling {
+    min_node_count = 1    
+    max_node_count = 3    
+  }
 }

@@ -1,8 +1,8 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: ilyassoussi/moussaada-front
-  tag: 1.0.1
+  tag: 1.0.0.preprod
   pullPolicy: IfNotPresent
 
 service:
@@ -13,5 +13,5 @@ env:
   SPRING_PROFILES_ACTIVE: kubernetes  
 
 ingress:
-  enabled: true
-  host: moussaada.34.30.83.254.nip.io
+  enabled: false
+  host: moussaada.34.9.129.237.nip.io
