@@ -23,16 +23,22 @@ jobs:
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:${{ github.sha }} .
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:${{ github.sha }}
 
-    - name: Install Google Cloud SDK
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GKE_CREDENTIALS }}
+
+    - name: Set up gcloud CLI
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{ secrets.GKE_PROJECT }}
-        service_account_key: ${{ secrets.GKE_CREDENTIALS }}
-        export_default_credentials: true
+        install_components: 'gke-gcloud-auth-plugin'
 
     - name: Get GKE credentials
       run: |
-        gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }} 
+        gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} \
+          --zone ${{ secrets.GKE_ZONE }} \
+          --project ${{ secrets.GKE_PROJECT }}
 
     - name: Set up Helm
       uses: azure/setup-helm@v3
