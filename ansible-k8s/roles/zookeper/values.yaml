@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: bitnami/zookeeper
+  tag: 3.9.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 2181
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi
+env:
+  - name: ALLOW_ANONYMOUS_LOGIN
+    value: "yes"

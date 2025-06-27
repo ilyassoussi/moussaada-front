@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-consul
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: server-consul
+  template:
+    metadata:
+      labels:
+        app: server-consul
+    spec:
+      containers:
+        - name: server-consul
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          args: ["agent", "-dev", "-client=0.0.0.0"]
+          ports:
+            - containerPort: 8500

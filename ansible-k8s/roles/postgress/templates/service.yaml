@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: moussaadaa-postgres
+  labels:
+    app: moussaadaa-postgres
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 5432
+  selector:
+    app: moussaadaa-postgres

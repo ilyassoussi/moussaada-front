@@ -14,4 +14,4 @@ env:
 
 ingress:
   enabled: false
-  host: moussaada.34.9.129.237.nip.io
+  host: moussaada.34.10.65.202.nip.io

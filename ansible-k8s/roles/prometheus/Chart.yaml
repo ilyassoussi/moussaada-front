@@ -1,0 +1,12 @@
+apiVersion: v2
+name: prometheus-stack
+description: Helm chart custom pour Prometheus + Grafana
+
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: kube-prometheus-stack
+    version: 57.0.3    # Vérifie la dernière version sur ArtifactHub
+    repository: https://prometheus-community.github.io/helm-charts

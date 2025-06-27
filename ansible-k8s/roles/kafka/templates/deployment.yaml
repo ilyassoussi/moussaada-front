@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moussaada-kafka
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: moussaada-kafka
+  template:
+    metadata:
+      labels:
+        app: moussaada-kafka
+    spec:
+      containers:
+        - name: moussaada-kafka
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 9092
+          env:
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+              value: {{ .Values.zookeeper.host }}:2181
+            - name: KAFKA_CFG_LISTENERS
+              value: PLAINTEXT://:9092
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: PLAINTEXT://moussaada-kafka:9092
+            - name: KAFKA_CFG_BROKER_ID
+              value: "0"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

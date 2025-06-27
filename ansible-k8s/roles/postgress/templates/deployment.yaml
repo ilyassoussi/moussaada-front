@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moussaadaa-postgres
+  labels:
+    app: moussaadaa-postgres
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: moussaadaa-postgres
+  template:
+    metadata:
+      labels:
+        app: moussaadaa-postgres
+    spec:
+      containers:
+        - name: postgresql
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: POSTGRES_USER
+              value: "{{ .Values.postgresUser }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.postgresPassword }}"
+            - name: POSTGRES_DB
+              value: "{{ .Values.postgresDatabase }}"
+          ports:
+            - containerPort: 5432
+          #volumeMounts:
+          #  - name: pgdata
+          #    mountPath: /var/lib/postgresql/data
+          #command:
+          #  - "sh"
+          #  - "-c"
+          #  - |
+          #    echo "{{ .Values.extraPgHbaConfig }}" >> /var/lib/postgresql/data/pg_hba.conf && \
+          #    docker-entrypoint.sh postgres
+      volumes:
+        - name: pgdata
+          emptyDir: {}

@@ -1,0 +1,9 @@
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm dependency update
+
+helm install prometheus-stack . --namespace monitoring --create-namespace
+
+kubectl port-forward svc/prometheus-stack-grafana 3000:80 -n monitoring
+kubectl port-forward svc/prometheus-stack-kube-prometheus-prometheus 9090:9090 -n monitoring

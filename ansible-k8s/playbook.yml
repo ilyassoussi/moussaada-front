@@ -1,0 +1,40 @@
+- name: Déploiement séquentiel avec dépendance
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    # - name: Installer ingress-nginx via Helm
+    #   kubernetes.core.helm:
+    #     name: ingress-nginx
+    #     chart_ref: ingress-nginx/ingress-nginx
+    #     release_namespace: ingress-nginx
+    #     create_namespace: true
+        
+    - name: Déployer Zookeeper
+      command: helm upgrade --install moussaada-zookeeper {{ playbook_dir }}/roles/zookeper
+
+    - name: Attendre 10 secondes pour que Zookeeper démarre
+      ansible.builtin.pause:
+        seconds: 10
+
+    - name: Déployer Kafka
+      command: helm upgrade --install moussaada-kafka {{ playbook_dir }}/roles/kafka
+
+    - name: Déployer Consul
+      command: helm upgrade --install server-consul {{ playbook_dir }}/roles/helm-consul
+
+    - name: Déployer PostgreSQL
+      command: helm upgrade --install moussaadaa-postgres {{ playbook_dir }}/roles/postgress
+
+    - name: Appliquer storagePartage.yaml avec kubectl
+      command: kubectl apply -f {{ playbook_dir }}/roles/shareStorage/storageParatage.yaml
+
+
+    - name: Attendre 10 secondes pour que Zookeeper démarre
+      ansible.builtin.pause:
+        seconds: 10
+
+    - name: Appliquer filestore-pv.yaml
+      command: kubectl apply -f {{ playbook_dir }}/roles/shareStorage/filestore-pv.yaml
+
+    - name: Appliquer filestore-pv-pdf.yaml
+      command: kubectl apply -f {{ playbook_dir }}/roles/shareStorage/filestore-pv-pdf.yaml
