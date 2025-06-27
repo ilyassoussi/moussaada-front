@@ -45,6 +45,6 @@ jobs:
 
     - name: Deploy to GKE with Helm
       run: |
-        helm upgrade --install react-frontend ./helm/react-frontend \
+        helm upgrade --install $IMAGE_NAME ./helm/ \
           --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME \
           --set image.tag=${{ github.sha }}
