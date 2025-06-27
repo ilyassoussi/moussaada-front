@@ -3,7 +3,7 @@ name: CI React.js
 on:
   push:
     branches:
-        -master
+        - master
 
 jobs:
   build-test:
@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        
+
 
       # - name: Run tests
       #   run: npm test -- --watchAll=false
