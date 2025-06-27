@@ -20,19 +20,18 @@ jobs:
       with:
         node-version: 18
 
-
-    - name: Code Quality Check (SonarQube)
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Install dependencies and build
       run: |
         npm ci --legacy-peer-deps
         npm run build || true
-        sonar-scanner \
-          -Dsonar.projectKey=moussaada-front \
-          -Dsonar.sources=. \
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-          -Dsonar.login=$SONAR_TOKEN
-          -Dsonar.qualitygate.wait=false
+
+    - name: Code Quality Check (SonarQube)
+      uses: sonarsource/sonarqube-scan-action@master
+      with:
+        projectBaseDir: .
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
     - name: Set up Docker
       run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
