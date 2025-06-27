@@ -2,67 +2,112 @@ name: CI/CD Frontend to GKE
 
 on:
   push:
-    branches: master
+    branches: [master]
 
 env:
   IMAGE_NAME: moussaada-front
 
 jobs:
+
+  # ----------------------------
+  # 🔧 1. Build React App
+  # ----------------------------
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Install dependencies and build
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build || true
+
+      - name: 📤 Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+
+  # ----------------------------
+  # 🧪 2. SonarQube Analysis
+  # ----------------------------
+  quality-check:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🧼 SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # ----------------------------
+  # 🐳 3. Docker Build & Push
+  # ----------------------------
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 📤 Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build/
+
+      - name: 🔐 Docker Login
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: 🏗️ Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  # ----------------------------
+  # 🚀 4. Deploy to GKE via Helm
+  # ----------------------------
   deploy:
     runs-on: ubuntu-latest
-
+    needs: docker
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GKE_CREDENTIALS }}
 
-    - name: Install dependencies and build
-      run: |
-        npm ci --legacy-peer-deps
-        npm run build || true
+      - name: ☁️ Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GKE_PROJECT }}
+          install_components: 'gke-gcloud-auth-plugin'
 
-    - name: Code Quality Check (SonarQube)
-      uses: sonarsource/sonarqube-scan-action@master
-      with:
-        projectBaseDir: .
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: 🔄 Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} \
+            --zone ${{ secrets.GKE_ZONE }} \
+            --project ${{ secrets.GKE_PROJECT }}
 
-    - name: Set up Docker
-      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      - name: ⚙️ Set up Helm
+        uses: azure/setup-helm@v3
 
-    - name: Build and push Docker image
-      run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:${{ github.sha }} .
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:${{ github.sha }}
-
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.GKE_CREDENTIALS }}
-
-    - name: Set up gcloud CLI
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        project_id: ${{ secrets.GKE_PROJECT }}
-        install_components: 'gke-gcloud-auth-plugin'
-
-    - name: Get GKE credentials
-      run: |
-        gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} \
-          --zone ${{ secrets.GKE_ZONE }} \
-          --project ${{ secrets.GKE_PROJECT }}
-
-    - name: Set up Helm
-      uses: azure/setup-helm@v3
-
-    - name: Deploy to GKE with Helm
-      run: |
-        helm upgrade --install $IMAGE_NAME ./helm/ \
-          --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME \
-          --set image.tag=${{ github.sha }}
+      - name: 🚀 Deploy to GKE with Helm
+        run: |
+          helm upgrade --install ${{ env.IMAGE_NAME }} ./helm/ \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ github.sha }}
