@@ -9,42 +9,36 @@ env:
 
 jobs:
 
-  # ----------------------------
-  # 🔧 1. Build React App
-  # ----------------------------
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: ⬇️ Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🟢 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: 📦 Install dependencies and build
+      - name: Install dependencies and build
         run: |
           npm ci --legacy-peer-deps
           npm run build || true
 
-      - name: 📤 Upload build artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: build
           path: build/
 
-  # ----------------------------
-  # 🧪 2. SonarQube Analysis
-  # ----------------------------
   quality-check:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: ⬇️ Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🧼 SonarQube Scan
+      - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
           projectBaseDir: .
@@ -52,26 +46,23 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-  # ----------------------------
-  # 🐳 3. Docker Build & Push
-  # ----------------------------
   docker:
     runs-on: ubuntu-latest
-    needs: build
+    needs: quality-check
     steps:
-      - name: ⬇️ Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 📤 Download build artifact
+      - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
           name: build
           path: build/
 
-      - name: 🔐 Docker Login
+      - name: Docker Login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: 🏗️ Build and push Docker image
+      - name: Build and push Docker image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
@@ -83,30 +74,30 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker
     steps:
-      - name: ⬇️ Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🔐 Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GKE_CREDENTIALS }}
 
-      - name: ☁️ Set up gcloud CLI
+      - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GKE_PROJECT }}
           install_components: 'gke-gcloud-auth-plugin'
 
-      - name: 🔄 Get GKE credentials
+      - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} \
             --zone ${{ secrets.GKE_ZONE }} \
             --project ${{ secrets.GKE_PROJECT }}
 
-      - name: ⚙️ Set up Helm
+      - name: Set up Helm
         uses: azure/setup-helm@v3
 
-      - name: 🚀 Deploy to GKE with Helm
+      - name: Deploy to GKE with Helm
         run: |
           helm upgrade --install ${{ env.IMAGE_NAME }} ./helm/ \
             --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }} \
