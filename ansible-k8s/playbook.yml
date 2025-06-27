@@ -25,6 +25,16 @@
     - name: Déployer PostgreSQL
       command: helm upgrade --install moussaadaa-postgres {{ playbook_dir }}/roles/postgress
 
+    - name: Attendre 10 secondes pour que Zookeeper démarre
+      ansible.builtin.pause:
+        seconds: 10
+
+    - name: Appliquer sonarqube-sysctl.yaml
+      command: kubectl apply -f {{ playbook_dir }}/roles/sonarqube-chart/sonarqube-sysctl.yaml
+
+    - name: Déployer Sonarqube
+      command: helm upgrade --install sonarqube {{ playbook_dir }}/roles/sonarqube-chart
+
     - name: Appliquer storagePartage.yaml avec kubectl
       command: kubectl apply -f {{ playbook_dir }}/roles/shareStorage/storageParatage.yaml
 
