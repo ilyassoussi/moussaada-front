@@ -51,11 +51,13 @@ jobs:
         with:
           version: 'latest'
 
-      - name: Configure kubeconfig
+      - name: Configure kubeconfig and list $HOME content
         run: |
           mkdir -p $HOME/.kube
           # echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
-          ls $HOME 
+          ls -la $HOME
+          ls -la $HOME/.kube
+          ls -la .
 
           
 
