@@ -20,13 +20,12 @@ jobs:
       with:
         node-version: 18
 
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
 
     - name: Code Quality Check (SonarQube)
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
+        npm ci --legacy-peer-deps
         npm run build
         sonar-scanner \
           -Dsonar.projectKey=moussaada-front \
