@@ -1,0 +1,25 @@
+namespace: default
+
+sonarqube:
+  image: sonarqube:lts
+  replicas: 1
+  port: 9000
+  storage: 10Gi
+  resources:
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+    requests:
+      memory: 1Gi
+      cpu: 500m
+
+externalDatabase:
+  host: moussaadaa-postgres
+  port: 5432
+  db: sonarqube
+  user: moussaadaDB
+  password: R3pp6sva
+
+ingress:
+  enabled: true
+  host: sonarqube.34.46.8.60.moussaada.nip.io 

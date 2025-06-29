@@ -1,0 +1,4 @@
+apiVersion: v2
+name: sonarqube
+description: A Helm chart to deploy SonarQube with Ingress and external Postgres
+version: 0.1.0

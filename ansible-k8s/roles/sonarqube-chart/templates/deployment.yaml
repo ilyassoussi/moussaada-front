@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarqube
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.sonarqube.replicas }}
+  selector:
+    matchLabels:
+      app: sonarqube
+  template:
+    metadata:
+      labels:
+        app: sonarqube
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: sonarqube
+          image: {{ .Values.sonarqube.image }}
+          ports:
+            - containerPort: {{ .Values.sonarqube.port }}
+          env:
+            - name: SONAR_JDBC_URL
+              value: jdbc:postgresql://{{ .Values.externalDatabase.host }}:{{ .Values.externalDatabase.port }}/{{ .Values.externalDatabase.db }}
+            - name: SONAR_JDBC_USERNAME
+              value: {{ .Values.externalDatabase.user }}
+            - name: SONAR_JDBC_PASSWORD
+              value: {{ .Values.externalDatabase.password }}
+          volumeMounts:
+            - name: sonarqube-data
+              mountPath: /opt/sonarqube/data
+      volumes:
+        - name: sonarqube-data
+          persistentVolumeClaim:
+            claimName: sonarqube-pvc

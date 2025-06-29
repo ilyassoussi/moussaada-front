@@ -67,9 +67,6 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-  # ----------------------------
-  # 🚀 4. Deploy to GKE via Helm
-  # ----------------------------
   deploy:
     runs-on: ubuntu-latest
     needs: docker
