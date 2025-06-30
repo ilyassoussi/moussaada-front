@@ -16,6 +16,7 @@ initdbScripts:
     CREATE DATABASE "terrain-db";
     CREATE DATABASE "sites-gestion-db";
     CREATE DATABASE "concervation-db";
+    CREATE DATABASE "sonarqube";
 
 service:
   type: ClusterIP

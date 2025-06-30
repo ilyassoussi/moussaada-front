@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx 
   rules:
-    - host: sonarqube.34.46.8.60.moussaada.nip.io
+    - host: sonarqube.35.184.32.68.moussaada.nip.io
       http:
         paths:
           - path: /
