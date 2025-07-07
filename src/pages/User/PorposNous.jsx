@@ -21,12 +21,13 @@ import {
     Globe
 } from 'lucide-react';
 import NavBar from '../../components/Header/Navbar';
+import { useTranslation } from 'react-i18next';
 import Footer from "../../components/Footer/Footer";
 import logoMarocain from '../../assets/ArmoiriesduMaroc.svg'
 function ProposNous() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [visibleSection, setVisibleSection] = useState('');
-
+    const { t, i18n } = useTranslation();
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
@@ -131,13 +132,13 @@ function ProposNous() {
                 <div className="flex justify-center">
                     <div className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
                         <Star className="w-4 h-4" />
-                        <span>{experience} ans d'expérience</span>
+                        <span>{experience} {t("aboutPage.feedback.experience")}</span>
                     </div>
                 </div>
 
                 {/* Achievements */}
                 <div className="space-y-2">
-                    <h4 className="text-sm font-semibold text-gray-700 text-center">Réalisations clés</h4>
+                    <h4 className="text-sm font-semibold text-gray-700 text-center">{t("aboutPage.feedback.Réalisations")}</h4>
                     <div className="space-y-1">
                         {achievements.map((achievement, index) => (
                             <div key={index} className="flex items-center text-sm text-gray-600">
@@ -152,7 +153,7 @@ function ProposNous() {
                 <div className="pt-4 border-t border-gray-100">
                     <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-medium hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2">
                         <Mail className="w-4 h-4" />
-                        <span>Contacter</span>
+                        <span>{t('aboutPage.btn.contact')}</span>
                     </button>
                 </div>
             </div>
@@ -189,23 +190,23 @@ function ProposNous() {
                 <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
                     <div className="animate-fade-in-up">
                         <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-bounce-in">
-                            Direction Provinciale
-                            <span className="block text-yellow-400 mt-2">de l'Agriculture</span>
+                            {t('aboutPage.header.hed')}
+                            <span className="block text-yellow-400 mt-2">{t('aboutPage.header.span')}</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-green-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-                            Cultivons l'avenir du Maroc ensemble. Innovation, durabilité et excellence au service de notre agriculture.
+                            {t('aboutPage.header.p')}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
                                 onClick={handleServiceRedirect}
                             >
-                                Découvrir nos services
+                                {t('aboutPage.btn.decouvrir')}
                             </button>
                             <button
                                 onClick={handleContactRedirect}
                                 className="border-2 border-white text-white hover:bg-white hover:text-green-700 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
                             >
-                                <span>Nous contacter</span>
+                                <span>{t('aboutPage.btn.nosContact')}</span>
                                 <ExternalLink className="w-5 h-5" />
                             </button>
                         </div>
@@ -229,22 +230,16 @@ function ProposNous() {
                             </div>
 
                             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
-                                Au cœur du développement
-                                <span className="text-green-600 block">agricole marocain</span>
+                                {t('aboutPage.intro.title')}
+                                <span className="text-green-600 block">{t('aboutPage.intro.stitle')}</span>
                             </h2>
 
                             <p className="text-lg text-gray-600 leading-relaxed">
-                                La Direction Provinciale de l'Agriculture (DPA) est l'institution de référence pour
-                                l'accompagnement et le développement du secteur agricole au Maroc. Depuis plus de 25 ans,
-                                nous œuvrons pour moderniser l'agriculture marocaine et soutenir nos agriculteurs dans
-                                leur quête d'excellence et de durabilité.
+                                {t('aboutPage.intro.text')}
                             </p>
 
                             <p className="text-lg text-gray-600 leading-relaxed">
-                                Notre expertise couvre tous les aspects de l'agriculture moderne : de la formation technique
-                                à l'innovation technologique, en passant par la certification qualité et la gestion durable
-                                des ressources naturelles. Nous sommes fiers d'accompagner plus de 15 000 agriculteurs
-                                dans leur développement professionnel.
+                                {t('aboutPage.intro.texts')}
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
@@ -307,10 +302,10 @@ function ProposNous() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                            Notre <span className="text-green-600">Mission</span>
+                            {t("aboutPage.mission.title")} <span className="text-green-600">{t("aboutPage.mission.span")}</span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Promouvoir le développement durable de l'agriculture marocaine à travers l'innovation et l'accompagnement
+                            {t("aboutPage.mission.text")}
                         </p>
                     </div>
 
@@ -321,11 +316,10 @@ function ProposNous() {
                                     <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
                                         <Target className="w-6 h-6 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-800">Vision</h3>
+                                    <h3 className="text-2xl font-bold text-gray-800">{t("aboutPage.mission.Vision")}</h3>
                                 </div>
                                 <p className="text-gray-600 leading-relaxed pl-16">
-                                    Être la référence en matière d'innovation agricole au Maroc, en favorisant une agriculture productive,
-                                    durable et respectueuse de l'environnement pour les générations futures.
+                                    {t("aboutPage.mission.visionText")}
                                 </p>
                             </div>
 
@@ -334,11 +328,10 @@ function ProposNous() {
                                     <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
                                         <Heart className="w-6 h-6 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-800">Valeurs</h3>
+                                    <h3 className="text-2xl font-bold text-gray-800">{t("aboutPage.mission.Valeurs")}</h3>
                                 </div>
                                 <p className="text-gray-600 leading-relaxed pl-16">
-                                    Excellence, intégrité, innovation et respect de l'environnement guident toutes nos actions
-                                    au service des agriculteurs et du développement rural marocain.
+                                    {t("aboutPage.mission.valeurText")}
                                 </p>
                             </div>
                         </div>
@@ -388,48 +381,48 @@ function ProposNous() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                            Nos <span className="text-green-600">Services</span>
+                            {t("aboutPage.service.title")} <span className="text-green-600">{t("aboutPage.service.span")}</span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Des solutions complètes pour accompagner le développement agricole au Maroc
+                            {t("aboutPage.service.text")}
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <ServiceCard
                             icon={Sprout}
-                            title="Conseil Technique"
-                            description="Accompagnement personnalisé des agriculteurs dans l'amélioration de leurs pratiques culturales et l'adoption de nouvelles technologies."
+                            title={t("aboutPage.service.conseils")}
+                            description={t("aboutPage.service.conseilsText")}
                             color="bg-gradient-to-br from-green-500 to-green-600"
                         />
                         <ServiceCard
                             icon={TrendingUp}
-                            title="Formation & Innovation"
-                            description="Programmes de formation continue et transfert de technologies pour moderniser l'agriculture marocaine."
+                            title={t("aboutPage.service.Formation")}
+                            description={t("aboutPage.service.FormationText")}
                             color="bg-gradient-to-br from-blue-500 to-blue-600"
                         />
                         <ServiceCard
                             icon={Award}
-                            title="Certification Qualité"
-                            description="Support pour l'obtention de certifications agricoles et l'amélioration de la qualité des produits."
+                            title={t("aboutPage.service.Certification")}
+                            description={t("aboutPage.service.CertificationText")}
                             color="bg-gradient-to-br from-yellow-500 to-yellow-600"
                         />
                         <ServiceCard
                             icon={Droplets}
-                            title="Gestion des Ressources"
-                            description="Optimisation de l'utilisation de l'eau et des ressources naturelles pour une agriculture durable."
+                            title={t("aboutPage.service.ressources")}
+                            description={t("aboutPage.service.ressourcesText")}
                             color="bg-gradient-to-br from-cyan-500 to-cyan-600"
                         />
                         <ServiceCard
                             icon={Users}
-                            title="Développement Rural"
-                            description="Initiatives pour le développement socio-économique des communautés rurales et l'amélioration des conditions de vie."
+                            title={t("aboutPage.service.Developpement")}
+                            description={t("aboutPage.service.DeveloppementText")}
                             color="bg-gradient-to-br from-purple-500 to-purple-600"
                         />
                         <ServiceCard
                             icon={Leaf}
-                            title="Agriculture Biologique"
-                            description="Promotion et accompagnement vers des pratiques agricoles biologiques et respectueuses de l'environnement."
+                            title={t("aboutPage.service.Agriculture")}
+                            description={t("aboutPage.service.AgricultureText")}
                             color="bg-gradient-to-br from-green-600 to-green-700"
                         />
                     </div>
@@ -442,48 +435,48 @@ function ProposNous() {
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center space-x-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
                             <Users className="w-4 h-4" />
-                            <span>Notre Équipe d'Experts</span>
+                            <span>{t("aboutPage.feedback.NotreEquipe")}</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                            Des <span className="text-green-600">Professionnels</span> Dévoués
+                            {t("aboutPage.feedback.title")} <span className="text-green-600">{t("aboutPage.feedback.span")}</span> {t("aboutPage.feedback.title2")}
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Une équipe multidisciplinaire d'experts passionnés, unis par la vision d'une agriculture marocaine moderne et durable
+                            {t("aboutPage.feedback.text")}
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <TeamMember
                             name="Dr. Ahmed Benali"
-                            role="Directeur Provincial"
-                            speciality="Agronomie & Développement Rural"
+                            role={t("aboutPage.feedback.role1")}
+                            speciality={t("aboutPage.feedback.speciality1")}
                             experience="15"
                             achievements={[
-                                "Doctorat en Sciences Agronomiques",
-                                "250+ projets supervisés",
-                                "Expert en agriculture durable"
+                                t("aboutPage.feedback.Réalisations1"),
+                                t("aboutPage.feedback.Réalisations2"),
+                                t("aboutPage.feedback.Réalisations3")
                             ]}
                         />
                         <TeamMember
                             name="Fatima Zahra El Amri"
-                            role="Responsable Formation"
-                            speciality="Formation & Transfert de Technologies"
+                            role={t("aboutPage.feedback.role2")}
+                            speciality={t("aboutPage.feedback.speciality2")}
                             experience="12"
                             achievements={[
-                                "Master en Pédagogie Agricole",
-                                "5000+ agriculteurs formés",
-                                "Spécialiste en innovation"
+                                t("aboutPage.feedback.Réalisations1"),
+                                t("aboutPage.feedback.Réalisations2"),
+                                t("aboutPage.feedback.Réalisations3")
                             ]}
                         />
                         <TeamMember
                             name="Mohamed Tahiri"
-                            role="Expert en Innovation"
-                            speciality="Technologies Agricoles Modernes"
+                            role={t("aboutPage.feedback.role3")}
+                            speciality={t("aboutPage.feedback.speciality3")}
                             experience="10"
                             achievements={[
-                                "Ingénieur Agronome",
-                                "50+ innovations déployées",
-                                "Recherche & Développement"
+                                t("aboutPage.feedback.Réalisations1"),
+                                t("aboutPage.feedback.Réalisations2"),
+                                t("aboutPage.feedback.Réalisations3")
                             ]}
                         />
                     </div>

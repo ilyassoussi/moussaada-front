@@ -28,7 +28,7 @@ const LoginPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
               >
-                Grow Your Farm with <span className="text-lime-600">Moussaada</span>
+                Développez votre ferme avec <span className="text-lime-600">Moussaada</span>
               </motion.h1>
               
               <motion.p 
@@ -37,7 +37,7 @@ const LoginPage = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
               >
-                Join thousands of farmers who are revolutionizing agriculture with smart technology and sustainable practices.
+                Rejoignez des milliers d’agriculteurs qui révolutionnent l’agriculture grâce à des technologies intelligentes et des pratiques durables.
               </motion.p>
               
               <motion.div 

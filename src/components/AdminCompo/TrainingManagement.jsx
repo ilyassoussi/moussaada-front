@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './dialog';
 import { Textarea } from './textarea';
 import { toast } from './use-toast';
+
 import { 
   Plus, 
   Edit, 
@@ -20,7 +21,12 @@ import {
   UserPlus,
   Eye
 } from 'lucide-react';
-
+import { getAllFormations,
+  createFormation,
+  updateFormation,
+  deleteFormationById,
+  getFormationswithoutId
+} from '../../services/apiAdmin';
 const TrainingManagement = () => {
   const [trainings, setTrainings] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -29,190 +35,193 @@ const TrainingManagement = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedTraining, setSelectedTraining] = useState(null);
   const [isParticipantsDialogOpen, setIsParticipantsDialogOpen] = useState(false);
+  
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    instructor: '',
+    titreFr: '',
+    descriptionFr: '',
+    titreAr: '',
+    descriptionAr: '',
+    intervenant: '',
     date: '',
     time: '',
-    location: '',
+    lieu: '',
     maxParticipants: 20,
-    status: 'active'
+    status: true
   });
 
   useEffect(() => {
     loadTrainings();
   }, []);
 
-  const loadTrainings = () => {
-    const savedTrainings = JSON.parse(localStorage.getItem('moussaada_trainings') || '[]');
-    // Ajouter des données de démonstration si aucune formation n'existe
-    if (savedTrainings.length === 0) {
-      const demoTrainings = [
-        {
-          id: 1,
-          title: 'Techniques d\'irrigation moderne',
-          description: 'Formation sur les nouvelles techniques d\'irrigation pour optimiser l\'utilisation de l\'eau en agriculture.',
-          instructor: 'Dr. Karim Benaissa',
-          date: '2024-12-15',
-          time: '09:00',
-          location: 'Centre de formation agricole - Alger',
-          maxParticipants: 25,
-          status: 'active',
-          participants: [
-            { id: 1, name: 'Ahmed Benali', email: 'ahmed.benali@email.com', registeredAt: new Date().toISOString() },
-            { id: 2, name: 'Fatima Khelifi', email: 'fatima.khelifi@email.com', registeredAt: new Date().toISOString() }
-          ],
-          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: 2,
-          title: 'Gestion des cultures biologiques',
-          description: 'Apprenez les meilleures pratiques pour la culture biologique et la certification.',
-          instructor: 'Mme. Aicha Mansouri',
-          date: '2024-12-20',
-          time: '14:00',
-          location: 'Ferme pilote - Blida',
-          maxParticipants: 15,
-          status: 'active',
-          participants: [
-            { id: 3, name: 'Mohamed Saidi', email: 'mohamed.saidi@email.com', registeredAt: new Date().toISOString() }
-          ],
-          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: 3,
-          title: 'Utilisation des engrais naturels',
-          description: 'Formation sur la préparation et l\'utilisation des engrais organiques.',
-          instructor: 'M. Youcef Hamidi',
-          date: '2024-11-25',
-          time: '10:00',
-          location: 'Centre agricole - Oran',
-          maxParticipants: 30,
-          status: 'completed',
-          participants: [
-            { id: 4, name: 'Nadia Boumediene', email: 'nadia.boumediene@email.com', registeredAt: new Date().toISOString() },
-            { id: 5, name: 'Rachid Zerrouki', email: 'rachid.zerrouki@email.com', registeredAt: new Date().toISOString() }
-          ],
-          createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      ];
-      setTrainings(demoTrainings);
-      saveTrainings(demoTrainings);
-    } else {
-      setTrainings(savedTrainings);
+  const loadTrainings = async () => {
+    // const savedTrainings = JSON.parse(localStorage.getItem('moussaada_trainings') || '[]');
+    // if (savedTrainings.length === 0) {
+    //   const demoTrainings = [
+    //     {
+    //       id: 1,
+    //       title: 'Techniques d\'irrigation moderne',
+    //       description: 'Formation sur les nouvelles techniques d\'irrigation pour optimiser l\'utilisation de l\'eau en agriculture.',
+    //       intervenant: 'Dr. Karim Benaissa',
+    //       date: '2024-12-15',
+    //       time: '09:00',
+    //       lieu: 'Centre de formation agricole - Alger',
+    //       maxParticipants: 25,
+    //       status: 'active',
+    //       participants: [
+    //         { id: 1, name: 'Ahmed Benali', email: 'ahmed.benali@email.com', registeredAt: new Date().toISOString() },
+    //         { id: 2, name: 'Fatima Khelifi', email: 'fatima.khelifi@email.com', registeredAt: new Date().toISOString() }
+    //       ],
+    //       createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    //     },
+    //     {
+    //       id: 2,
+    //       title: 'Gestion des cultures biologiques',
+    //       description: 'Apprenez les meilleures pratiques pour la culture biologique et la certification.',
+    //       intervenant: 'Mme. Aicha Mansouri',
+    //       date: '2024-12-20',
+    //       time: '14:00',
+    //       lieu: 'Ferme pilote - Blida',
+    //       maxParticipants: 15,
+    //       status: 'active',
+    //       participants: [
+    //         { id: 3, name: 'Mohamed Saidi', email: 'mohamed.saidi@email.com', registeredAt: new Date().toISOString() }
+    //       ],
+    //       createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    //     },
+    //     {
+    //       id: 3,
+    //       title: 'Utilisation des engrais naturels',
+    //       description: 'Formation sur la préparation et l\'utilisation des engrais organiques.',
+    //       intervenant: 'M. Youcef Hamidi',
+    //       date: '2024-11-25',
+    //       time: '10:00',
+    //       lieu: 'Centre agricole - Oran',
+    //       maxParticipants: 30,
+    //       status: 'completed',
+    //       participants: [
+    //         { id: 4, name: 'Nadia Boumediene', email: 'nadia.boumediene@email.com', registeredAt: new Date().toISOString() },
+    //         { id: 5, name: 'Rachid Zerrouki', email: 'rachid.zerrouki@email.com', registeredAt: new Date().toISOString() }
+    //       ],
+    //       createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+    //     }
+    //   ];
+    //   setTrainings(demoTrainings);
+    //   saveTrainings(demoTrainings);
+    // } else {
+    //   setTrainings(savedTrainings);
+    // }
+    try {
+      const data = await getAllFormations();
+      setTrainings(data);
+    } catch (error) {
+      toast({ title: "Erreur", description: "Impossible de charger les formations." });
     }
   };
 
-  const saveTrainings = (trainingsData) => {
-    localStorage.setItem('moussaada_trainings', JSON.stringify(trainingsData));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const training = {
-      id: editingTraining ? editingTraining.id : Date.now(),
-      ...formData,
-      participants: editingTraining ? editingTraining.participants : [],
-      createdAt: editingTraining ? editingTraining.createdAt : new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+
+    const formationPayload = {
+      titreFr: formData.titreFr,
+      descriptionFr: formData.descriptionFr,
+      titreAr: formData.titreAr,
+      descriptionAr: formData.descriptionAr,
+      intervenant: formData.intervenant,
+      date: formData.date,
+      heure: formData.heure,
+      lieu: formData.lieu,
+      participantsMax: formData.maxParticipants,
+      active: formData.status === true,
     };
 
-    let updatedTrainings;
-    if (editingTraining) {
-      updatedTrainings = trainings.map(item => item.id === editingTraining.id ? training : item);
-      toast({
-        title: "Formation modifiée !",
-        description: "La formation a été mise à jour avec succès.",
-      });
-    } else {
-      updatedTrainings = [training, ...trainings];
-      toast({
-        title: "Formation créée !",
-        description: "La nouvelle formation a été ajoutée avec succès.",
-      });
-    }
+    try {
+      if (editingTraining) {
+        await updateFormation(editingTraining.id, formationPayload);
+        toast({ title: "Formation mise à jour", description: "La formation a été mise à jour avec succès." });
+      } else {
+        await createFormation(formationPayload);
+        toast({ title: "Formation créée", description: "La formation a été ajoutée avec succès." });
+      }
 
-    setTrainings(updatedTrainings);
-    saveTrainings(updatedTrainings);
-    resetForm();
+      loadTrainings(); // refresh depuis l'API
+      resetForm();
+    } catch (error) {
+      toast({ title: "Erreur", description: "Une erreur est survenue lors de l'enregistrement." });
+    }
   };
 
   const resetForm = () => {
     setFormData({
-      title: '',
-      description: '',
-      instructor: '',
+      titreFr: '',
+      descriptionFr: '',
+      titreAr: '',
+      descriptionAr: '',
+      intervenant: '',
       date: '',
       time: '',
-      location: '',
-      maxParticipants: 20,
-      status: 'active'
+      lieu: '',
+      maxParticipants: 0,
+      status: true
     });
     setEditingTraining(null);
     setIsDialogOpen(false);
   };
 
-  const handleEdit = (training) => {
-    setEditingTraining(training);
-    setFormData({
-      title: training.title,
-      description: training.description,
-      instructor: training.instructor,
-      date: training.date,
-      time: training.time,
-      location: training.location,
-      maxParticipants: training.maxParticipants,
-      status: training.status
-    });
+  const handleEdit = async (training) => {
+    const trainingData = await getFormationswithoutId(training.id);
+    if (trainingData) {     
+      setEditingTraining(trainingData);
+      setFormData({
+        titreFr: trainingData.traductions[0].titre,
+        descriptionFr: trainingData.traductions[0].description,
+        titreAr: trainingData.traductions[1].titre,
+        descriptionAr: trainingData.traductions[1].description,
+        intervenant: trainingData.intervenant,
+        date: trainingData.date,
+        time: trainingData.heure,
+        lieu: trainingData.lieu,
+        maxParticipants: trainingData.participantsMax,
+        status: trainingData.active
+      });
+    }
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
-      const updatedTrainings = trainings.filter(item => item.id !== id);
-      setTrainings(updatedTrainings);
-      saveTrainings(updatedTrainings);
-      toast({
-        title: "Formation supprimée !",
-        description: "La formation a été supprimée avec succès.",
-      });
+      try {
+        await deleteFormationById(id);
+        toast({ title: "Supprimée", description: "Formation supprimée avec succès." });
+        loadTrainings();
+      } catch (error) {
+        toast({ title: "Erreur", description: "Échec de suppression de la formation." });
+      }
     }
   };
 
-  const updateTrainingStatus = (id, newStatus) => {
-    const updatedTrainings = trainings.map(training =>
-      training.id === id ? { ...training, status: newStatus, updatedAt: new Date().toISOString() } : training
-    );
-    setTrainings(updatedTrainings);
-    saveTrainings(updatedTrainings);
-    
-    const statusLabels = {
-      active: 'active',
-      completed: 'terminée',
-      cancelled: 'annulée'
-    };
-    
-    toast({
-      title: "Statut mis à jour !",
-      description: `La formation est maintenant ${statusLabels[newStatus]}.`,
-    });
+  const updateTrainingStatus = async (id, newStatus) => {
+    try {
+      await updateFormation(id, { status: newStatus });
+      toast({ title: "Statut mis à jour", description: `Formation ${getStatusLabel(newStatus)}` });
+      loadTrainings();
+    } catch (error) {
+      toast({ title: "Erreur", description: "Impossible de mettre à jour le statut." });
+    }
   };
 
   const filteredTrainings = trainings.filter(training => {
-    const matchesSearch = training.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         training.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         training.location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = training.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          training.intervenant.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          training.lieu.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || training.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'status-active';
-      case 'completed': return 'status-approved';
-      case 'cancelled': return 'status-inactive';
+      case true: return 'status-active';
+      case false: return 'status-approved';
+      case false: return 'status-inactive';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -258,22 +267,45 @@ const TrainingManagement = () => {
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Titre de la formation *</Label>
+                <Label htmlFor="title">Titre de la formation Fr*</Label>
                 <Input
                   id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  value={formData.titreFr}
+                  onChange={(e) => setFormData(prev => ({ ...prev, titreFr: e.target.value }))}
                   placeholder="Ex: Techniques d'irrigation moderne"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description *</Label>
+                <Label htmlFor="description">Description Fr*</Label>
                 <Textarea
                   id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  value={formData.descriptionFr}
+                  onChange={(e) => setFormData(prev => ({ ...prev, descriptionFr: e.target.value }))}
+                  placeholder="Description détaillée de la formation"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="title">Titre de la formation Ar*</Label>
+                <Input
+                  id="title"
+                  value={formData.titreAr}
+                  onChange={(e) => setFormData(prev => ({ ...prev, titreAr: e.target.value }))}
+                  placeholder="Ex: Techniques d'irrigation moderne"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description Ar*</Label>
+                <Textarea
+                  id="description"
+                  value={formData.descriptionAr}
+                  onChange={(e) => setFormData(prev => ({ ...prev, descriptionAr: e.target.value }))}
                   placeholder="Description détaillée de la formation"
                   rows={4}
                   required
@@ -282,22 +314,22 @@ const TrainingManagement = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="instructor">Intervenant *</Label>
+                  <Label htmlFor="intervenant">Intervenant *</Label>
                   <Input
-                    id="instructor"
-                    value={formData.instructor}
-                    onChange={(e) => setFormData(prev => ({ ...prev, instructor: e.target.value }))}
+                    id="intervenant"
+                    value={formData.intervenant}
+                    onChange={(e) => setFormData(prev => ({ ...prev, intervenant: e.target.value }))}
                     placeholder="Nom de l'intervenant"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="location">Lieu *</Label>
+                  <Label htmlFor="lieu">Lieu *</Label>
                   <Input
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    id="lieu"
+                    value={formData.lieu}
+                    onChange={(e) => setFormData(prev => ({ ...prev, lieu: e.target.value }))}
                     placeholder="Lieu de la formation"
                     required
                   />
@@ -321,8 +353,8 @@ const TrainingManagement = () => {
                   <Input
                     id="time"
                     type="time"
-                    value={formData.time}
-                    onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
+                    value={formData.heure}
+                    onChange={(e) => setFormData(prev => ({ ...prev, heure: e.target.value }))}
                     required
                   />
                 </div>
@@ -341,16 +373,17 @@ const TrainingManagement = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="status">Statut</Label>
-                <select
-                  id="status"
-                  value={formData.status}
-                  onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
-                  className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
-                >
-                  <option value="active">Active</option>
-                  <option value="completed">Terminée</option>
-                  <option value="cancelled">Annulée</option>
-                </select>
+                  <select
+                    id="status"
+                    value={formData.status ? 'true' : 'false'}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, status: e.target.value === 'true' }))
+                    }
+                    className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
+                  >
+                    <option value="true">Active</option>
+                    <option value="false">Terminée</option>
+                  </select>
               </div>
 
               <div className="flex gap-3 pt-4">
@@ -391,9 +424,9 @@ const TrainingManagement = () => {
             className="pl-10 pr-4 h-10 border border-input bg-background rounded-md text-sm min-w-[180px]"
           >
             <option value="all">Tous les statuts</option>
-            <option value="active">Actives</option>
-            <option value="completed">Terminées</option>
-            <option value="cancelled">Annulées</option>
+            <option value="true">Actives</option>
+            <option value="false">Terminées</option>
+            <option value="false ">Annulées</option>
           </select>
         </div>
       </motion.div>
@@ -513,14 +546,14 @@ const TrainingManagement = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 mb-4">
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4" />
-                          <span>Intervenant: <strong>{training.instructor}</strong></span>
+                          <span>Intervenant: <strong>{training.intervenant}</strong></span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
                           <span>{new Date(training.date).toLocaleDateString('fr-FR')} à {training.time}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span>📍 {training.location}</span>
+                          <span>📍 {training.lieu}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span>👥 {training.participants?.length || 0}/{training.maxParticipants} participants</span>
@@ -560,7 +593,7 @@ const TrainingManagement = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateTrainingStatus(training.id, 'completed')}
+                          onClick={() => updateTrainingStatus(training.id, false)}
                           disabled={training.status === 'completed'}
                           className="text-green-600"
                         >
@@ -569,7 +602,7 @@ const TrainingManagement = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateTrainingStatus(training.id, 'cancelled')}
+                          onClick={() => updateTrainingStatus(training.id, false)}
                           disabled={training.status === 'cancelled'}
                           className="text-red-600"
                         >
@@ -609,19 +642,19 @@ const TrainingManagement = () => {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium">Date:</span>
-                    <p>{new Date(selectedTraining.date).toLocaleDateString('fr-FR')} à {selectedTraining.time}</p>
+                    <p>{new Date(selectedTraining.date).toLocaleDateString('fr-FR')} à {selectedTraining.heure}</p>
                   </div>
                   <div>
                     <span className="font-medium">Lieu:</span>
-                    <p>{selectedTraining.location}</p>
+                    <p>{selectedTraining.lieu}</p>
                   </div>
                   <div>
                     <span className="font-medium">Intervenant:</span>
-                    <p>{selectedTraining.instructor}</p>
+                    <p>{selectedTraining.intervenant}</p>
                   </div>
                   <div>
                     <span className="font-medium">Participants:</span>
-                    <p>{selectedTraining.participants?.length || 0}/{selectedTraining.maxParticipants}</p>
+                    <p>{selectedTraining.participants?.length || 0}/{selectedTraining.participantsMax}</p>
                   </div>
                 </div>
               </div>

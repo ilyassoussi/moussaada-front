@@ -487,7 +487,7 @@ const AuthForm = () => {
         transition={{ delay: 0.6, duration: 0.5 }}
         className="mt-6 text-center text-sm text-gray-600"
       >
-        By using our platform, you're helping to grow sustainable agriculture.
+        En utilisant notre plateforme, vous contribuez à développer une agriculture durable.
       </motion.div>
     </div>
   );

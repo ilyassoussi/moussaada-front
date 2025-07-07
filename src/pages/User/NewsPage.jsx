@@ -161,16 +161,16 @@ const NewsPage = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               </div>
             </div>
-<div>
-  <label htmlFor="search-date" className="block text-sm font-medium text-gray-700 mb-1">Rechercher par date</label>
-  <input
-    type="date"
-    id="search-date"
-    value={searchDate}
-    onChange={(e) => { setSearchDate(e.target.value); setCurrentPage(1); }}
-    className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
-  />
-</div>
+            <div>
+              <label htmlFor="search-date" className="block text-sm font-medium text-gray-700 mb-1">Rechercher par date</label>
+              <input
+                type="date"
+                id="search-date"
+                value={searchDate}
+                onChange={(e) => { setSearchDate(e.target.value); setCurrentPage(1); }}
+                className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
+              />
+            </div>
           </div>
         </motion.div>
 

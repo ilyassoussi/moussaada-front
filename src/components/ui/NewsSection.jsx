@@ -1,46 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Sprout } from 'lucide-react';
 import NewsCard from './NewsCard';
-import { newsData }  from '../data/NewsData';
 import NewsSkeleton from './NewsSkeleton';
+import { getAllActualites } from '../../services/apiAdmin';
+import { useTranslation } from 'react-i18next';
 
 const NewsSection = () => {
+  const [newsData, setNewsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [visibleNews, setVisibleNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [animationState, setAnimationState] = useState('entering');
+  const { i18n } = useTranslation();
 
   const categories = ['all', 'harvest', 'innovation', 'sustainability'];
   const newsPerPage = 3;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    const fetchData = async () => {
+      try {
+        const res = await getAllActualites();
+        setNewsData(res.data); // ajuster selon backend (peut-être res.data.content)
+      } catch (err) {
+        console.error('Erreur chargement des actualités :', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [i18n.language]);
 
-  useEffect(() => {
-    const filtered = activeCategory === 'all'
-      ? newsData
-      : newsData.filter(news => news.category === activeCategory);
-
-    const startIdx = currentPage * newsPerPage;
-    setVisibleNews(filtered.slice(startIdx, startIdx + newsPerPage));
-  }, [activeCategory, currentPage]);
-
-  const handleCategoryChange = (category) => {
-    setAnimationState('exiting');
-    setTimeout(() => {
-      setActiveCategory(category);
-      setCurrentPage(0);
-      setAnimationState('entering');
-      setTimeout(() => {
-        setAnimationState('visible');
-      }, 500);
-    }, 500);
-  };
 
   const handlePageChange = (direction) => {
     setAnimationState('exiting');
@@ -55,46 +45,18 @@ const NewsSection = () => {
 
   const filteredNews = activeCategory === 'all'
     ? newsData
-    : newsData.filter(news => news.category === activeCategory);
+    : newsData.filter(news => news.id === activeCategory);
 
   const maxPages = Math.ceil(filteredNews.length / newsPerPage);
 
-  if (isLoading) {
-    return <NewsSkeleton />;
-  }
+  if (isLoading) return <NewsSkeleton />;
 
   return (
     <div className="w-full from-gray-50 to-gray-100 py-12">
       <div className="container mx-auto max-w-6xl px-4">
         <div className="mb-8 flex items-center">
           <Sprout className="mr-3 h-8 w-8 text-green-600" />
-          <h2 className="text-3xl font-bold text-gray-800">Agricultural News</h2>
-        </div>
-
-        <div className="mb-10 flex flex-wrap items-center gap-3">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => handleCategoryChange(category)}
-              className={`group relative overflow-hidden rounded-full px-5 py-2 font-medium transition-all duration-300 ${
-                activeCategory === category
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-green-50'
-              }`}
-            >
-              <span
-                className={`absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-amber-600 via-brown-500 to-green-600 ${
-                  activeCategory === category ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'
-                }`}
-              />
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-              {activeCategory === category && (
-                <span className="absolute -top-1 right-2">
-                  <Sprout className="h-3 w-3 animate-pulse text-green-200" />
-                </span>
-              )}
-            </button>
-          ))}
+          <h2 className="text-3xl font-bold text-gray-800">Les actualités d'agriculture</h2>
         </div>
 
         <div className={`grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 ${

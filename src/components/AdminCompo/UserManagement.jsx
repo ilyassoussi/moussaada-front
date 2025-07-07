@@ -3,440 +3,381 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './button';
 import { Input } from './input';
-import { Label } from './label';
+import { Badge } from './badge';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './dialog';
-import { toast } from './use-toast';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  UserCheck, 
-  UserX,
-  Search,
-  Users,
-  Filter
-} from 'lucide-react';
+import { useToast } from './use-toast';
+import { Search, User, CheckCircle, XCircle, Eye, Filter, Download } from 'lucide-react';
+import { Helmet } from 'react-helmet';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState('all');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    role: 'paysan',
-    region: '',
-    isActive: true
-  });
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const { toast } = useToast();
 
-  const roles = [
-    { value: 'admin', label: 'Administrateur' },
-    { value: 'agent_subvention', label: 'Agent de subvention' },
-    { value: 'agent_terrain', label: 'Agent de terrain' },
-    { value: 'paysan', label: 'Paysan' }
-  ];
-
+  // Mock data for demonstration
   useEffect(() => {
-    loadUsers();
+    const mockUsers = [
+      {
+        id: 1,
+        identite: 'AB123456',
+        nom: 'Ahmed Ben Ali',
+        email: 'ahmed.benali@email.com',
+        telephone: '+212 6 12 34 56 78',
+        region: 'Casablanca-Settat',
+        typeActivite: 'Céréales',
+        dateInscription: '2024-01-15',
+        statut: 'en_attente',
+        superficie: '25 hectares'
+      },
+      {
+        id: 2,
+        identite: 'CD789012',
+        nom: 'Fatima El Mansouri',
+        email: 'fatima.mansouri@email.com',
+        telephone: '+212 6 87 65 43 21',
+        region: 'Marrakech-Safi',
+        typeActivite: 'Arboriculture',
+        dateInscription: '2024-01-20',
+        statut: 'actif',
+        superficie: '15 hectares'
+      },
+      {
+        id: 3,
+        identite: 'EF345678',
+        nom: 'Mohamed Ouali',
+        email: 'mohamed.ouali@email.com',
+        telephone: '+212 6 55 44 33 22',
+        region: 'Fès-Meknès',
+        typeActivite: 'Maraîchage',
+        dateInscription: '2024-01-25',
+        statut: 'suspendu',
+        superficie: '8 hectares'
+      },
+      {
+        id: 4,
+        identite: 'GH901234',
+        nom: 'Aicha Benkirane',
+        email: 'aicha.benkirane@email.com',
+        telephone: '+212 6 99 88 77 66',
+        region: 'Rabat-Salé-Kénitra',
+        typeActivite: 'Élevage',
+        dateInscription: '2024-02-01',
+        statut: 'en_attente',
+        superficie: '50 hectares'
+      }
+    ];
+    
+    setUsers(mockUsers);
+    setFilteredUsers(mockUsers);
   }, []);
 
-  const loadUsers = () => {
-    const savedUsers = JSON.parse(localStorage.getItem('moussaada_users') || '[]');
-    setUsers(savedUsers);
-  };
-
-  const saveUsers = (usersData) => {
-    localStorage.setItem('moussaada_users', JSON.stringify(usersData));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    let filtered = users;
     
-    const user = {
-      id: editingUser ? editingUser.id : Date.now(),
-      ...formData,
-      createdAt: editingUser ? editingUser.createdAt : new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    let updatedUsers;
-    if (editingUser) {
-      updatedUsers = users.map(item => item.id === editingUser.id ? user : item);
-      toast({
-        title: "Utilisateur modifié !",
-        description: "L'utilisateur a été mis à jour avec succès.",
-      });
-    } else {
-      updatedUsers = [user, ...users];
-      toast({
-        title: "Utilisateur créé !",
-        description: "Le nouvel utilisateur a été ajouté avec succès.",
-      });
+    if (searchTerm) {
+      filtered = filtered.filter(user => 
+        user.identite.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
-
-    setUsers(updatedUsers);
-    saveUsers(updatedUsers);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      role: 'paysan',
-      region: '',
-      isActive: true
-    });
-    setEditingUser(null);
-    setIsDialogOpen(false);
-  };
-
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setFormData({
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      region: user.region,
-      isActive: user.isActive
-    });
-    setIsDialogOpen(true);
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-      const updatedUsers = users.filter(item => item.id !== id);
-      setUsers(updatedUsers);
-      saveUsers(updatedUsers);
-      toast({
-        title: "Utilisateur supprimé !",
-        description: "L'utilisateur a été supprimé avec succès.",
-      });
-    }
-  };
-
-  const toggleUserStatus = (id) => {
-    const updatedUsers = users.map(user => 
-      user.id === id ? { ...user, isActive: !user.isActive } : user
-    );
-    setUsers(updatedUsers);
-    saveUsers(updatedUsers);
     
-    const user = updatedUsers.find(item => item.id === id);
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(user => user.statut === filterStatus);
+    }
+    
+    setFilteredUsers(filtered);
+  }, [searchTerm, filterStatus, users]);
+
+  const handleActivateAccount = (userId) => {
+    setUsers(users.map(user => 
+      user.id === userId ? { ...user, statut: 'actif' } : user
+    ));
     toast({
-      title: user.isActive ? "Utilisateur activé !" : "Utilisateur désactivé !",
-      description: `Le compte a été ${user.isActive ? 'activé' : 'désactivé'} avec succès.`,
+      title: "Compte activé",
+      description: "Le compte a été activé avec succès.",
     });
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.region.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
-    return matchesSearch && matchesRole;
-  });
-
-  const getRoleLabel = (role) => {
-    const roleObj = roles.find(r => r.value === role);
-    return roleObj ? roleObj.label : role;
+  const handleSuspendAccount = (userId) => {
+    setUsers(users.map(user => 
+      user.id === userId ? { ...user, statut: 'suspendu' } : user
+    ));
+    toast({
+      title: "Compte suspendu",
+      description: "Le compte a été suspendu.",
+    });
   };
 
-  const getRoleColor = (role) => {
-    switch (role) {
-      case 'admin': return 'bg-purple-100 text-purple-800';
-      case 'agent_subvention': return 'bg-blue-100 text-blue-800';
-      case 'agent_terrain': return 'bg-green-100 text-green-800';
-      case 'paysan': return 'bg-orange-100 text-orange-800';
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'actif': return 'bg-green-100 text-green-800';
+      case 'en_attente': return 'bg-yellow-100 text-yellow-800';
+      case 'suspendu': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'actif': return 'Actif';
+      case 'en_attente': return 'En attente';
+      case 'suspendu': return 'Suspendu';
+      default: return status;
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* En-tête */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-      >
-        <div>
-          <h1 className="text-3xl font-bold gradient-text">Gestion des Utilisateurs</h1>
-          <p className="text-gray-600 mt-2">Administrez les comptes agents et paysans</p>
-        </div>
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      <Helmet>
+        <title>Back Office - Gestion des Comptes | AgriMaroc</title>
+        <meta name="description" content="Interface d'administration pour gérer et activer les comptes des paysans marocains." />
+      </Helmet>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={() => resetForm()}
-              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nouvel Utilisateur
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>
-                {editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}
-              </DialogTitle>
-            </DialogHeader>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Gestion des Comptes Paysans
+          </h1>
+          <p className="text-lg text-gray-600">
+            Recherchez et gérez les comptes des agriculteurs marocains
+          </p>
+        </motion.div>
+
+        {/* Search and Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="glass-effect rounded-xl p-6 card-shadow mb-8"
+        >
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Rechercher par identité, nom ou email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 h-12 border-green-200 focus:border-green-500"
+              />
+            </div>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nom complet *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Nom et prénom"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="email@example.com"
-                    required
-                  />
-                </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Filter className="w-5 h-5 text-gray-500" />
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:border-green-500"
+                >
+                  <option value="all">Tous les statuts</option>
+                  <option value="actif">Actif</option>
+                  <option value="en_attente">En attente</option>
+                  <option value="suspendu">Suspendu</option>
+                </select>
               </div>
+              
+              <Button variant="outline" className="border-green-600 text-green-700 hover:bg-green-50">
+                <Download className="w-4 h-4 mr-2" />
+                Exporter
+              </Button>
+            </div>
+          </div>
+        </motion.div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Téléphone</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="+213 XXX XXX XXX"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="role">Rôle *</Label>
-                  <select
-                    id="role"
-                    value={formData.role}
-                    onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
-                    className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
-                    required
-                  >
-                    {roles.map(role => (
-                      <option key={role.value} value={role.value}>
-                        {role.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="region">Région</Label>
-                  <Input
-                    id="region"
-                    value={formData.region}
-                    onChange={(e) => setFormData(prev => ({ ...prev, region: e.target.value }))}
-                    placeholder="Région d'affectation"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="isActive">Statut</Label>
-                  <select
-                    id="isActive"
-                    value={formData.isActive}
-                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
-                    className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
-                  >
-                    <option value="true">Actif</option>
-                    <option value="false">Inactif</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" className="flex-1">
-                  {editingUser ? 'Mettre à jour' : 'Créer l\'utilisateur'}
-                </Button>
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Annuler
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </motion.div>
-
-      {/* Filtres et recherche */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="flex flex-col sm:flex-row gap-4"
-      >
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Rechercher un utilisateur..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        
-        <div className="relative">
-          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <select
-            value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-            className="pl-10 pr-4 h-10 border border-input bg-background rounded-md text-sm min-w-[180px]"
-          >
-            <option value="all">Tous les rôles</option>
-            {roles.map(role => (
-              <option key={role.value} value={role.value}>
-                {role.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </motion.div>
-
-      {/* Statistiques */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        {roles.map(role => {
-          const count = users.filter(user => user.role === role.value).length;
-          return (
-            <Card key={role.value} className="border-0 shadow-lg">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-gray-800">{count}</p>
-                  <p className="text-sm text-gray-600">{role.label}s</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </motion.div>
-
-      {/* Liste des utilisateurs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="grid gap-4"
-      >
-        {filteredUsers.length === 0 ? (
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-12 text-center">
-              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                Aucun utilisateur trouvé
-              </h3>
-              <p className="text-gray-500">
-                {searchTerm || filterRole !== 'all' ? 'Aucun résultat pour vos critères.' : 'Commencez par créer votre premier utilisateur.'}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredUsers.map((user, index) => (
+        {/* Users Grid */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Users List */}
+          <div className="lg:col-span-2">
             <motion.div
-              key={user.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-4"
             >
-              <Card className="border-0 shadow-lg card-hover">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        {user.name.charAt(0).toUpperCase()}
+              {filteredUsers.map((user, index) => (
+                <motion.div
+                  key={user.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <Card className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-green-500"
+                        onClick={() => setSelectedUser(user)}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 agricultural-gradient rounded-full flex items-center justify-center">
+                          <User className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{user.nom}</h3>
+                          <p className="text-sm text-gray-600">ID: {user.identite}</p>
+                          <p className="text-sm text-gray-500">{user.region}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-3">
+                        <Badge className={getStatusColor(user.statut)}>
+                          {getStatusLabel(user.statut)}
+                        </Badge>
+                        
+                        <div className="flex space-x-2">
+                          {user.statut === 'en_attente' && (
+                            <Button
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleActivateAccount(user.id);
+                              }}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                          )}
+                          
+                          {user.statut === 'actif' && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSuspendAccount(user.id);
+                              }}
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          )}
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedUser(user);
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+              
+              {filteredUsers.length === 0 && (
+                <div className="text-center py-12">
+                  <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun utilisateur trouvé</h3>
+                  <p className="text-gray-500">Essayez de modifier vos critères de recherche.</p>
+                </div>
+              )}
+            </motion.div>
+          </div>
+
+          {/* User Details Panel */}
+          <div className="lg:col-span-1">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="sticky top-24"
+            >
+              {selectedUser ? (
+                <Card className="p-6 card-shadow">
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <div className="w-20 h-20 agricultural-gradient rounded-full flex items-center justify-center mx-auto mb-4">
+                        <User className="w-10 h-10 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">{selectedUser.nom}</h3>
+                      <Badge className={`mt-2 ${getStatusColor(selectedUser.statut)}`}>
+                        {getStatusLabel(selectedUser.statut)}
+                      </Badge>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Identité</label>
+                        <p className="text-gray-900 font-medium">{selectedUser.identite}</p>
                       </div>
                       
                       <div>
-                        <h3 className="font-semibold text-gray-800">{user.name}</h3>
-                        <p className="text-sm text-gray-600">{user.email}</p>
-                        {user.phone && (
-                          <p className="text-sm text-gray-500">{user.phone}</p>
-                        )}
+                        <label className="text-sm font-medium text-gray-500">Email</label>
+                        <p className="text-gray-900">{selectedUser.email}</p>
+                      </div>
+                      
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Téléphone</label>
+                        <p className="text-gray-900">{selectedUser.telephone}</p>
+                      </div>
+                      
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Région</label>
+                        <p className="text-gray-900">{selectedUser.region}</p>
+                      </div>
+                      
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Type d'activité</label>
+                        <p className="text-gray-900">{selectedUser.typeActivite}</p>
+                      </div>
+                      
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Superficie</label>
+                        <p className="text-gray-900">{selectedUser.superficie}</p>
+                      </div>
+                      
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Date d'inscription</label>
+                        <p className="text-gray-900">{new Date(selectedUser.dateInscription).toLocaleDateString('fr-FR')}</p>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                        {getRoleLabel(user.role)}
-                      </span>
-                      
-                      {user.region && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                          {user.region}
-                        </span>
+                    
+                    <div className="flex space-x-3">
+                      {selectedUser.statut === 'en_attente' && (
+                        <Button
+                          onClick={() => handleActivateAccount(selectedUser.id)}
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Activer
+                        </Button>
                       )}
                       
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        user.isActive ? 'status-active' : 'status-inactive'
-                      }`}>
-                        {user.isActive ? 'Actif' : 'Inactif'}
-                      </span>
-
-                      <div className="flex items-center gap-2">
+                      {selectedUser.statut === 'actif' && (
                         <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEdit(user)}
+                          variant="destructive"
+                          onClick={() => handleSuspendAccount(selectedUser.id)}
+                          className="flex-1"
                         >
-                          <Edit className="w-4 h-4" />
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Suspendre
                         </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleUserStatus(user.id)}
-                          className={user.isActive ? 'text-orange-600' : 'text-green-600'}
-                        >
-                          {user.isActive ? (
-                            <UserX className="w-4 h-4" />
-                          ) : (
-                            <UserCheck className="w-4 h-4" />
-                          )}
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDelete(user.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </Card>
+              ) : (
+                <Card className="p-8 text-center card-shadow">
+                  <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Sélectionnez un utilisateur</h3>
+                  <p className="text-gray-500">Cliquez sur un utilisateur pour voir ses détails.</p>
+                </Card>
+              )}
             </motion.div>
-          ))
-        )}
-      </motion.div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

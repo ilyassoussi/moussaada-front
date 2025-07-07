@@ -84,10 +84,20 @@ export const createFormation = async (formationData) => {
     return response.data;
 };
 
+export const updateFormation = async (id,formationData) => {
+    const response = await axiosInstance.put(`/admin/formations/update/${id}`, formationData);
+    return response.data;
+};
+
 export const getAllFormations = async () => {
     const lang = i18n.language || 'fr';
     const response = await axiosInstance.get(`/admin/formations?lang=${lang}`);
-    return response.data;
+    return response.data.data;
+};
+
+export const getFormationswithoutId = async (id) => {
+    const response = await axiosInstance.get(`/admin/formations/withoutlang/${id}`);
+    return response.data.data;
 };
 
 export const deleteFormationById = async (id) => {

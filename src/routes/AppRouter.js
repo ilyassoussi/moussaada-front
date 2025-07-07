@@ -2,11 +2,13 @@
 import { useRoutes } from 'react-router-dom';
 import Login from '../pages/User/Login/Login';
 import Acceul from '../pages/User/Home/HomePage';
+import Contact from '../pages/User/Contact/ContactUs';
 import Validation from '../pages/User/ValidationCompte/VerificationPage';
 import Paysan from '../pages/paysan/MonCompte';
 import UpdateSituation from '../pages/paysan/UpdateSituationPage';
 import Reclamation from '../pages/paysan/ReclamationsPage';
 import DemandeSubvention from '../pages/paysan/DemandeSubventionPage';
+import Reservation from '../pages/paysan/EventReservationPage';
 import SuivisReclamation from '../pages/paysan/SuiviReclamationsPage';
 import SuivisSubvention from '../pages/paysan/SuiviSubventionsPage';
 import AgentLoginPage from '../pages/Subventions/AgentLoginPage';
@@ -28,10 +30,12 @@ import Admin from '../pages/Admin/Admin';
 export default function AppRouter() {
   const routes = useRoutes([
     { path: '/', element: <Acceul /> },
+    { path: '/contact', element: <Contact /> },
     { path: '/login', element: <Login /> },
     { path: '/validation', element: <Validation /> },
     { path: '/espace-paysan', element: <Paysan /> },
     { path: '/mise-a-jour-situation', element: <UpdateSituation /> },
+    { path: '/prise-de-rendez-vous', element: <Reservation /> },
     { path: '/demande-subventions', element: <DemandeSubvention /> },
     { path: '/reclamations', element: <Reclamation /> },
     { path: '/suivi-subventions', element: <SuivisSubvention /> },

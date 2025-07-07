@@ -1,5 +1,23 @@
 
 {
+  "Home":{
+    "welcome": "Bienvenue sur",
+    "subtitle": "Votre partenaire pour une agriculture innovante, durable et prospère. Nous vous aidons à cultiver l'avenir.",
+    "discover_solutions": "Découvrir nos solutions",
+    "about_title": "À Propos de MOUSSAADA",
+    "about_paragraph_1": "Chez MOUSSAADA, nous sommes passionnés par l'agriculture et la technologie. Notre mission est de fournir aux agriculteurs les outils et les connaissances nécessaires pour prospérer dans un monde en constante évolution. Nous croyons en une agriculture durable qui nourrit la planète tout en préservant ses ressources.",
+    "about_paragraph_2": "Forts d'une équipe d'experts agronomes, d'ingénieurs et de spécialistes des données, nous développons des solutions innovantes adaptées aux défis spécifiques de l'agriculture moderne. De l'analyse de sol à la gestion optimisée des cultures, nous sommes à vos côtés à chaque étape.",
+    "advanced_technology": "Technologie Avancée",
+    "optimized_yields": "Rendements Optimisés",
+    "sustainable_practices": "Pratiques Durables",
+    "expert_support": "Support Expert",
+    "learn_more_team": "En savoir plus sur notre équipe",
+    "testimonials_title": "Ce que disent nos agriculteurs",
+    "testimonials_description": "Découvrez comment MOUSSAADA a aidé des agriculteurs comme vous.",
+    "testimonial_1": "Grâce à MOUSSAADA, j'ai pu augmenter mes rendements de 20% en seulement une saison. Leurs conseils sont inestimables !",
+    "testimonial_2": "La plateforme est intuitive et les analyses de sol très précises. Un vrai changement pour ma ferme.",
+    "testimonial_3": "Le support client est exceptionnel. Ils sont toujours là pour répondre à nos questions et nous guider."
+  },
   "sidebar": {
     "myAccount": "Mon compte",
     "updateSituation": "Mise à jour situation",
@@ -239,6 +257,16 @@
     "loadingNews": "Chargement des actualités...",
     "noNews": "Aucune actualité à afficher pour le moment."
   },
+  "newsBloc": {
+    "title": "Les actualites d'agriculture",
+    "Rechercher": "Rechercher",
+    "searchPlaceholder": "Rechercher ...",
+    "filterByCategory": "Filtrer par catégorie",
+    "allCategories": "Toutes les catégories",
+    "readMore": "Lire la suite",
+    "loadingNews": "Chargement des actualités...",
+    "noNews": "Aucune actualité à afficher pour le moment."
+  },
   "connect":{
     "seconnecter": "Se Connecter"
   },
@@ -305,5 +333,110 @@
     "loading": "Chargement...",
     "error": "Une erreur est survenue.",
     "comingSoon": "Bientôt disponible"
+  },
+  "contactus": {
+        "title": "Contactez Moussaada | Soutien à l'Agriculture Marocaine",
+        "description": "Contactez Moussaada pour un soutien expert, des consultations et des partenariats. Nous aidons les agriculteurs marocains à prospérer grâce à l'innovation et à la gestion des subventions.",
+        "language": "العربية",
+        "heroTitle": "Cultivons l'avenir, ensemble.",
+        "heroSubtitle": "Votre partenaire pour une agriculture durable et innovante au Maroc. Contactez-nous pour toute demande de soutien, de consultation ou de partenariat.",
+        "formTitle": "Envoyez-nous un message",
+        "formName": "Nom complet",
+        "formEmail": "Adresse e-mail",
+        "formPhone": "Numéro de téléphone",
+        "formMessage": "Votre message",
+        "formSubmit": "Envoyer le message",
+        "contactTitle": "Nos Coordonnées",
+        "address": "Avenue Hassan II, Rabat, Maroc",
+        "socialTitle": "Suivez-nous",
+        "footerText": "© 2025 Moussaada. Tous droits réservés.",
+        "successTitle": "Message envoyé !",
+        "successDesc": "Merci de nous avoir contactés. Nous vous répondrons bientôt.",
+        "errorTitle": "Erreur d'envoi",
+        "errorDesc": "Veuillez réessayer plus tard.",
+        "featureToast": "Cette fonctionnalité n'est pas encore implémentée. Mais vous pouvez la demander dans votre prochaine requête ! 🚀"
+    },
+  "aboutPage": {
+    "header": {
+        "hed":"Direction Provinciale",
+        "span":"de l'Agriculture",
+        "p":"Cultivons l'avenir du Maroc ensemble. Innovation, durabilité et excellence au service de notre agriculture"
+      },
+    "intro": {
+      "title": "Au cœur du développement",
+      "stitle": "agricole marocain",
+      "text": "Depuis plus de 25 ans, la DPA œuvre pour la modernisation de l’agriculture et l’accompagnement des agriculteurs dans leur transition vers une agriculture durable, innovante et rentable.",
+      "texts": "Notre expertise couvre tous les aspects de l'agriculture moderne : de la formation technique à l'innovation technologique, en passant par la certification qualité et la gestion durable des ressources naturelles. Nous sommes fiers d'accompagner plus de 15 000 agriculteurs dans leur développement professionnel."
+    },
+    "mission": {
+      "title": "Notre",
+      "span": "mission",
+      "text": "Accompagner les acteurs agricoles par des services techniques, de formation et de suivi afin de promouvoir un secteur performant et respectueux de l’environnement.",
+      "Vision": "Vision",
+      "visionText": "Être le leader de l’accompagnement agricole au Maroc, reconnu pour notre expertise et notre engagement envers les agriculteurs.",
+      "Valeurs": "Valeurs",
+      "valeurText": "Excellence, intégrité, innovation et respect de l'environnement guident toutes nos actions au service des agriculteurs et du développement rural marocain."
+    },
+    "service": {
+      "title": "No",
+      "span": "Services",
+      "text": "Des solutions complètes pour accompagner le développement agricole au Maroc.",
+      "Certification": "Certification Qualité",
+      "CertificationText": "Support pour l'obtention de certifications agricoles et l'amélioration de la qualité des produits",
+      "Formation": "Formation & Innovation",
+      "FormationText": "Programmes de formation continue et transfert de technologies pour moderniser l'agriculture marocaine",
+      "conseils": "Conseils Techniques",
+      "conseilsText": "Accompagnement personnalisé pour optimiser les pratiques agricoles et améliorer les rendements",
+      "ressources": "Gestion des Ressources",
+      "ressourcesText": "Optimisation de l'utilisation de l'eau et des ressources naturelles pour une agriculture durable.",
+      "Developpement": "Développement Rural",
+      "DeveloppementText": "Initiatives pour le développement socio-économique des communautés rurales et l'amélioration des conditions de vie",
+      "Agriculture": "Agriculture Biologique",
+      "AgricultureText": "Promotion et accompagnement vers des pratiques agricoles biologiques et respectueuses de l'environnement."
+    },
+    "feedback": {
+      "title": "Des",
+      "span": "Professionnels",
+      "title2": "Dévoués",
+      "NotreEquipe": "Notre Équipe d'Experts",
+      "text": "Une équipe multidisciplinaire d'experts passionnés, unis par la vision d'une agriculture marocaine moderne et durable.",
+      "role1": "Directeur Provincial",
+      "role2": "Responsable Formation",
+      "role3": "Expert en Innovation",
+      "Réalisations": "Réalisations clés",
+      "Réalisations1": "Ingénieur Agronome",
+      "Réalisations2": "50+ innovations déployées",
+      "Réalisations3": "Recherche & Développement",
+      "experience": "ans d'expérience",
+      "speciality1": "Formation & Transfert de Technologies",
+      "speciality2": "Formation & Transfert de Technologies",
+      "speciality3": "Agronomie & Développement Rural"
+    },
+    "values": {
+      "title": "Nos valeurs",
+      "items": [
+        "Engagement envers les agriculteurs",
+        "Innovation continue",
+        "Développement durable",
+        "Transparence et efficacité"
+      ]
+    },
+    "stats": {
+      "projects": "250+ projets réalisés",
+      "farmers": "15 000+ agriculteurs accompagnés",
+      "satisfaction": "98% de taux de satisfaction"
+    },
+    "certifications": {
+      "title": "Nos distinctions",
+      "iso": "Certifié ISO 9001",
+      "award": "Label Excellence Agricole 2023"
+    },
+    "btn": {
+      "nosContact": "Nos contacter",
+      "decouvrir": "Decouvrir nos services",
+      "savoir": "Savoir plus",
+      "contact": "Contacter"
+    },
+    "cta": "Voir nos projets"
   }
 }
