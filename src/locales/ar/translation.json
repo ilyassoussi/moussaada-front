@@ -213,6 +213,9 @@
     "statusRejected": "تم الرفض",
     "statusPaid": "تم الدفع"
   },
+  "newsBloc": {
+      "title": "أخبار الفلاحة"
+    },
   "cities": {
     "casablanca": "الدار البيضاء",
     "rabat": "الرباط",

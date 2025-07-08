@@ -8,20 +8,21 @@ import { useTranslation } from 'react-i18next';
 const NewsSection = () => {
   const [newsData, setNewsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
   const [visibleNews, setVisibleNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [animationState, setAnimationState] = useState('entering');
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  const categories = ['all', 'harvest', 'innovation', 'sustainability'];
   const newsPerPage = 3;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await getAllActualites();
-        setNewsData(res.data); // ajuster selon backend (peut-être res.data.content)
+        const sortedNews = res.data.sort(
+          (a, b) => new Date(b.date_creation) - new Date(a.date_creation)
+        );
+        setNewsData(sortedNews);
       } catch (err) {
         console.error('Erreur chargement des actualités :', err);
       } finally {
@@ -31,6 +32,17 @@ const NewsSection = () => {
     fetchData();
   }, [i18n.language]);
 
+  // Ne pas utiliser de filteredNews si tu n'as pas de catégorie
+  const maxPages = Math.ceil(newsData.length / newsPerPage);
+
+  useEffect(() => {
+    if (newsData.length > 0) {
+      const startIndex = currentPage * newsPerPage;
+      const endIndex = startIndex + newsPerPage;
+      setVisibleNews(newsData.slice(startIndex, endIndex));
+      setAnimationState('visible');
+    }
+  }, [newsData, currentPage]);
 
   const handlePageChange = (direction) => {
     setAnimationState('exiting');
@@ -43,12 +55,6 @@ const NewsSection = () => {
     }, 500);
   };
 
-  const filteredNews = activeCategory === 'all'
-    ? newsData
-    : newsData.filter(news => news.id === activeCategory);
-
-  const maxPages = Math.ceil(filteredNews.length / newsPerPage);
-
   if (isLoading) return <NewsSkeleton />;
 
   return (
@@ -56,7 +62,7 @@ const NewsSection = () => {
       <div className="container mx-auto max-w-6xl px-4">
         <div className="mb-8 flex items-center">
           <Sprout className="mr-3 h-8 w-8 text-green-600" />
-          <h2 className="text-3xl font-bold text-gray-800">Les actualités d'agriculture</h2>
+          <h2 className="text-3xl font-bold text-gray-800">{t("newsBloc.title")}</h2>
         </div>
 
         <div className={`grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 ${

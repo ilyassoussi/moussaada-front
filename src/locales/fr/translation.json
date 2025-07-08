@@ -258,14 +258,7 @@
     "noNews": "Aucune actualité à afficher pour le moment."
   },
   "newsBloc": {
-    "title": "Les actualites d'agriculture",
-    "Rechercher": "Rechercher",
-    "searchPlaceholder": "Rechercher ...",
-    "filterByCategory": "Filtrer par catégorie",
-    "allCategories": "Toutes les catégories",
-    "readMore": "Lire la suite",
-    "loadingNews": "Chargement des actualités...",
-    "noNews": "Aucune actualité à afficher pour le moment."
+    "title": "Les actualites d'agriculture"
   },
   "connect":{
     "seconnecter": "Se Connecter"
