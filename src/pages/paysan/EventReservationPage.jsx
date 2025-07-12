@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
 import { Calendar, MapPin, Users, Clock, Download, CheckCircle } from 'lucide-react';
@@ -12,10 +12,12 @@ import QRCodeGenerator from '../../components/PaysanCompo/QRCodeGenerator';
 import { Sidebar } from "../../components/PaysanCompo/sidebar";
 import { Header } from "../../components/PaysanCompo/header";
 import { Footer } from "../../components/PaysanCompo/footer";
+import logo from '../../assets/ArmoiriesduMaroc.svg'; // Assuming you have a logo image
 
 const EventReservationPage = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const canvasRef = useRef(null);
   const [reservationForm, setReservationForm] = useState({
     nom: '',
     identite: '',
@@ -185,7 +187,7 @@ const EventReservationPage = () => {
                           <img  
                             alt={`Image de l'événement ${event.titre}`}
                             className="w-full h-full object-cover"
-                            src="https://images.unsplash.com/photo-1595872018818-97555653a011" />
+                            src={logo} />
                         </div>
                         
                         <div className="flex-1 space-y-4">
@@ -363,7 +365,7 @@ const EventReservationPage = () => {
                   <p className="text-sm text-gray-500">{reservationData?.event.lieu}</p>
                 </div>
                 
-                <QRCodeGenerator reservationData={reservationData} />
+                <QRCodeGenerator ref={canvasRef} reservationData={reservationData} />
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
@@ -380,9 +382,13 @@ const EventReservationPage = () => {
                   
                   <Button
                     onClick={() => {
-                      toast({
-                        title: "🚧 Cette fonctionnalité n'est pas encore implémentée—mais ne vous inquiétez pas ! Vous pouvez la demander dans votre prochaine demande ! 🚀"
-                      });
+                      const canvas = canvasRef.current?.getCanvas();
+                      if (!canvas) return;
+                      const url = canvas.toDataURL('image/png');
+                      const link = document.createElement('a');
+                      link.download = `reservation-${reservationData.id}.png`;
+                      link.href = url;
+                      link.click();
                     }}
                     className="agricultural-gradient text-white border-0"
                   >

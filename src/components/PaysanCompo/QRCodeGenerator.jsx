@@ -1,10 +1,14 @@
-
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useImperativeHandle, forwardRef, useRef } from 'react';
 import { motion } from 'framer-motion';
 import QRCode from 'qrcode';
 
-const QRCodeGenerator = ({ reservationData }) => {
+const QRCodeGenerator = forwardRef(({ reservationData }, ref) => {
   const canvasRef = useRef(null);
+
+  // Permet au parent d'accéder au canvas
+  useImperativeHandle(ref, () => ({
+    getCanvas: () => canvasRef.current
+  }));
 
   useEffect(() => {
     if (reservationData && canvasRef.current) {
@@ -28,7 +32,7 @@ const QRCodeGenerator = ({ reservationData }) => {
         width: 300,
         margin: 2,
         color: {
-          dark: '#059669', // Green color
+          dark: '#059669',
           light: '#FFFFFF'
         }
       }, (error) => {
@@ -86,6 +90,6 @@ const QRCodeGenerator = ({ reservationData }) => {
       </p>
     </motion.div>
   );
-};
+});
 
 export default QRCodeGenerator;

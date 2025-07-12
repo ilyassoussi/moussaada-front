@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosInstance from "../hooks/axiosInstanceSubvention";
 
 
@@ -30,7 +31,7 @@ export const createSubventions = async (categorie,description,montantMaximum,pou
 
 export const getAllSubventions = async () => {
     try {
-        const response = await axiosInstance.get('/subvention/getall');
+        const response = await axios.get('http://localhost:8888/subvention/getall');
         return response.data.data;
     } catch (error) {
         throw error.response ? error.response.data : error;

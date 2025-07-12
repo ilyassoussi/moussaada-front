@@ -242,11 +242,11 @@ function SuiviSubventionsPage() {
                   <div><span className="font-semibold">{t("suiviSubventionsPage.type")}: </span> {selectedSubvention.type_demande}</div>
                   <div><span className="font-semibold">{t("suiviSubventionsPage.depositDate")}: </span> {formatDate(selectedSubvention.date_traitement)}</div>
                   <div><span className="font-semibold">{t("suiviSubventionsPage.titleNumber")}: </span> {selectedSubvention.numero_titre}</div>
-                  <div><span className="font-semibold">{t("suiviSubventionsPage.quote")}: </span> {selectedSubvention.devis_fournisseur_name}</div>
+                  <div><span className="font-semibold">{t("suiviSubventionsPage.quote")}: </span> {subventionReponse?.montantSubvention}</div>
                   <div><span className="font-semibold">{t("suiviSubventionsPage.descriptionLabel")}: </span><em className="line-clamp-2">{selectedSubvention.description}</em></div>
                   <div className="pt-2 border-t border-border">
-                    <span className="font-semibold">{t("suiviSubventionsPage.responseLabel")}:</span>
-                    <p className="mt-1 whitespace-pre-wrap">{subventionReponse}</p>
+                    <span className="font-semibold">Reponse :</span>
+                    <p className="mt-1 whitespace-pre-wrap">{subventionReponse?.description}</p>
                   </div>
                 </>
               )}
